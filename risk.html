@@ -181,7 +181,7 @@
     </section>
 
     <div class="flex-row">
-      <!-- ภาพรวมการแข่งขัน -->
+      <!-- ความเสี่ยงเชิงแข่งขัน -->
       <section class="card half">
         <div class="section-title">
           <span>1. ความเสี่ยงเชิงแข่งขัน</span>
@@ -219,7 +219,7 @@
           <div class="metric-left">
             โรงงาน/กิจกรรมอุตสาหกรรมทั้งหมดในพื้นที่
             <div class="small-note">
-              ตัวแทนโอกาสเรื่องมลพิษ การร้องเรียนชุมชน การตรวจสอบจากรัฐ
+              เป็นตัวแทนโอกาสเรื่องมลพิษ การร้องเรียนชุมชน การตรวจสอบจากรัฐ
             </div>
           </div>
           <div class="metric-right" id="allfactories-count">-</div>
@@ -262,12 +262,7 @@
   </footer>
 
   <script>
-    // ---------------------------
-    // 1) parser CSV เดียวกับ map.html
-    //    รองรับ address ที่มี "," โดยใส่ใน ""
-    //    คาดคอลัมน์เป็น:
-    //    category,name,detail,"address",lat,lng
-    // ---------------------------
+    // ---------- parser CSV เหมือน map.html ----------
     function parseFactoriesCSV(csvText) {
       const lines = csvText.trim().split('\n');
       const factories = [];
@@ -286,7 +281,7 @@
         let row = lines[i].trim();
         if (!row) continue;
 
-        // address ที่ครอบด้วย "" แล้วข้างในมี ,
+        // address ครอบด้วย "" ข้างในมีคอมม่า
         let address = '';
         let addressMatch = row.match(/"([^"]*)"/);
         if (addressMatch) {
@@ -323,11 +318,9 @@
       return factories;
     }
 
-    // ---------------------------
-    // 2) ฟังก์ชันระยะทาง Haversine (กม.)
-    // ---------------------------
+    // ---------- คำนวณระยะทาง (กม.) ----------
     function distanceKm(lat1, lng1, lat2, lng2) {
-      const R = 6371; // โลก ~6371 km
+      const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI/180;
       const dLng = (lng2 - lng1) * Math.PI/180;
       const a =
@@ -339,9 +332,7 @@
       return R * c;
     }
 
-    // ---------------------------
-    // 3) ตำแหน่งลานกระทิงแดง (ต้องเหมือน map.html)
-    // ---------------------------
+    // ---------- จุดลานกระทิงแดง (ต้องตรงกับ map.html) ----------
     const redBullSite = {
       name: "ลานกระทิงแดง (จุดตั้งใหม่)",
       address: "ถนนสายใยรัก สมุทรสาคร",
@@ -349,25 +340,16 @@
       lng: 100.279895
     };
 
-    // ---------------------------
-    // 4) กำหนดรัศมีวิเคราะห์ (กม.)
-    //    *คุณเปลี่ยนตัวเลขนี้ได้ถ้าอยากดู 3กม. / 10กม.*
-    // ---------------------------
+    // ---------- รัศมีวิเคราะห์ (กม.) ----------
     const ANALYSIS_RADIUS_KM = 5;
 
-    // ---------------------------
-    // 5) กฎว่าอันไหนคือ "คู่แข่งหลัก"
-    //    ต้องเหมือน map.html
-    // ---------------------------
+    // ---------- กติกาว่าใครคือคู่แข่งหลัก ----------
     function isRecyclingFactory(f) {
       return f.category.includes("รีไซเคิล");
     }
 
-    // ---------------------------
-    // 6) ฟังก์ชันสเกลคะแนน 0-100 แล้วคืน emoji สี
-    // ---------------------------
+    // ---------- แปลงคะแนน -> สี/คำอธิบาย ----------
     function getRiskLevelInfo(score) {
-      // score คาดว่า 0-100
       if (score <= 25) {
         return { color:"🟢", text:"ความเสี่ยงต่ำ / ช่องว่างตลาดยังเปิดกว้าง" };
       } else if (score <= 50) {
@@ -379,61 +361,52 @@
       }
     }
 
-    // ---------------------------
-    // 7) logic คำนวณความเสี่ยง
-    // ---------------------------
+    // ---------- วิเคราะห์ตัวเลขความเสี่ยง ----------
     function analyzeRisk(factories) {
-      // 7.1 คัดโรงงานในรัศมี
+      // คัดโรงงานในรัศมี
       const inside = factories.filter(f => {
         const d = distanceKm(redBullSite.lat, redBullSite.lng, f.lat, f.lng);
         return d <= ANALYSIS_RADIUS_KM;
       });
 
-      // 7.2 นับคู่แข่ง (รีไซเคิล)
+      // นับคู่แข่ง (รีไซเคิล)
       const competitors = inside.filter(isRecyclingFactory);
 
-      // 7.3 คะแนน competition-risk (คู่แข่ง)
-      //    สมมติ max กดไว้ที่ 20 โรงงานรีไซเคิลในรัศมีนี้ = 100 คะแนน
+      // สร้างคะแนนแบบง่าย
+      // สมมติ: 20 คู่แข่ง = เต็ม 100
       const maxCompetitorRef = 20;
       const competitionScoreRaw = (competitors.length / maxCompetitorRef) * 100;
       const competitionScore = Math.min(100, Math.round(competitionScoreRaw));
 
-      // 7.4 คะแนน impact-risk (ความหนาแน่นอุตสาหกรรมรวม)
-      //    สมมติ max 50 โรงงานในรัศมีนี้ = 100 คะแนน
+      // สมมติ: 50 โรงงานรวม = เต็ม 100
       const maxAllRef = 50;
       const impactScoreRaw = (inside.length / maxAllRef) * 100;
       const impactScore = Math.min(100, Math.round(impactScoreRaw));
 
-      // 7.5 คะแนนรวม = เอา 2 ส่วนมาถัวเฉลี่ย
+      // คะแนนรวม = เฉลี่ยสองอัน
       const totalScore = Math.round((competitionScore + impactScore) / 2);
 
-      // 7.6 ตีความสี
-      const totalInfo = getRiskLevelInfo(totalScore);
-      const compInfo = getRiskLevelInfo(competitionScore);
-      const impactInfo = getRiskLevelInfo(impactScore);
-
+      // ตีความระดับสี
       return {
         radiusKm: ANALYSIS_RADIUS_KM,
         allFactoriesInRadius: inside,
         competitorsInRadius: competitors,
         competitionScore,
-        competitionExplain: compInfo,
+        competitionExplain: getRiskLevelInfo(competitionScore),
         impactScore,
-        impactExplain: impactInfo,
+        impactExplain: getRiskLevelInfo(impactScore),
         totalScore,
-        totalExplain: totalInfo
+        totalExplain: getRiskLevelInfo(totalScore)
       };
     }
 
-    // ---------------------------
-    // 8) render UI ลง DOM
-    // ---------------------------
+    // ---------- อัปเดต UI ----------
     function renderRisk(result) {
       // รัศมี
       document.getElementById("radius-km-label").textContent = result.radiusKm;
       document.getElementById("radius-km-a").textContent = result.radiusKm;
 
-      // จำนวนโรงงาน
+      // จำนวน
       document.getElementById("competitor-count").textContent =
         result.competitorsInRadius.length + " ราย";
 
@@ -443,18 +416,14 @@
       // competition score
       document.getElementById("competition-risk-score").textContent =
         result.competitionScore + " /100";
-
       document.getElementById("competition-interpret").textContent =
-        result.competitionExplain.color + " " +
-        result.competitionExplain.text;
+        result.competitionExplain.color + " " + result.competitionExplain.text;
 
       // impact score
       document.getElementById("impact-risk-score").textContent =
         result.impactScore + " /100";
-
       document.getElementById("impact-interpret").textContent =
-        result.impactExplain.color + " " +
-        result.impactExplain.text;
+        result.impactExplain.color + " " + result.impactExplain.text;
 
       // total summary
       document.getElementById("total-risk-score").innerHTML =
@@ -489,9 +458,7 @@
       }
     }
 
-    // ---------------------------
-    // 9) main: โหลด CSV แล้วคำนวณ
-    // ---------------------------
+    // ---------- main: โหลด CSV ----------
     fetch("data/factories.csv", { cache: "no-store" })
       .then(res => res.text())
       .then(csvText => {
@@ -504,6 +471,10 @@
         document.getElementById("total-risk-interpret").textContent =
           "โหลดข้อมูลไม่สำเร็จ";
       });
+  </script>
+
+</body>
+</html>
   </script>
 
 </body>
