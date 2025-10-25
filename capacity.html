@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ออกแบบกำลังการอัด & ศักยภาพ HUB</title>
+  <title>กำลังการอัด & ศักยภาพ HUB</title>
 
   <style>
     :root {
       --bg-main:#0f172a;
       --bg-card:#1e293b;
-      --bg-card-soft:rgba(30,41,59,.6);
+      --bg-soft:rgba(30,41,59,.6);
       --line:#334155;
       --text-main:#f8fafc;
       --text-dim:#94a3b8;
       --accent:#38bdf8;
-      --good:#22c55e;
-      --warn:#eab308;
-      --risk:#ef4444;
+      --green:#4ade80;
+      --yellow:#fde047;
+      --red:#f87171;
+      --blue:#60a5fa;
     }
 
     body {
@@ -65,7 +66,7 @@
       display:grid;
       gap:16px;
       grid-template-columns:1fr;
-      max-width:1200px;
+      max-width:1250px;
       width:100%;
       margin:0 auto;
     }
@@ -79,38 +80,65 @@
     }
 
     .card h2{
-      margin:0 0 8px 0;
+      margin:0 0 4px 0;
       font-size:15px;
       font-weight:600;
       color:#fff;
       display:flex;
       gap:8px;
       align-items:center;
+      flex-wrap:wrap;
     }
 
-    .card small{
+    .sub{
       font-size:12px;
       color:var(--text-dim);
       line-height:1.4;
+      margin-bottom:12px;
+    }
+
+    .grid-2{
+      display:grid;
+      gap:16px;
+    }
+    @media(min-width:900px){
+      .grid-2{
+        grid-template-columns:1fr 1fr;
+      }
+      main{
+        grid-template-columns:1fr 1fr;
+      }
+      .wide{
+        grid-column:1 / span 2;
+      }
     }
 
     .flex-row{
       display:flex;
       flex-wrap:wrap;
-      gap:12px;
+      align-items:flex-end;
+      column-gap:12px;
+      row-gap:12px;
     }
 
-    .input-block{
+    .input-col{
+      min-width:140px;
       flex:1;
-      min-width:150px;
     }
-    .input-block label{
+
+    label{
       font-size:12px;
       color:#cbd5e1;
       display:block;
       margin-bottom:4px;
     }
-    .input-block input{
+    .unit{
+      font-size:11px;
+      color:var(--text-dim);
+      font-weight:400;
+    }
+
+    input{
       width:100%;
       background:#0f172a;
       border:1px solid var(--line);
@@ -129,28 +157,44 @@
       font-size:14px;
       padding:10px 14px;
       cursor:pointer;
-      align-self:flex-end;
+      line-height:1.2;
+      min-width:120px;
     }
     button#calcBtn:hover{
       filter:brightness(1.1);
     }
 
-    .result-number{
-      font-size:20px;
-      font-weight:600;
-      color:#fff;
-      line-height:1.2;
+    /* mini stat cards */
+    .stats-wrap{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+      gap:12px;
+      margin-top:12px;
     }
-    .result-label{
-      font-size:12px;
+    .stat-box{
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+    }
+    .stat-label{
+      font-size:11px;
+      line-height:1.4;
       color:var(--text-dim);
     }
-
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:16px;
-      margin-top:16px;
+    .stat-value{
+      font-size:18px;
+      font-weight:600;
+      color:#fff;
+      line-height:1.3;
+      margin-top:2px;
+      word-break:break-word;
+    }
+    .tagline{
+      font-size:11px;
+      line-height:1.4;
+      margin-top:2px;
+      color:var(--text-dim);
     }
 
     table.compare{
@@ -158,6 +202,7 @@
       border-collapse:collapse;
       font-size:13px;
       color:#cbd5e1;
+      margin-top:12px;
     }
     table.compare th{
       background:#0f172a;
@@ -167,6 +212,7 @@
       font-size:12px;
       padding:8px 10px;
       border-bottom:1px solid var(--line);
+      white-space:nowrap;
     }
     table.compare td{
       padding:8px 10px;
@@ -176,7 +222,23 @@
     table.compare tr:last-child td{
       border-bottom:0;
     }
-    .tag{
+
+    ul.explain-list{
+      padding-left:16px;
+      margin:8px 0 0 0;
+      font-size:12px;
+      color:#cbd5e1;
+      line-height:1.5;
+    }
+    ul.explain-list li{
+      margin-bottom:6px;
+    }
+    ul.explain-list b{
+      color:#fff;
+      font-weight:600;
+    }
+
+    .badge{
       display:inline-block;
       font-size:11px;
       font-weight:600;
@@ -184,40 +246,27 @@
       padding:4px 6px;
       border-radius:6px;
       border:1px solid transparent;
+      vertical-align:middle;
     }
-    .tag.green{
+    .badge.green{
       background:#052e16;
       border-color:#14532d;
-      color:#4ade80;
+      color:var(--green);
     }
-    .tag.yellow{
+    .badge.yellow{
       background:#422006;
       border-color:#713f12;
-      color:#facc15;
+      color:var(--yellow);
     }
-    .tag.red{
+    .badge.red{
       background:#450a0a;
       border-color:#7f1d1d;
-      color:#f87171;
+      color:var(--red);
     }
-    .tag.blue{
+    .badge.blue{
       background:#082f49;
       border-color:#1e40af;
-      color:#60a5fa;
-    }
-
-    .explain-block{
-      font-size:12px;
-      color:#cbd5e1;
-      line-height:1.5;
-      margin-top:12px;
-      background:var(--bg-card-soft);
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:12px 16px;
-    }
-    .explain-block b{
-      color:#fff;
+      color:var(--blue);
     }
 
     footer{
@@ -229,14 +278,6 @@
       border-top:1px solid #334155;
     }
 
-    @media(min-width:900px){
-      main{
-        grid-template-columns:1fr 1fr;
-      }
-      .wide{
-        grid-column:1 / span 2;
-      }
-    }
   </style>
 </head>
 <body>
@@ -256,379 +297,426 @@
 
 <main>
 
-  <!-- INPUT -->
+  <!-- 1. INPUT ปริมาณรายสินค้า -->
   <section class="card wide">
-    <h2>1) ใส่ข้อมูลอินพุตปริมาณวัสดุรีไซเคิล / ปี</h2>
-    <small>
-      สมมติให้ “วัสดุหลักที่ต้องอัด” = ขวด PET / HDPE / กล่องลูกฟูก / กระป๋องอลูมิเนียม / กระดาษอื่นๆ
-      (ไม่รวมขวดแก้วดีที่เราจะส่งคืนให้โรงงานสุราแบบเป็นใบ ไม่ต้องอัด)
-      <br/>
-      ระบบจะคำนวณเครื่องอัด (แนวตั้ง vs แนวนอน), จำนวนคน, พลังงาน, %เฮดรูม, และความสามารถเติบโตเป็น HUB
-    </small>
-
-    <div class="flex-row" style="margin-top:16px;">
-      <div class="input-block">
-        <label>ปริมาณรวมต่อปี (ตัน/ปี)</label>
-        <input id="yearTonnage" type="number" min="0" step="0.1" value="5000"/>
-      </div>
-
-      <div class="input-block">
-        <label>จำนวนวันเดินเครื่องต่อปี (วัน)</label>
-        <input id="operatingDays" type="number" min="1" step="1" value="300"/>
-      </div>
-
-      <div class="input-block">
-        <label>ชั่วโมงต่อกะ (ชม./กะ)</label>
-        <input id="shiftHours" type="number" min="1" step="1" value="8"/>
-      </div>
-
-      <div class="input-block">
-        <label>จำนวนกะต่อวัน (กะ/วัน)</label>
-        <input id="shiftsPerDay" type="number" min="1" step="1" value="1"/>
-      </div>
-
-      <button id="calcBtn">คำนวณ</button>
+    <h2>1) ปริมาณวัสดุที่คาดว่าจะเข้าลาน (ต่อปี)</h2>
+    <div class="sub">
+      ใส่ปริมาณแยกตามประเภท (ตัน/ปี). ขวดแก้ว “ดี” ใส่เป็นจำนวนใบ/ปี (ไม่ต้องอัด เพราะจะส่งกลับโรงงานสุราแบบนำกลับใช้ซ้ำ)
     </div>
 
-    <div class="explain-block">
-      <b>หลักการ:</b><br/>
-      1. แปลงตัน/ปี → ตัน/วัน → ตัน/ชม. จากจำนวนวันทำงานและจำนวนชั่วโมง/กะ.<br/>
-      2. เอาตัน/ชม. ไปเทียบกับกำลังอัดของเครื่องอัดแนวตั้ง (~0.5 ตัน/ชม./เครื่อง) และแนวนอน (~2 ตัน/ชม./เครื่อง).<br/>
-      3. คำนวณจำนวนเครื่องที่ต้องใช้ = เพดาน(ปริมาณที่เราต้องอัดต่อชม. ÷ กำลังของเครื่องหนึ่งตัว).<br/>
-      4. เช็ค % การใช้งานเครื่อง (utilization) ว่าเราใช้เครื่องเต็มหรือยัง → ถ้ายังเหลือ = ยังสเกลได้อีกโดยไม่ซื้อเครื่องเพิ่ม.<br/>
-      5. ประเมินการจัดเรียงก้อนบนรถบรรทุกโดยดูน้ำหนักต่อก้อน (แนวตั้ง ~150 กก./ก้อน, แนวนอน ~400 กก./ก้อน) เพื่อประเมินการขนส่งและค่าส่งต่อตัน.
+    <div class="grid-2">
+
+      <div>
+        <div class="flex-row">
+          <div class="input-col">
+            <label>ขวด PET ใส / PET สี <span class="unit">(ตัน/ปี)</span></label>
+            <input id="petTon" type="number" min="0" step="0.1" value="1500"/>
+          </div>
+          <div class="input-col">
+            <label>ขวด HDPE (เช่น ขวดนม/ขาวขุ่น) <span class="unit">(ตัน/ปี)</span></label>
+            <input id="hdpeTon" type="number" min="0" step="0.1" value="600"/>
+          </div>
+        </div>
+
+        <div class="flex-row">
+          <div class="input-col">
+            <label>กระดาษลูกฟูก / กล่อง <span class="unit">(ตัน/ปี)</span></label>
+            <input id="cartonTon" type="number" min="0" step="0.1" value="2000"/>
+          </div>
+          <div class="input-col">
+            <label>กระดาษขาวดำ / กระดาษผสม <span class="unit">(ตัน/ปี)</span></label>
+            <input id="paperTon" type="number" min="0" step="0.1" value="500"/>
+          </div>
+        </div>
+
+        <div class="flex-row">
+          <div class="input-col">
+            <label>กระป๋องอะลูมิเนียม <span class="unit">(ตัน/ปี)</span></label>
+            <input id="aluTon" type="number" min="0" step="0.1" value="200"/>
+          </div>
+          <div class="input-col">
+            <label>วันเดินเครื่องต่อปี <span class="unit">(วัน/ปี)</span></label>
+            <input id="operatingDays" type="number" min="1" step="1" value="300"/>
+          </div>
+        </div>
+
+        <div class="flex-row">
+          <div class="input-col">
+            <label>ชั่วโมง/กะ <span class="unit">(ชม.)</span></label>
+            <input id="shiftHours" type="number" min="1" step="1" value="8"/>
+          </div>
+          <div class="input-col">
+            <label>กะ/วัน <span class="unit">(กะ)</span></label>
+            <input id="shiftsPerDay" type="number" min="1" step="1" value="1"/>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex-row">
+          <div class="input-col">
+            <label>ขวดแก้ว “ดี” ที่จะส่งคืนโรงงานสุรา <span class="unit">(ใบ/ปี)</span></label>
+            <input id="glassBottleCount" type="number" min="0" step="1" value="2000000"/>
+          </div>
+
+          <button id="calcBtn">คำนวณ</button>
+        </div>
+
+        <div class="sub" style="margin-top:12px;">
+          หมายเหตุ:
+          <br/>• PET / HDPE / กระดาษ / อะลูมิเนียม = ต้องอัดก้อน
+          <br/>• ขวดแก้วดี = ไม่อัด → เป็นสินค้า premium (ส่งกลับใช้ซ้ำ)
+        </div>
+      </div>
+
     </div>
   </section>
 
 
-  <!-- SUMMARY KPIs -->
+  <!-- 2. LOAD SUMMARY -->
   <section class="card">
-    <h2>2) ตัวชี้วัดกำลังงานต่อชม.</h2>
-    <div class="grid-3">
-      <div>
-        <div class="result-number" id="outTonDay">-</div>
-        <div class="result-label">ตัน/วัน (เฉลี่ย)</div>
+    <h2>2) ภาระงานที่ต้องอัดก้อน</h2>
+    <div class="sub">ระบบรวมวัตถุดิบทุกประเภทที่ “ต้องอัด” แล้วแปลงเป็นโหลดต่อวัน/ต่อชั่วโมง</div>
+
+    <div class="stats-wrap">
+      <div class="stat-box">
+        <div class="stat-label">รวมวัตถุดิบที่ต้องอัด</div>
+        <div class="stat-value" id="totalTonPerYear">-</div>
+        <div class="tagline">ตัน / ปี</div>
       </div>
-      <div>
-        <div class="result-number" id="outTonHour">-</div>
-        <div class="result-label">ตัน/ชม. ที่ต้องอัด</div>
+
+      <div class="stat-box">
+        <div class="stat-label">เฉลี่ยต่อวัน</div>
+        <div class="stat-value" id="tonPerDay">-</div>
+        <div class="tagline">ตัน / วัน</div>
       </div>
-      <div>
-        <div class="result-number" id="outKgHour">-</div>
-        <div class="result-label">กก./ชม. ที่ต้องอัด</div>
+
+      <div class="stat-box">
+        <div class="stat-label">ภาระต่อชั่วโมง</div>
+        <div class="stat-value" id="tonPerHour">-</div>
+        <div class="tagline">ตัน / ชม.</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-label">โหลดเครื่องอัด</div>
+        <div class="stat-value" id="kgPerHour">-</div>
+        <div class="tagline">กก. / ชม. ที่ต้องอัด</div>
       </div>
     </div>
 
-    <div class="explain-block">
-      <b>ตีความ:</b>
-      นี่คือโหลดจริงที่เข้าเครื่องอัดต่อชั่วโมง (รวม PET, HDPE, กระดาษลูกฟูก ฯลฯ)
-      ถ้าค่านี้สูง แปลว่าคุณต้องมีเครื่องแรงหรือหลายเครื่องทำพร้อมกัน
-    </div>
+    <ul class="explain-list">
+      <li><b>วิธีคิด:</b> (ตัน/ปี ÷ วันทำงาน) = ตัน/วัน → ÷ ชั่วโมงเดินเครื่องจริงต่อวัน = ตัน/ชม. → ×1000 = กก./ชม.</li>
+      <li>เลขนี้คือความเร็ว “กี่กิโลกรัมต่อชั่วโมง” ที่เครื่องอัดต้องกินเข้าให้ทัน ไม่งั้นสต็อกจะค่อยๆ กองเต็มลาน</li>
+    </ul>
   </section>
 
 
-  <!-- MACHINE SIZING -->
+  <!-- 3. เครื่องอัด: แนวตั้ง vs แนวนอน -->
   <section class="card">
-    <h2>3) ขนาดเครื่องอัดที่ต้องใช้ (Vertical vs Horizontal)</h2>
+    <h2>3) เครื่องอัดที่เหมาะ</h2>
+    <div class="sub">เปรียบเทียบสเปคประมาณการ แล้วดูว่าควรลงทุนแบบไหน</div>
 
     <table class="compare">
       <thead>
         <tr>
-          <th>พารามิเตอร์</th>
+          <th>พารามิเตอร์หลัก</th>
           <th>แนวตั้ง (Vertical baler)</th>
           <th>แนวนอน (Horizontal baler)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>กำลังอัดโดยประมาณ</td>
-          <td>~0.5 ตัน/ชม./เครื่อง<br/><small>(≈ 500 กก./ชม.)</small></td>
-          <td>~2 ตัน/ชม./เครื่อง<br/><small>(≈ 2,000 กก./ชม.)</small></td>
+          <td>กำลังอัดต่อเครื่อง</td>
+          <td>~0.5 ตัน/ชม.<br/><small>≈ 500 กก./ชม.</small></td>
+          <td>~2 ตัน/ชม.<br/><small>≈ 2,000 กก./ชม.</small></td>
         </tr>
         <tr>
-          <td>น้ำหนักต่อก้อน (bale)</td>
+          <td>น้ำหนัก 1 ก้อน</td>
           <td>~150 กก./ก้อน</td>
           <td>~400 กก./ก้อน</td>
         </tr>
         <tr>
-          <td>เวลาทำ 1 ก้อน (โดยเฉลี่ย)</td>
-          <td>15-20 นาที/ก้อน<br/><small>ขึ้นกับชนิดวัสดุ & การมัดเชือก</small></td>
-          <td>5-8 นาที/ก้อน<br/><small>ป้อนต่อเนื่อง ออกอัตโนมัติ</small></td>
+          <td>เวลาทำ 1 ก้อน</td>
+          <td>ประมาณ 15-20 นาที</td>
+          <td>ประมาณ 5-8 นาที</td>
         </tr>
         <tr>
-          <td>กำลังไฟ</td>
-          <td>~10 kW ต่อเครื่อง</td>
-          <td>~25 kW ต่อเครื่อง</td>
+          <td>กำลังไฟต่อเครื่อง</td>
+          <td>~10 kW</td>
+          <td>~25 kW</td>
         </tr>
         <tr>
-          <td>แรงงานต่อกะ</td>
-          <td>2 คน/กะ<br/><small>1 คนป้อน + 1 คนมัด/ยกก้อน</small></td>
-          <td>2 คน/กะ<br/><small>1 คนป้อนสายพาน + 1 คนโฟล์คลิฟต์</small></td>
+          <td>แรงงาน/กะ</td>
+          <td>2 คน (ป้อน+มัด)</td>
+          <td>2 คน (ป้อน+โฟล์คลิฟต์)</td>
         </tr>
         <tr>
-          <td>เหมาะกับรีไซเคิลแบบไหน</td>
-          <td>Volume ไม่สูง, หลายชนิดแยกทำทีละอย่าง</td>
-          <td>Volume สูง, ต้องผลิตก้อนได้มาตรฐานเหมือนกันทุกวัน</td>
+          <td>เหมาะกับ</td>
+          <td>ปริมาณไม่สูงมาก / ทำทีละชนิด</td>
+          <td>ปริมาณสูง / อยากได้ก้อนมาตรฐานโรงงาน</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="grid-3" style="margin-top:16px;">
-      <div>
-        <div class="result-number" id="needVert">-</div>
-        <div class="result-label">จำนวนเครื่องแนวตั้งที่ต้องใช้ (≈)</div>
+    <div class="stats-wrap" style="margin-top:16px;">
+      <div class="stat-box">
+        <div class="stat-label">ต้องใช้เครื่องแนวตั้ง ≈</div>
+        <div class="stat-value" id="needVert">-</div>
+        <div class="tagline">เครื่อง</div>
       </div>
-      <div>
-        <div class="result-number" id="needHori">-</div>
-        <div class="result-label">จำนวนเครื่องแนวนอนที่ต้องใช้ (≈)</div>
+
+      <div class="stat-box">
+        <div class="stat-label">ต้องใช้เครื่องแนวนอน ≈</div>
+        <div class="stat-value" id="needHori">-</div>
+        <div class="tagline">เครื่อง</div>
       </div>
-      <div>
-        <div class="result-number" id="pickType">-</div>
-        <div class="result-label">คำแนะนำเครื่องหลัก</div>
+
+      <div class="stat-box">
+        <div class="stat-label">คำแนะนำ</div>
+        <div class="stat-value" id="pickType">-</div>
+        <div class="tagline">เลือก main machine</div>
       </div>
     </div>
 
-    <div class="grid-3" style="margin-top:16px;">
-      <div>
-        <div class="result-number" id="utilVert">-</div>
-        <div class="result-label">% การใช้งาน/โหลดของแนวตั้ง</div>
+    <div class="stats-wrap">
+      <div class="stat-box">
+        <div class="stat-label">%การใช้งานแนวตั้ง (โหลด/กำลัง)</div>
+        <div class="stat-value" id="utilVert">-</div>
+        <div class="tagline">ควรต่ำกว่า ~80% จะเหลือ buffer</div>
       </div>
-      <div>
-        <div class="result-number" id="utilHori">-</div>
-        <div class="result-label">% การใช้งาน/โหลดของแนวนอน</div>
+
+      <div class="stat-box">
+        <div class="stat-label">%การใช้งานแนวนอน (โหลด/กำลัง)</div>
+        <div class="stat-value" id="utilHori">-</div>
+        <div class="tagline">ต่ำ = ยังโตได้โดยไม่ต้องซื้อเพิ่ม</div>
       </div>
-      <div>
-        <div class="result-number" id="powerNeed">-</div>
-        <div class="result-label">กำลังไฟรวม (kW ประมาณ)</div>
+
+      <div class="stat-box">
+        <div class="stat-label">กำลังไฟรวม (โดยประมาณ)</div>
+        <div class="stat-value" id="powerNeed">-</div>
+        <div class="tagline">kW (สำหรับชุดที่แนะนำ)</div>
       </div>
     </div>
 
-    <div class="explain-block">
-      <b>สูตรหลัก:</b><br/>
-      - ปริมาณที่ต้องอัดต่อชม. (กก./ชม.) ÷ กำลังอัด/เครื่อง (กก./ชม.) → ปัดขึ้น = จำนวนเครื่องที่ต้องมี.<br/>
-      - %การใช้งาน = (โหลดจริง ÷ ความสามารถรวมของเครื่องทั้งหมด) × 100.<br/>
-      <br/>
-      <b>เหตุผลเชิงธุรกิจ:</b><br/>
-      • ถ้าคุณต้องใช้หลายเครื่องแนวตั้งพร้อมกัน → พื้นที่หน้างานจะแตกเป็นหลายจุด, ยากต่อควบคุมคุณภาพก้อน, ยากวางแผนสต็อก/ขนรถบรรทุก<br/>
-      • ถ้าแนวนอน 1 เครื่องรับงานหลักได้ และ utilization ไม่ถึง 80% แปลว่าคุณยังเหลือ buffer
-        สำหรับการขยายวอลุ่ม (รับของเพิ่ม / รับงานจังหวัดข้างเคียง) โดยยังไม่ต้องซื้อเครื่องเพิ่ม → นี่คือจุดเริ่มต้นของการเป็น “HUB จังหวัด”
-    </div>
+    <ul class="explain-list">
+      <li><b>จำนวนเครื่อง</b> = เพดาน(กก./ชม. ÷ ความสามารถกก./ชม.ของเครื่อง 1 ตัว)</li>
+      <li><b>%การใช้งาน</b> = (โหลดจริง / ความสามารถรวม) × 100</li>
+      <li>แนวนอนให้ก้อนใหญ่ มาตรฐานสม่ำเสมอ → รถบรรทุกเรียงง่าย → ต้นทุนขนส่ง/ตัน ต่ำกว่า</li>
+    </ul>
   </section>
 
 
-  <!-- LOGISTICS / TRUCK -->
+  <!-- 4. โลจิสติกส์ / รถบรรทุก -->
   <section class="card">
-    <h2>4) การบรรทุกขึ้นรถ & ประสิทธิภาพเส้นทาง</h2>
-    <div class="grid-3">
-      <div>
-        <div class="result-number" id="truckVert">-</div>
-        <div class="result-label">ก้อนแนวตั้ง / รถ (≈)</div>
+    <h2>4) โหลดขึ้นรถบรรทุก</h2>
+    <div class="sub">สมมติรถบรรทุกกลางบรรทุกได้ ~15 ตัน/เที่ยว (15,000 กก.)</div>
+
+    <div class="stats-wrap">
+      <div class="stat-box">
+        <div class="stat-label">แนวตั้ง</div>
+        <div class="stat-value" id="truckVert">-</div>
+        <div class="tagline">ก้อน/เที่ยว (ก้อน ~150 กก.)</div>
       </div>
-      <div>
-        <div class="result-number" id="truckHori">-</div>
-        <div class="result-label">ก้อนแนวนอน / รถ (≈)</div>
+
+      <div class="stat-box">
+        <div class="stat-label">แนวนอน</div>
+        <div class="stat-value" id="truckHori">-</div>
+        <div class="tagline">ก้อน/เที่ยว (ก้อน ~400 กก.)</div>
       </div>
-      <div>
-        <div class="result-number" id="payloadTon">15 ตัน</div>
-        <div class="result-label">สมมติบรรทุกได้ ~15 ตัน/เที่ยว</div>
+
+      <div class="stat-box">
+        <div class="stat-label">ความหมาย</div>
+        <div class="stat-value">
+          <span class="badge blue">ก้อนใหญ่ = ค่าขน/กก. ต่ำ</span>
+        </div>
+        <div class="tagline">โรงงานปลายทางชอบก้อนสม่ำเสมอ เพราะลงคลังง่าย</div>
       </div>
     </div>
 
-    <div class="explain-block">
-      <b>หลักการ:</b><br/>
-      - น้ำหนัก/ก้อน × จำนวนก้อนบนรถ ≈ น้ำหนักรวมบนรถ.<br/>
-      - เราสมมติรถบรรทุกกลางสามารถขนได้ประมาณ 15 ตันต่อเที่ยว (payload จริงจะขึ้นกับประเภทรถและกฎหมายถนน).<br/>
-      - ก้อนแนวนอนหนักกว่าและเป็นทรงเหลี่ยมสม่ำเสมอ → เรียงซ้อนบนรถง่าย → ใช้พื้นที่คุ้ม → ต้นทุนโลจิสติกส์ต่อกิโลกรัมต่ำกว่า.<br/>
-      <br/>
-      <b>เชิงกลยุทธ์:</b><br/>
-      - ถ้าคุณส่งให้โรงงานปลายทาง (โรงงานกระดาษ / เม็ดพลาสติก / โรงงานสุรา) แบบก้อนมาตรฐาน,
-        โรงงานจะชอบมากกว่าเศษหลวม เพราะ unload ง่าย วัดน้ำหนักง่าย ตรวจคุณภาพง่าย.<br/>
-      - ยิ่งคุณคุมรูปทรงก้อนได้มาตรฐาน → คุณยิ่ง “ดูเหมือนโรงคัดกลางจังหวัด” มากกว่า “ร้านของเก่า”
-    </div>
+    <ul class="explain-list">
+      <li>แนวนอน → ก้อนหนัก/เหลี่ยม → ใช้พื้นที่รถดีขึ้น ⇒ ส่งตรงโรงงานปลายน้ำได้เลย</li>
+      <li>นี่คือภาพ “ศูนย์รวบรวม” ไม่ใช่ร้านของเก่าเล็กๆ</li>
+    </ul>
   </section>
 
 
-  <!-- BUSINESS SCALE / HUB -->
+  <!-- 5. ระดับสเกลธุรกิจ / HUB -->
   <section class="card wide">
-    <h2>5) ระดับสเกลธุรกิจ & โอกาสเป็น HUB จังหวัด</h2>
+    <h2>5) ระดับสเกลธุรกิจ & โอกาสเป็น HUB</h2>
+    <div class="sub">ดูว่าตอนนี้เราอยู่ระดับไหน และโตไปเป็นจุดศูนย์กลางจังหวัด / ภูมิภาคได้ไหม</div>
 
-    <div class="grid-3">
-      <div>
-        <div class="result-number" id="bizScale">-</div>
-        <div class="result-label">ระดับสเกลธุรกิจ</div>
+    <div class="stats-wrap">
+      <div class="stat-box">
+        <div class="stat-label">สเกลธุรกิจ</div>
+        <div class="stat-value" id="bizScale">-</div>
+        <div class="tagline" id="bizTagline">-</div>
       </div>
-      <div>
-        <div class="result-number" id="hubChance">-</div>
-        <div class="result-label">ศักยภาพเป็นจุดรวบรวมหลัก</div>
+
+      <div class="stat-box">
+        <div class="stat-label">โอกาสเป็น HUB</div>
+        <div class="stat-value" id="hubChance">-</div>
+        <div class="tagline">อำนาจต่อรองกับโรงงานปลายน้ำ</div>
       </div>
-      <div>
-        <div class="result-number" id="nextStep">-</div>
-        <div class="result-label">ขั้นต่อไปที่ควรทำ</div>
+
+      <div class="stat-box">
+        <div class="stat-label">ขั้นต่อไป</div>
+        <div class="stat-value" id="nextStep">-</div>
+        <div class="tagline">การบ้านระดับกลยุทธ์</div>
       </div>
     </div>
 
-    <div class="explain-block" id="hubExplain">
-      ใส่ตัวเลขด้านบนแล้วกดคำนวณเพื่อดูคำอธิบายเชิงกลยุทธ์:
-      - เราอยู่ระดับไหนตอนนี้?
-      - เราจะกลายเป็นศูนย์รวบรวม (hub) ให้ทั้งจังหวัด / จังหวัดรอบข้างได้ยังไง?
-      - เราต้องลงทุนอะไรเพิ่ม (เครื่อง, พื้นที่สต็อก, คน, ระบบแยกประเภท)?
-    </div>
+    <ul class="explain-list" id="hubExplain">
+      <li>กรอกเลขแล้วกดคำนวณ เพื่อดูแผนโตแบบ HUB จังหวัด / HUB ภูมิภาค</li>
+      <li>ขวดแก้วดี = ความได้เปรียบเชิงภาพลักษณ์สิ่งแวดล้อม (reuse) ที่รายเล็กทั่วไปไม่มี</li>
+    </ul>
   </section>
 
 </main>
 
 <footer>
-  © วิเคราะห์ศักยภาพลานรีไซเคิลสมุทรสาคร · Prototype
+  © ศักยภาพลานรีไซเคิลสมุทรสาคร · Prototype
 </footer>
 
 <script>
-function formatNumber(val, digits=1){
+function fmt(val, d=1){
   if(isNaN(val)) return "-";
-  return Number(val).toFixed(digits);
+  return Number(val).toFixed(d);
 }
 
 function calc(){
-  // ===== 1. อ่านอินพุต =====
-  const yearTonnage = parseFloat(document.getElementById("yearTonnage").value || "0"); // ตัน/ปี
-  const operatingDays = parseFloat(document.getElementById("operatingDays").value || "300"); // วัน/ปี
-  const shiftHours = parseFloat(document.getElementById("shiftHours").value || "8"); // ชม./กะ
-  const shiftsPerDay = parseFloat(document.getElementById("shiftsPerDay").value || "1"); // กะ/วัน
+  // ===== 1. read inputs =====
+  const petTon   = parseFloat(document.getElementById("petTon").value||"0");
+  const hdpeTon  = parseFloat(document.getElementById("hdpeTon").value||"0");
+  const cartonTon= parseFloat(document.getElementById("cartonTon").value||"0");
+  const paperTon = parseFloat(document.getElementById("paperTon").value||"0");
+  const aluTon   = parseFloat(document.getElementById("aluTon").value||"0");
+  const glassBot = parseFloat(document.getElementById("glassBottleCount").value||"0"); // ขวด/ปี (ไม่อัด)
 
-  // ป้องกันศูนย์
-  const safeDays = operatingDays > 0 ? operatingDays : 1;
-  const safeHoursPerDay = shiftHours * shiftsPerDay > 0 ? (shiftHours * shiftsPerDay) : 1;
+  const operatingDays = parseFloat(document.getElementById("operatingDays").value||"300");
+  const shiftHours    = parseFloat(document.getElementById("shiftHours").value||"8");
+  const shiftsPerDay  = parseFloat(document.getElementById("shiftsPerDay").value||"1");
 
-  // ===== 2. แปลงเป็นตัน/วัน, ตัน/ชม., กก./ชม. =====
-  const tonPerDay = yearTonnage / safeDays;                 // ตัน/วัน
-  const tonPerHour = tonPerDay / safeHoursPerDay;           // ตัน/ชม.
-  const kgPerHour  = tonPerHour * 1000;                     // กก./ชม.
+  const hoursPerDay   = (shiftHours * shiftsPerDay>0 ? shiftHours*shiftsPerDay : 1);
+  const daysPerYear   = (operatingDays>0 ? operatingDays : 1);
 
-  // ===== 3. พารามิเตอร์เครื่อง สมมติฐานวิศวกรรมทั่วไป =====
-  // vertical baler
-  const vertCapacityKgHr = 500;      // ≈0.5 t/hr
-  const vertBaleKg = 150;            // กก./ก้อน
-  const vertPowerkW = 10;            // kW ต่อเครื่อง
-  const vertPeoplePerShift = 2;      // คน/กะ
+  // ===== 2. total ton that needs baling (not including glass bottles) =====
+  const totalTonPerYear = petTon + hdpeTon + cartonTon + paperTon + aluTon;
 
-  // horizontal baler
-  const horiCapacityKgHr = 2000;     // ≈2 t/hr
-  const horiBaleKg = 400;            // กก./ก้อน
-  const horiPowerkW = 25;            // kW ต่อเครื่อง
-  const horiPeoplePerShift = 2;      // คน/กะ
+  // convert to ton/day → ton/hour → kg/hour
+  const tonPerDay = totalTonPerYear / daysPerYear;
+  const tonPerHour = tonPerDay / hoursPerDay;
+  const kgPerHour  = tonPerHour * 1000;
 
-  // ===== 4. จำนวนเครื่องที่ต้องใช้ (ปัดขึ้น) =====
-  const needVertMachines = Math.ceil( kgPerHour / vertCapacityKgHr );
-  const needHoriMachines = Math.ceil( kgPerHour / horiCapacityKgHr );
+  // ===== 3. machine assumptions =====
+  const vertCapacityKgHr = 500;   // ~0.5 t/hr
+  const horiCapacityKgHr = 2000;  // ~2 t/hr
+  const vertBaleKg = 150;
+  const horiBaleKg = 400;
+  const vertPowerkW = 10;
+  const horiPowerkW = 25;
+  const vertPeoplePerShift = 2;
+  const horiPeoplePerShift = 2;
 
-  // ป้องกัน 0 → อย่างน้อย 1 ถ้ามีงาน
-  const safeNeedVert = (yearTonnage>0) ? Math.max(needVertMachines,1) : 0;
-  const safeNeedHori = (yearTonnage>0) ? Math.max(needHoriMachines,1) : 0;
+  // how many machines needed (ceil)
+  const needVertMachines = (kgPerHour>0) ? Math.max(1, Math.ceil(kgPerHour / vertCapacityKgHr)) : 0;
+  const needHoriMachines = (kgPerHour>0) ? Math.max(1, Math.ceil(kgPerHour / horiCapacityKgHr)) : 0;
 
-  // ===== 5. utilization (%โหลดใช้งานเครื่อง) =====
-  const vertTotalCap = safeNeedVert * vertCapacityKgHr;
-  const horiTotalCap = safeNeedHori * horiCapacityKgHr;
+  // utilization
+  const vertTotalCap = needVertMachines * vertCapacityKgHr;
+  const horiTotalCap = needHoriMachines * horiCapacityKgHr;
 
   const utilVertPct = vertTotalCap>0 ? (kgPerHour / vertTotalCap)*100 : 0;
   const utilHoriPct = horiTotalCap>0 ? (kgPerHour / horiTotalCap)*100 : 0;
 
-  // ===== 6. กำลังไฟรวมโดยประมาณ (kW) สำหรับ config ที่แนะนำ =====
-  // เราจะเลือกแบบไหน? ถ้า yearTonnage สูง (>=3000 ตัน/ปี) ให้ผลักไปแนวนอน
+  // choose recommended machine type:
+  // rule: ถ้าปริมาณรวม >= 3000 ตัน/ปี → แนวนอน
+  // ถ้าต่ำกว่านั้น → แนวตั้งพอ
   let pick = "แนวตั้ง (Vertical)";
-  let powerNeed = safeNeedVert * vertPowerkW;
-  let opPeople = safeNeedVert * vertPeoplePerShift;
-
-  if(yearTonnage >= 3000){
+  let powerNeed = needVertMachines * vertPowerkW;
+  let opPeople = needVertMachines * vertPeoplePerShift;
+  if(totalTonPerYear >= 3000){
     pick = "แนวนอน (Horizontal)";
-    powerNeed = safeNeedHori * horiPowerkW;
-    opPeople = safeNeedHori * horiPeoplePerShift;
+    powerNeed = needHoriMachines * horiPowerkW;
+    opPeople = needHoriMachines * horiPeoplePerShift;
   }
 
-  // ===== 7. การบรรทุกขึ้นรถ =====
-  // สมมติรถบรรทุกกลางบรรทุกได้ประมาณ 15 ตัน (15,000 กก.) ต่อเที่ยว
-  const truckPayloadKg = 15000;
+  // truck loading
+  const truckPayloadKg = 15000; // ~15 ตัน/เที่ยว
+  const truckVertBales = vertBaleKg>0 ? Math.floor(truckPayloadKg/vertBaleKg) : 0;
+  const truckHoriBales = horiBaleKg>0 ? Math.floor(truckPayloadKg/horiBaleKg) : 0;
 
-  const truckVertBales = Math.floor(truckPayloadKg / vertBaleKg); // ก้อนแนวตั้ง / เที่ยว
-  const truckHoriBales = Math.floor(truckPayloadKg / horiBaleKg); // ก้อนแนวนอน / เที่ยว
-
-  // ===== 8. ระดับสเกลธุรกิจ / โอกาสเป็น HUB =====
-  // rule of thumb:
-  // < 3,000 ตัน/ปี  = จุดรับซื้อระดับท้องถิ่น / community scale
-  // 3,000-15,000   = ลานรวมจังหวัด (provincial hub เริ่มส่งตรงโรงงาน)
-  // > 15,000       = ศูนย์รวบรวมภูมิภาค (regional hub / ส่งโรงงานปลายน้ำหลายประเภท)
+  // scale classification (based on totalTonPerYear)
+  // <3000 ตัน/ปี = local
+  // 3000-15000   = provincial hub
+  // >15000       = regional hub
   let scaleText = "";
-  let hubScoreText = "";
+  let scaleDetail = "";
+  let hubChanceText = "";
   let nextStepText = "";
   let hubExplainDetail = "";
 
-  if(yearTonnage < 3000){
-    scaleText = "จุดรับซื้อท้องถิ่น (Local)";
-    hubScoreText = "ยังไม่ใช่ HUB ใหญ่";
-    nextStepText = "เพิ่มวอลุ่ม";
+  if(totalTonPerYear < 3000){
+    scaleText = "จุดรับซื้อท้องถิ่น";
+    scaleDetail = "Local scale";
+    hubChanceText = "ยังไม่ใช่ HUB";
+    nextStepText = "เพิ่มวอลุ่ม / เก็บประเภทให้สะอาด";
+
     hubExplainDetail =
-      "ปริมาณรวมยังไม่สูงพอจะต่อรองกับโรงงานปลายน้ำโดยตรงในฐานะ 'ศูนย์จังหวัด'. " +
-      "โฟกัสที่การแยกประเภทวัสดุให้สะอาด เพื่อขาย premium ให้ผู้รวบรวมใหญ่ / โรงงาน. " +
-      "ยังไม่จำเป็นต้องลงทุน Horizontal baler ขนาดใหญ่หนึ่งตัวก็ได้ (Vertical หลายตัวพอ).";
-  }else if(yearTonnage < 15000){
-    scaleText = "ลานรวมจังหวัด (Provincial Hub)";
-    hubScoreText = "เริ่มมีอำนาจต่อรอง";
-    nextStepText = "ลงทุนเครื่องแนวนอน 1 ตัว";
+      "ปริมาณรวมยังไม่ใหญ่พอคุยโรงงานปลายน้ำแบบสัญญาตรง " +
+      "โฟกัสคุณภาพของแต่ละชนิด (PET แยกสี, กระดาษไม่ปนพลาสติก) เพื่อขายได้ราคาpremium. " +
+      "ขวดแก้วดีคือจุดต่าง เพราะรายเล็กอื่นยังแยก/คัดแบบนี้ยาก";
+  } else if(totalTonPerYear < 15000){
+    scaleText = "ลานรวมระดับจังหวัด";
+    scaleDetail = "Provincial hub";
+    hubChanceText = "เริ่มมีอำนาจต่อรอง";
+    nextStepText = "พิจารณาแนวนอน 1 เครื่อง";
+
     hubExplainDetail =
-      "คุณเริ่มมีวอลุ่มพอที่จะ: " +
-      "1) อัดก้อนมาตรฐานแนวนอน ส่งเข้าโรงงานกระดาษ/พลาสติก, " +
-      "2) รับของจากร้านเล็ก/อำเภอรอบ ๆ แล้วรวมโหลดเป็นรถเต็มเที่ยว. " +
-      "นี่คือจุดที่ลูกค้าโรงงานปลายน้ำจะมองคุณเป็นคู่ค้าระดับจังหวัด ไม่ใช่ร้านของเก่า.";
-  }else{
-    scaleText = "ศูนย์รวบรวมภูมิภาค (Regional Hub)";
-    hubScoreText = "ศูนย์กลางได้จริง";
-    nextStepText = "เพิ่มคน+ระบบโลจิสติกส์";
+      "คุณเริ่มเป็นจุดศูนย์กลางรับของจากอำเภอต่าง ๆ แล้วอัดก้อนมาตรฐานใหญ่ " +
+      "รถบรรทุกสามารถวิ่งเต็มเที่ยวไปโรงงานปลายน้ำได้บ่อยขึ้น " +
+      "โรงงานจะเริ่มมองคุณเป็นคู่ค้าหลักของจังหวัดมากกว่า 'ร้านของเก่า'";
+  } else {
+    scaleText = "ศูนย์รวบรวมภูมิภาค";
+    scaleDetail = "Regional hub";
+    hubChanceText = "HUB จริง";
+    nextStepText = "เสริมโลจิสติกส์และความปลอดภัยคลัง";
+
     hubExplainDetail =
-      "วอลุ่มระดับนี้สามารถวิ่งรถเต็มเที่ยวประจำวัน จัดตารางรับของจากจังหวัดข้างเคียง " +
-      "และคุยสัญญาระยะยาวกับโรงงานปลายน้ำ (กระดาษ / พลาสติก / สุรา) ได้ตรง ๆ. " +
-      "คุณคือ 'HUB ภูมิภาค' มากกว่าจุดซื้อของเก่า. " +
-      "โฟกัสงาน = ความสม่ำเสมอของคุณภาพก้อน, มาตรฐานความปลอดภัย (ไฟไหม้), " +
-      "และภาพลักษณ์ด้านสิ่งแวดล้อม/ชุมชน.";
+      "วอลุ่มระดับภูมิภาค: คุณสามารถล็อกตารางรับของจากจังหวัดรอบข้าง " +
+      "อัดก้อนแนวนอนก้อนใหญ่ แล้วส่งออกเป็นเที่ยวรถมาตรฐานทุกวัน " +
+      "นี่คือระดับที่เจรจาราคายาวกับโรงงานปลายน้ำ (กระดาษ, พลาสติก, สุรา) ได้โดยตรง. " +
+      "ต้องใส่ใจเรื่องพื้นที่กองสต็อกและความเสี่ยงไฟเป็นพิเศษ";
   }
 
-  // ===== 9. เขียนผลออกจอ =====
-  document.getElementById("outTonDay").textContent = formatNumber(tonPerDay,2);
-  document.getElementById("outTonHour").textContent = formatNumber(tonPerHour,3);
-  document.getElementById("outKgHour").textContent = formatNumber(kgPerHour,0);
+  // ===== write results to UI =====
+  document.getElementById("totalTonPerYear").textContent = fmt(totalTonPerYear,1)+" ตัน";
+  document.getElementById("tonPerDay").textContent       = fmt(tonPerDay,2)+" ตัน";
+  document.getElementById("tonPerHour").textContent      = fmt(tonPerHour,3)+" ตัน";
+  document.getElementById("kgPerHour").textContent       = fmt(kgPerHour,0)+" กก.";
 
-  document.getElementById("needVert").textContent = safeNeedVert>0 ? safeNeedVert+" เครื่อง" : "-";
-  document.getElementById("needHori").textContent = safeNeedHori>0 ? safeNeedHori+" เครื่อง" : "-";
+  document.getElementById("needVert").textContent = (needVertMachines>0?needVertMachines+" เครื่อง":"-");
+  document.getElementById("needHori").textContent = (needHoriMachines>0?needHoriMachines+" เครื่อง":"-");
   document.getElementById("pickType").textContent = pick;
 
-  document.getElementById("utilVert").textContent =
-    safeNeedVert>0 ? formatNumber(utilVertPct,1)+" %" : "-";
-  document.getElementById("utilHori").textContent =
-    safeNeedHori>0 ? formatNumber(utilHoriPct,1)+" %" : "-";
+  document.getElementById("utilVert").textContent = (needVertMachines>0?fmt(utilVertPct,1)+" %":"-");
+  document.getElementById("utilHori").textContent = (needHoriMachines>0?fmt(utilHoriPct,1)+" %":"-");
+  document.getElementById("powerNeed").textContent= fmt(powerNeed,1)+" kW";
 
-  document.getElementById("powerNeed").textContent =
-    formatNumber(powerNeed,1)+" kW (รวมประมาณ)";
-
-  document.getElementById("truckVert").textContent =
-    truckVertBales>0 ? truckVertBales+" ก้อน/เที่ยว" : "-";
-  document.getElementById("truckHori").textContent =
-    truckHoriBales>0 ? truckHoriBales+" ก้อน/เที่ยว" : "-";
+  document.getElementById("truckVert").textContent= truckVertBales+" ก้อน";
+  document.getElementById("truckHori").textContent= truckHoriBales+" ก้อน";
 
   document.getElementById("bizScale").textContent = scaleText;
-  document.getElementById("hubChance").textContent = hubScoreText;
+  document.getElementById("bizTagline").textContent = scaleDetail;
+  document.getElementById("hubChance").textContent = hubChanceText;
   document.getElementById("nextStep").textContent = nextStepText;
 
   document.getElementById("hubExplain").innerHTML =
-    "<b>สรุปเชิงกลยุทธ์:</b><br/>" +
-    hubExplainDetail +
-    "<br/><br/><b>แนวคิดการโตเป็น HUB:</b><br/>" +
-    "• รับของจากจุดเล็กหลายอำเภอ → รวมเป็นก้อนมาตรฐาน → ส่งโรงงานปลายน้ำทีละรถเต็ม.\n" +
-    "<br/>" +
-    "• ขวดแก้วดี (ส่งคืนโรงงานสุราเป็นใบ): คือสินค้า premium เพราะไม่ต้องอัด " +
-    "และเป็นการคืนบรรจุภัณฑ์แบบใช้ซ้ำ ซึ่งรายเล็กส่วนใหญ่จัดการไม่ได้. นี่เป็นจุดต่างเชิงภาพลักษณ์สิ่งแวดล้อม.\n" +
-    "<br/>" +
-    "• Horizontal baler ให้ก้อนใหญ่ (~400 กก./ก้อน) รูปทรงคงที่ ทำให้ต้นทุนโลจิสติกส์/ตัน ต่ำกว่า vertical มาก " +
-    "และทำให้คุณคุยกับโรงงานปลายน้ำในฐานะ 'คู่สัญญา' ไม่ใช่ 'ผู้หิ้วของ'.";
+    "<li>"+hubExplainDetail+"</li>" +
+    "<li>ขวดแก้วดี ("+glassBot.toLocaleString()+" ใบ/ปี โดยประมาณ): เป็นภาพลักษณ์ด้านสิ่งแวดล้อม/รีฟิล/รียูส ซึ่งรายเล็กทั่วไปไม่มี</li>" +
+    "<li>แนวนอน = ก้อนใหญ่ (~400กก.) เรียงขึ้นรถง่าย → ค่าขนส่ง/ตัน ต่ำ → ดูเป็น HUB จริง</li>";
 }
 
-// run once on load with default values
+// run default on load
 calc();
 document.getElementById("calcBtn").addEventListener("click", calc);
 </script>
