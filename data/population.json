@@ -1,0 +1,140 @@
+{
+  "reference_point": {
+    "name_th": "ลานกระทิงแดง",
+    "desc": "ศูนย์กลางวิเคราะห์การเข้าถึง (catchment)",
+    "lat": 13.565126,
+    "lng": 100.279895
+  },
+  "population_points": [
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "พันท้ายนรสิงห์",
+      "tambon_en": "Phanthai Norasing",
+      "population": 43687,
+      "lat": 13.5777724,
+      "lng": 100.3656284,
+      "cluster": "A",
+      "class": "สูง"
+    },
+    {
+      "amphoe": "กระทุ่มแบน",
+      "tambon_th": "อ้อมน้อย",
+      "tambon_en": "Om Noi",
+      "population": 53888,
+      "lat": 13.7013895,
+      "lng": 100.3143385,
+      "cluster": "A",
+      "class": "สูง"
+    },
+    {
+      "amphoe": "กระทุ่มแบน",
+      "tambon_th": "สวนหลวง",
+      "tambon_en": "Suan Luang",
+      "population": 39180,
+      "lat": 13.6739044,
+      "lng": 100.3184851,
+      "cluster": "A",
+      "class": "สูง"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "ท่าทราย",
+      "tambon_en": "Tha Sai",
+      "population": 32634,
+      "lat": 13.5720976,
+      "lng": 100.2722945,
+      "cluster": "B",
+      "class": "กลาง"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "นาดี",
+      "tambon_en": "Na Di",
+      "population": 28318,
+      "lat": 13.5984793,
+      "lng": 100.3089904,
+      "cluster": "B",
+      "class": "กลาง"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "บางหญ้าแพรก",
+      "tambon_en": "Bang Ya Phraek",
+      "population": 26002,
+      "lat": 13.5115627,
+      "lng": 100.2656209,
+      "cluster": "B",
+      "class": "กลาง"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "โคกขาม",
+      "tambon_en": "Khok Kham",
+      "population": 25122,
+      "lat": 13.5497804,
+      "lng": 100.274131,
+      "cluster": "B",
+      "class": "กลาง"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "บางน้ำจืด",
+      "tambon_en": "Bang Nam Chuet",
+      "population": 15802,
+      "lat": 13.5878173,
+      "lng": 100.3242768,
+      "cluster": "C",
+      "class": "ต่ำ"
+    },
+    {
+      "amphoe": "บ้านแพ้ว",
+      "tambon_th": "หลักสาม",
+      "tambon_en": "Lak Sam",
+      "population": 16653,
+      "lat": 13.5988746,
+      "lng": 100.0863269,
+      "cluster": "C",
+      "class": "ต่ำ"
+    },
+    {
+      "amphoe": "บ้านแพ้ว",
+      "tambon_th": "ยกกระบัตร",
+      "tambon_en": "Yokkrabat",
+      "population": 15135,
+      "lat": 13.5527008,
+      "lng": 100.0975221,
+      "cluster": "C",
+      "class": "ต่ำ"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "มหาชัย",
+      "tambon_en": "Maha Chai",
+      "population": 38607,
+      "lat": 13.5497804,
+      "lng": 100.274131,
+      "cluster": "A",
+      "class": "สูง"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "คอกกระบือ",
+      "tambon_en": "Khok Krabue",
+      "population": 10593,
+      "lat": 13.5878173,
+      "lng": 100.3242768,
+      "cluster": "C",
+      "class": "ต่ำ"
+    },
+    {
+      "amphoe": "เมืองสมุทรสาคร",
+      "tambon_th": "ท่าฉลอม",
+      "tambon_en": "Tha Chalom",
+      "population": 7489,
+      "lat": 13.4919384,
+      "lng": 100.1871351,
+      "cluster": "C",
+      "class": "ต่ำ"
+    }
+  ]
+}
