@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ประมาณการสินค้ารีไซเคิลที่เก็บได้ | สมุทรสาคร</title>
+
+  <style>
+    :root {
+      --bg-dark-900:#0f172a;
+      --bg-dark-800:#1e293b;
+      --bg-dark-700:#334155;
+      --bg-dark-600:#475569;
+      --text-dim:#94a3b8;
+      --text-soft:#cbd5e1;
+      --text-bright:#fff;
+      --accent:#38bdf8;
+      --card-bg:rgba(15,23,42,.8);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      background: var(--bg-dark-900);
+      color: var(--text-bright);
+      margin: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--bg-dark-900);
+      border-bottom: 1px solid var(--bg-dark-700);
+      padding: 12px 16px;
+      font-size: 14px;
+
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-bright);
+    }
+
+    nav a {
+      color: var(--text-dim);
+      margin-left: 16px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    nav a:hover {
+      color: var(--text-bright);
+    }
+    nav a.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    main {
+      padding: 16px;
+      color: var(--text-soft);
+      display: grid;
+      gap: 16px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    section.card {
+      background: var(--card-bg);
+      border: 1px solid var(--bg-dark-700);
+      border-radius: 16px;
+      box-shadow:0 24px 60px rgb(0 0 0 / .8);
+      padding: 16px 20px;
+    }
+
+    section.card h2 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-bright);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    section.card .sub {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .flex-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .metric-box {
+      flex: 1 1 200px;
+      background: var(--bg-dark-800);
+      border:1px solid var(--bg-dark-700);
+      border-radius:12px;
+      padding:12px 16px;
+      min-width:200px;
+      box-shadow:0 16px 40px rgb(0 0 0 / .6);
+    }
+
+    .metric-label {
+      font-size:12px;
+      color: var(--text-dim);
+      margin-bottom:4px;
+    }
+    .metric-value {
+      font-size:20px;
+      font-weight:600;
+      color: var(--text-bright);
+      line-height:1.3;
+    }
+    .metric-hint {
+      font-size:11px;
+      color: var(--text-soft);
+      line-height:1.4;
+      margin-top:4px;
+    }
+
+    .status-pill {
+      display:inline-block;
+      font-size:12px;
+      font-weight:600;
+      border-radius:999px;
+      padding:4px 8px;
+      line-height:1.2;
+      border:1px solid #fff3;
+    }
+
+    .pill-green  { background:#064e3b; color:#4ade80; }
+    .pill-yellow { background:#713f12; color:#fde047; }
+    .pill-orange { background:#7c2d12; color:#fb923c; }
+    .pill-red    { background:#7f1d1d; color:#f87171; }
+
+    .controls-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap:16px;
+    }
+
+    .control-block {
+      background: var(--bg-dark-800);
+      border:1px solid var(--bg-dark-700);
+      border-radius:12px;
+      padding:12px 16px;
+      font-size:13px;
+      color: var(--text-soft);
+      box-shadow:0 16px 40px rgb(0 0 0 / .6);
+    }
+
+    .control-block label {
+      display:block;
+      font-size:12px;
+      color: var(--text-dim);
+      margin-bottom:4px;
+    }
+
+    .control-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .control-row input[type="number"] {
+      width:80px;
+      background:#0f172a;
+      border:1px solid var(--bg-dark-700);
+      border-radius:8px;
+      color:#fff;
+      font-size:13px;
+      padding:6px 8px;
+      text-align:right;
+    }
+
+    .explain-box {
+      font-size:11px;
+      line-height:1.5;
+      color: var(--text-dim);
+      margin-top:8px;
+    }
+
+    table {
+      width:100%;
+      border-collapse: collapse;
+      font-size:12px;
+      min-width:280px;
+    }
+
+    thead {
+      background: var(--bg-dark-800);
+    }
+
+    th, td {
+      text-align:left;
+      padding:8px 10px;
+      border-bottom:1px solid var(--bg-dark-700);
+      color: var(--text-soft);
+      vertical-align: top;
+      line-height:1.4;
+    }
+
+    th {
+      color: var(--text-bright);
+      font-weight:600;
+      font-size:12px;
+    }
+
+    footer {
+      background: var(--bg-dark-900);
+      border-top:1px solid var(--bg-dark-700);
+      color:#475569;
+      font-size:12px;
+      text-align:center;
+      padding:12px 0 16px;
+    }
+
+    @media(max-width:600px){
+      header {
+        flex-direction: column;
+        align-items:flex-start;
+      }
+      nav a {
+        margin-left:0;
+        margin-right:16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">สมุทรสาคร — ประมาณการสินค้ารีไซเคิล</div>
+    <nav>
+      <a href="index.html">หน้าแรก</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html">การแข่งขัน</a>
+      <a href="risk.html">ความเสี่ยง</a>
+      <a href="supply.html" class="active">ประมาณการสินค้า</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- สรุป -->
+    <section class="card">
+      <h2>ศักยภาพวัสดุรีไซเคิลจากบรรจุภัณฑ์</h2>
+      <div class="sub">
+        สมมติว่าของที่เราสนใจคือ “บรรจุภัณฑ์ที่ขาย/รับซื้อกลับได้” เช่น กล่องกระดาษลูกฟูก ขวดแก้ว
+        ขวด PET กระป๋องเหล็ก/อลูมิเนียม ฯลฯ
+        <br/>
+        เราคิดจากประชากรในจังหวัด ×
+        ปริมาณขยะบรรจุภัณฑ์รีไซเคิล/คน/วัน ×
+        อัตราเก็บกลับได้จริง (%).
+      </div>
+
+      <div class="flex-wrap">
+        <div class="metric-box">
+          <div class="metric-label">ประชากรรวม (ทั้งหมดใน CSV)</div>
+          <div class="metric-value" id="totalPop">-</div>
+          <div class="metric-hint">คน</div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-label">
+            ศักยภาพที่เก็บได้ (ตัน / วัน)
+            <span id="statusPill" class="status-pill pill-green">-</span>
+          </div>
+          <div class="metric-value" id="tonsPerDay">-</div>
+          <div class="metric-hint">
+            เฉพาะส่วนที่รีไซเคิล + เก็บกลับได้ตาม % สมมติฐาน
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-label">ศักยภาพต่อเดือน (ตัน / เดือน)</div>
+          <div class="metric-value" id="tonsPerMonth">-</div>
+          <div class="metric-hint">คูณ ~30 วัน</div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-label">ศักยภาพต่อปี (ตัน / ปี)</div>
+          <div class="metric-value" id="tonsPerYear">-</div>
+          <div class="metric-hint">คูณ 365 วัน</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ปรับสมมติฐาน -->
+    <section class="card">
+      <h2>สมมติฐานการคำนวณ (ปรับได้)</h2>
+      <div class="controls-grid">
+
+        <div class="control-block">
+          <label for="kgPerPerson">
+            ปริมาณบรรจุภัณฑ์รีไซเคิล / คน / วัน (กก.)
+          </label>
+          <div class="control-row">
+            <div>
+              <input type="number" id="kgPerPerson" step="0.01" min="0" />
+              <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">
+                ค่าเริ่มต้น: 0.30
+              </div>
+            </div>
+            <div style="font-size:12px;line-height:1.4;color:var(--text-soft);text-align:right;">
+              ของที่ขายได้ เช่น กระดาษลูกฟูก ขวด PET
+              กระป๋องโลหะ ฯลฯ
+            </div>
+          </div>
+          <div class="explain-box">
+            จากข้อมูลทั่วไทย ขยะชุมชนรวม ~1 กก./คน/วัน
+            โดยส่วนที่เป็นบรรจุภัณฑ์รีไซเคิลได้ (กระดาษ กล่อง พลาสติกแข็งรีไซเคิลได้ โลหะ) มักอยู่ราว
+            20–35% ของน้ำหนักทั้งหมด
+            ⇒ ประมาณ 0.20–0.35 กก./คน/วัน สำหรับจังหวัดอุตสาหกรรมเราตั้งต้นที่ 0.30
+          </div>
+        </div>
+
+        <div class="control-block">
+          <label for="recoveryRate">
+            อัตราการเก็บกลับได้ (%)
+          </label>
+          <div class="control-row">
+            <div>
+              <input type="number" id="recoveryRate" step="1" min="0" max="100" />
+              <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">
+                ค่าเริ่มต้น: 40
+              </div>
+            </div>
+            <div style="font-size:12px;line-height:1.4;color:var(--text-soft);text-align:right;">
+              คือเปอร์เซ็นต์ที่เราจะ "ได้ของจริง"
+              หลังหักของที่ปนเปื้อน / ทิ้งรวม ฯลฯ
+            </div>
+          </div>
+          <div class="explain-box">
+            ถ้าระบบเก็บแยกดี (มีซาเล้ง/ร้านรีไซเคิลหนาแน่น) ค่านี้อาจสูงขึ้น
+            ถ้าเก็บยากหรือพื้นที่โลจิสติกส์ห่างไกล ค่านี้จะต่ำลง
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- รายอำเภอ -->
+    <section class="card">
+      <h2>Breakdown รายอำเภอ</h2>
+      <div class="sub">
+        ค่านี้ใช้สมมติฐานเดียวกันทุกอำเภอ (กก./คน/วัน และ % เก็บกลับ)
+        เพื่อดูว่าอำเภอไหนคือกระเป๋าสินค้าที่น่าสนใจที่สุด
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>อำเภอ</th>
+              <th>ประชากร</th>
+              <th>ตัน/วัน<br/>(เก็บได้)</th>
+              <th>ตัน/เดือน</th>
+              <th>ตัน/ปี</th>
+            </tr>
+          </thead>
+          <tbody id="districtTableBody">
+            <!-- จะถูกเติมด้วย JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- วิธีอ่านค่า -->
+    <section class="card">
+      <h2>วิธีอ่านสีสถานะศักยภาพ 🟢🟡🟠🔴</h2>
+      <div class="sub">
+        ตีความจาก "ตัน/วัน (เก็บได้)" ทั้งจังหวัด:
+      </div>
+
+      <div style="font-size:13px;line-height:1.6;color:var(--text-soft);">
+        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
+          <span class="status-pill pill-green">🟢 ต่ำ</span>
+          <div><strong>&lt; 20 ตัน/วัน</strong> ปริมาณไม่ใหญ่มาก กระจายเป็นรายย่อย เก็บแบบ point-to-point</div>
+        </div>
+
+        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
+          <span class="status-pill pill-yellow">🟡 กลาง</span>
+          <div><strong>20–50 ตัน/วัน</strong> เริ่มคุ้มกับ logistics ระดับอำเภอ/คลัสเตอร์</div>
+        </div>
+
+        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
+          <span class="status-pill pill-orange">🟠 สูง</span>
+          <div><strong>50–100 ตัน/วัน</strong> ศักยภาพเข้มข้น คุ้มตั้ง drop-off hub / คลังย่อย</div>
+        </div>
+
+        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
+          <span class="status-pill pill-red">🔴 มาก</span>
+          <div><strong>&gt; 100 ตัน/วัน</strong> มีระดับ supply ใหญ่พอสำหรับศูนย์คัดแยก / บด / อัดก้อนขนาดอุตสาหกรรม</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © วิเคราะห์ศักยภาพวัสดุรีไซเคิล · สมุทรสาคร · Prototype (คำนวณหน้าเว็บสดจาก CSV)
+  </footer>
+
+  <script>
+    // -----------------------------
+    // โหลด CSV ตำบล แล้วรวมเป็นอำเภอ
+    // subdistricts.csv format (ตัวอย่างที่คุณให้):
+    // อำเภอ,ตำบล_TH,ตำบล_ENG,จำนวนประชากร,พิกัด
+    // -----------------------------
+
+    // parse CSV -> array objects
+    function parseSubdistrictCSV(csvText){
+      const lines = csvText.trim().split("\n");
+      const out = [];
+
+      // ตรวจ header
+      let startIndex = 0;
+      const headerLower = lines[0].toLowerCase();
+      const hasHeader =
+        headerLower.includes("อำเภอ") ||
+        headerLower.includes("จำนวนประชากร");
+      if (hasHeader) startIndex = 1;
+
+      for (let i = startIndex; i < lines.length; i++){
+        const row = lines[i].trim();
+        if (!row) continue;
+
+        // ตรงนี้เรา assume ไม่มี "..." ในกลาง (ไฟล์ประชากรคุณไม่มีคอมม่าครอบ)
+        const parts = row.split(",").map(v => v.trim());
+
+        if (parts.length < 5) continue;
+
+        const amphoe = parts[0];
+        const tambonTH = parts[1];
+        // const tambonEN = parts[2];
+        const popStr = parts[3];
+        // const coord = parts[4];
+
+        // popStr อาจมี comma (38,607) ต้องลบ comma ก่อน parse
+        const cleanPop = popStr.replace(/,/g,"");
+        const pop = parseInt(cleanPop,10);
+        if (isNaN(pop)) continue;
+
+        out.push({
+          amphoe: amphoe,
+          tambonTH: tambonTH,
+          population: pop
+        });
+      }
+
+      return out;
+    }
+
+    // group by amphoe
+    function groupByAmphoe(subdistrictRows){
+      const amphoeMap = {}; // { amphoe: totalPop }
+      subdistrictRows.forEach(r=>{
+        if (!amphoeMap[r.amphoe]){
+          amphoeMap[r.amphoe] = 0;
+        }
+        amphoeMap[r.amphoe] += r.population;
+      });
+
+      // แปลงเป็น array
+      const arr = Object.keys(amphoeMap).map(amphoeName=>({
+        amphoe: amphoeName,
+        population: amphoeMap[amphoeName]
+      }));
+      return arr;
+    }
+
+    // -----------------------------
+    // คำนวณปริมาณสินค้ารีไซเคิล (ตัน)
+    // totalPop: คนทั้งหมด
+    // kgPerPersonPerDay: กก./คน/วัน ของ "บรรจุภัณฑ์รีไซเคิลได้"
+    // recoveryRate: % เก็บกลับได้
+    // return {tonsDay, tonsMonth, tonsYear}
+    // -----------------------------
+    function calcTonnage(totalPop, kgPerPersonPerDay, recoveryRatePct){
+      // กก./วันรวม (ก่อนหัก loss)
+      const kgDayRaw = totalPop * kgPerPersonPerDay;
+
+      // ที่เก็บกลับได้จริง
+      const kgDayRecovered = kgDayRaw * (recoveryRatePct/100);
+
+      const tonsPerDay = kgDayRecovered / 1000; // 1000 kg = 1 ton
+      const tonsPerMonth = tonsPerDay * 30;
+      const tonsPerYear  = tonsPerDay * 365;
+
+      return {
+        tonsPerDay,
+        tonsPerMonth,
+        tonsPerYear
+      };
+    }
+
+    // format ตัวเลขสวย ๆ
+    function fmt(n, digits=2){
+      if (isNaN(n)) return "-";
+      return n.toLocaleString("th-TH", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      });
+    }
+    function fmtInt(n){
+      if (isNaN(n)) return "-";
+      return n.toLocaleString("th-TH");
+    }
+
+    // ให้สีสถานะตาม tons/day
+    function classifyStatus(tonsPerDay){
+      // 🟢 <20, 🟡 20-50, 🟠 50-100, 🔴 >100
+      if (tonsPerDay > 100){
+        return {text:"🔴 มาก", cls:"pill-red"};
+      } else if (tonsPerDay > 50){
+        return {text:"🟠 สูง", cls:"pill-orange"};
+      } else if (tonsPerDay > 20){
+        return {text:"🟡 กลาง", cls:"pill-yellow"};
+      } else {
+        return {text:"🟢 ต่ำ", cls:"pill-green"};
+      }
+    }
+
+    // อัปเดตตารางอำเภอ
+    function renderDistrictTable(amphoeArr, kgPerPersonPerDay, recoveryRatePct){
+      const tbody = document.getElementById("districtTableBody");
+      tbody.innerHTML = "";
+
+      amphoeArr.forEach(row=>{
+        const pop = row.population;
+        const {tonsPerDay, tonsPerMonth, tonsPerYear} =
+          calcTonnage(pop, kgPerPersonPerDay, recoveryRatePct);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="white-space:nowrap;font-weight:600;color:#fff;">${row.amphoe}</td>
+          <td>${fmtInt(pop)} คน</td>
+          <td>${fmt(tonsPerDay,2)}</td>
+          <td>${fmt(tonsPerMonth,1)}</td>
+          <td>${fmt(tonsPerYear,0)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // อัปเดตการ์ดสรุปบนสุด
+    function renderSummary(totalPop, kgPerPersonPerDay, recoveryRatePct){
+      const totalPopEl = document.getElementById("totalPop");
+      const tonsPerDayEl = document.getElementById("tonsPerDay");
+      const tonsPerMonthEl = document.getElementById("tonsPerMonth");
+      const tonsPerYearEl = document.getElementById("tonsPerYear");
+      const statusPillEl = document.getElementById("statusPill");
+
+      totalPopEl.textContent = fmtInt(totalPop);
+
+      const {tonsPerDay, tonsPerMonth, tonsPerYear} =
+        calcTonnage(totalPop, kgPerPersonPerDay, recoveryRatePct);
+
+      tonsPerDayEl.textContent   = fmt(tonsPerDay,2);
+      tonsPerMonthEl.textContent = fmt(tonsPerMonth,1);
+      tonsPerYearEl.textContent  = fmt(tonsPerYear,0);
+
+      const st = classifyStatus(tonsPerDay);
+      statusPillEl.textContent = st.text;
+      statusPillEl.className = "status-pill " + st.cls;
+    }
+
+    // main flow:
+    // 1. load CSV
+    // 2. parse & group
+    // 3. ตั้งค่า default controls
+    // 4. render ทั้งหน้า
+    let globalState = {
+      totalPop: 0,
+      amphoeArr: [],
+      kgPerPersonPerDay: 0.30, // ค่าเริ่มต้น
+      recoveryRatePct: 40      // %
+    };
+
+    function recalcAndRender(){
+      renderSummary(
+        globalState.totalPop,
+        globalState.kgPerPersonPerDay,
+        globalState.recoveryRatePct
+      );
+      renderDistrictTable(
+        globalState.amphoeArr,
+        globalState.kgPerPersonPerDay,
+        globalState.recoveryRatePct
+      );
+    }
+
+    // ตั้งค่า input listeners
+    function setupControls(){
+      const kgInput = document.getElementById("kgPerPerson");
+      const recInput = document.getElementById("recoveryRate");
+
+      kgInput.value = globalState.kgPerPersonPerDay.toString();
+      recInput.value = globalState.recoveryRatePct.toString();
+
+      kgInput.addEventListener("input", ()=>{
+        const v = parseFloat(kgInput.value);
+        if (!isNaN(v) && v >= 0){
+          globalState.kgPerPersonPerDay = v;
+          recalcAndRender();
+        }
+      });
+
+      recInput.addEventListener("input", ()=>{
+        const v = parseFloat(recInput.value);
+        if (!isNaN(v) && v >= 0 && v <= 100){
+          globalState.recoveryRatePct = v;
+          recalcAndRender();
+        }
+      });
+    }
+
+    // โหลด CSV จริง
+    fetch("data/subdistricts.csv",{cache:"no-store"})
+      .then(res=>res.text())
+      .then(csvText=>{
+        const rows = parseSubdistrictCSV(csvText);
+        const amphoeArr = groupByAmphoe(rows);
+
+        // รวมประชากรทั้งจังหวัด
+        const totalPop = amphoeArr.reduce((sum,r)=>sum+r.population,0);
+
+        globalState.totalPop = totalPop;
+        globalState.amphoeArr = amphoeArr;
+
+        setupControls();
+        recalcAndRender();
+      })
+      .catch(err=>{
+        console.error("โหลด subdistricts.csv ไม่ได้:", err);
+        alert("โหลดข้อมูลประชากร subdistricts.csv ไม่ได้");
+      });
+  </script>
+</body>
+</html>
