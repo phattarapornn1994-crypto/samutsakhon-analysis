@@ -26,7 +26,7 @@
   <style>
     :root {
       --bg-page: #ffffff;
-      --bg-alt: #0f172a;          /* ใช้กับตัว map wrapper ที่เป็นโทนเข้มอยู่แล้ว */
+      --bg-alt: #0f172a;
       --panel-bg: rgba(15,23,42,0.8);
       --panel-border: #334155;
       --panel-text-main: #fff;
@@ -46,7 +46,7 @@
       margin: 0;
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto auto 1fr auto; /* header + intro + map + footer */
     }
 
     /* ---------- HEADER / NAV ---------- */
@@ -110,21 +110,54 @@
       line-height: 1;
     }
 
+    /* ---------- INTRO BLOCK (หัวข้อสั้นๆ บน map) ---------- */
+    .page-intro-wrap {
+      padding: 12px 16px 8px;
+      border-bottom: 1px solid var(--border-card);
+      background: #ffffff;
+      color: var(--text-main);
+    }
+    .page-headline {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text-main);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .page-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-dim);
+      max-width: 900px;
+      margin: 0;
+    }
+    @media(min-width:768px){
+      .page-headline { font-size:20px; }
+    }
+
     /* ---------- MAP WRAPPER ---------- */
+    /* เดิมคือ absolute เต็มจอ → ตอนนี้ให้เป็น section ปกติที่กินเกือบเต็ม viewport */
     #map-wrapper {
       position: relative;
       background: var(--bg-alt);
+      /* ลองกำหนดความสูงขั้นต่ำให้แผนที่กินจอทันที:
+         100vh - (header ~56px + intro ~70px + footer ~60px) ≈ 100vh - 186px
+         เราจะใช้ค่านี้คร่าว ๆ ให้เห็นแผนที่ทันทีโดยไม่ต้องเลื่อน */
+      min-height: calc(100vh - 190px);
     }
 
     #map {
       width: 100%;
       height: 100%;
-      min-height: 480px;
-      position: absolute;
-      inset: 0;
+      min-height: 400px;
+      /* เอา position:absolute ออก ให้เป็น block ปกติ */
     }
 
-    /* ---------- FLOATING PANELS ON MAP ---------- */
+    /* ---------- FLOATING PANELS (ยังลอยบน map-wrapper) ---------- */
     .info-panel {
       position: absolute;
       top: 16px;
@@ -247,35 +280,6 @@
       gap:6px;
       margin-bottom:4px;
     }
-
-    /* ---------- PAGE TOP TEXT UNDER NAV (outside map) ---------- */
-    .page-intro-wrap {
-      padding: 16px;
-      border-bottom: 1px solid var(--border-card);
-      background: #ffffff;
-      color: var(--text-main);
-    }
-    .page-headline {
-      font-size: 18px;
-      font-weight: 600;
-      line-height: 1.4;
-      color: var(--text-main);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .page-desc {
-      font-size: 13px;
-      line-height: 1.5;
-      color: var(--text-dim);
-      max-width: 900px;
-      margin-top: 4px;
-    }
-
-    @media(min-width:768px){
-      .page-headline { font-size:20px; }
-    }
   </style>
 </head>
 <body>
@@ -295,21 +299,21 @@
     </nav>
   </header>
 
-  <!-- SHORT INTRO (ชุดข้อความอ่านง่ายก่อนดูแผนที่จริง) -->
+  <!-- INTRO BLOCK -->
   <section class="page-intro-wrap">
     <div class="page-headline">
       แผนที่โรงงาน / จุดศูนย์กลาง / ความหนาแน่นกิจกรรมรีไซเคิล
     </div>
-    <div class="page-desc">
+    <p class="page-desc">
       ใช้หน้านี้ดูว่า “เราจะตั้ง Hub ที่ไหน แล้วรอบตัวเป็นอะไรบ้าง”
       – จุดสีส้มคือไซต์เรา, จุดแดงคือคู่แข่งรีไซเคิล, สีน้ำเงินคือโรงงานอื่น
       และ Heatmap สีฟ้า→เขียว→เหลือง→ส้ม→แดง คือโซนที่กิจกรรมโรงงานกระจุกตัว
       (ยิ่งแดงแปลว่ายิ่งหนาแน่น)
-    </div>
+    </p>
   </section>
 
   <!-- MAP AREA -->
-  <main id="map-wrapper">
+  <section id="map-wrapper">
     <div id="map"></div>
 
     <section class="info-panel">
@@ -346,7 +350,7 @@
         <div>Heatmap ความหนาแน่นโรงงาน</div>
       </div>
     </section>
-  </main>
+  </section>
 
   <footer>
     © วิเคราะห์พื้นที่เชิงกลยุทธ์ · สมุทรสาคร
@@ -360,17 +364,16 @@
     //    category,name,detail,"address, may contain , inside",lat,lng
     // ---------------------------
     function parseFactoriesCSV(csvText) {
-      const lines = csvText.trim().split('\n');
+      const lines = csvText.trim().split('\\n');
       const factories = [];
 
-      // ถ้ามี header ข้ามบรรทัดแรก
+      // เช็ก header
       let startIndex = 0;
       const firstLineLower = lines[0].toLowerCase();
       const looksLikeHeader =
         firstLineLower.includes('category') ||
         firstLineLower.includes('name') ||
         firstLineLower.includes('lat');
-
       if (looksLikeHeader) startIndex = 1;
 
       for (let i = startIndex; i < lines.length; i++) {
@@ -436,7 +439,6 @@
     // 4) เช็คว่าเป็นโรงงานรีไซเคิลไหม = คู่แข่งตรง
     // ---------------------------
     function isRecyclingFactory(f) {
-      // ถ้าช่องหมวดมีคำว่า รีไซเคิล ให้ถือว่าเป็นคู่แข่งหลัก
       return f.category.includes("รีไซเคิล");
     }
 
@@ -444,22 +446,21 @@
     // 5) popup โรงงาน
     // ---------------------------
     function factoryPopupHTML(fac) {
-      return `
-        <div class="popup-title">${fac.name || "-"}</div>
+      return \`
+        <div class="popup-title">\${fac.name || "-"}</div>
         <div class="popup-desc">
-          <div><strong>ประเภท:</strong> ${fac.category || "-"}</div>
-          <div><strong>รายละเอียด:</strong> ${fac.detail || "-"}</div>
-          <div><strong>ที่อยู่:</strong> ${fac.address || "-"}</div>
-          <div><strong>พิกัด:</strong> ${fac.lat.toFixed(5)}, ${fac.lng.toFixed(5)}</div>
+          <div><strong>ประเภท:</strong> \${fac.category || "-"}</div>
+          <div><strong>รายละเอียด:</strong> \${fac.detail || "-"}</div>
+          <div><strong>ที่อยู่:</strong> \${fac.address || "-"}</div>
+          <div><strong>พิกัด:</strong> \${fac.lat.toFixed(5)}, \${fac.lng.toFixed(5)}</div>
         </div>
-      `;
+      \`;
     }
 
     // ---------------------------
     // 6) สร้างแผนที่
     // ---------------------------
     function initMap(factories) {
-      // base ถนน
       const street = L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
@@ -468,7 +469,6 @@
         }
       );
 
-      // base ดาวเทียม
       const satellite = L.tileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         {
@@ -477,14 +477,13 @@
         }
       );
 
-      // init map
       map = L.map("map", {
         center: [redBullSite.lat, redBullSite.lng],
         zoom: 11,
         layers: [street]
       });
 
-      // 6.1 marker Hub (ลานกระทิงแดง)
+      // Hub marker
       layerRedBull = L.layerGroup();
       const redBullMarker = L.circleMarker([redBullSite.lat, redBullSite.lng], {
         radius: 10,
@@ -492,16 +491,16 @@
         fillColor: "#f97316",
         fillOpacity: 0.9,
         weight: 2
-      }).bindPopup(`
-        <div class="popup-title">★ ${redBullSite.name}</div>
+      }).bindPopup(\`
+        <div class="popup-title">★ \${redBullSite.name}</div>
         <div class="popup-desc">
-          <div><strong>ที่อยู่:</strong> ${redBullSite.address}</div>
-          <div><strong>พิกัด:</strong> ${redBullSite.lat}, ${redBullSite.lng}</div>
+          <div><strong>ที่อยู่:</strong> \${redBullSite.address}</div>
+          <div><strong>พิกัด:</strong> \${redBullSite.lat}, \${redBullSite.lng}</div>
         </div>
-      `);
+      \`);
       redBullMarker.addTo(layerRedBull);
 
-      // 6.2 markers โรงงาน
+      // โรงงาน markers
       layerFactories = L.layerGroup();
       factories.forEach(f => {
         const color = isRecyclingFactory(f) ? "#ef4444" : "#3b82f6"; // แดง=รีไซเคิล, น้ำเงิน=อื่น
@@ -515,15 +514,12 @@
         marker.addTo(layerFactories);
       });
 
-      // 6.3 heatmap
-      // intensity fix = 0.6 default
+      // heatmap
       const heatPoints = factories.map(f => [f.lat, f.lng, 0.6]);
       layerHeat = L.heatLayer(heatPoints, {
         radius: 28,
         blur: 20,
         maxZoom: 17,
-        // gradient: intensity(low->high)
-        // 0.0 = น้ำเงินเข้ม, 0.25 = เขียว, 0.5 = เหลือง, 0.75 = ส้ม, 1.0 = แดง
         gradient: {
           0.0: "#1e3a8a", // น้ำเงินเข้ม
           0.25:"#10b981", // เขียว
@@ -533,12 +529,11 @@
         }
       });
 
-      // ใส่เลเยอร์เริ่มต้น
+      // add default layers
       layerRedBull.addTo(map);
       layerFactories.addTo(map);
-      // layerHeat ไม่เปิด default ให้คนเปิดเอง
+      // heatmap ให้ user เปิดเอง
 
-      // 6.4 control toggle ชั้นข้อมูล
       const baseMaps = {
         "โหมดถนน (OSM)": street,
         "โหมดดาวเทียม (Esri)": satellite
@@ -552,7 +547,7 @@
 
       L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
 
-      // 6.5 zoom ให้พอดีจุดทั้งหมด
+      // zoom bound
       const allLatLng = factories.map(f => [f.lat, f.lng]);
       allLatLng.push([redBullSite.lat, redBullSite.lng]);
       const bounds = L.latLngBounds(allLatLng);
