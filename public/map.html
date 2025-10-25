@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>แผนที่โรงงาน & ลานกระทิงแดง - สมุทรสาคร</title>
 
-  <!-- Leaflet CSS จาก CDN -->
+  <!-- Leaflet CSS จาก CDN (เอาไว้ให้แผนที่แสดงผลและ control สวยงาม) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -13,14 +11,19 @@
     crossorigin=""
   />
 
-  <!-- Leaflet JS จาก CDN -->
+  <!-- Leaflet JS จาก CDN (ตัวแผนที่หลัก) -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
 
-  <!-- พื้นหลัง / UI คล้ายหน้า index -->
+  <!-- Leaflet.heat (ปลั๊กอิน Heatmap) -->
+  <script
+    src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"
+  ></script>
+
+  <!-- พื้นหลัง / UI / layout -->
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -64,12 +67,10 @@
       width: 100%;
       height: 100%;
       min-height: 400px;
-      /* เต็มพื้นที่ตรงกลางของหน้าจอ */
       position: absolute;
       inset: 0;
     }
 
-    /* กล่อง info ด้านบนซ้าย */
     .info-panel {
       position: absolute;
       top: 16px;
@@ -97,7 +98,6 @@
       gap: 6px;
     }
 
-    /* กล่อง legend ด้านล่างซ้าย */
     .legend-panel {
       position: absolute;
       bottom: 16px;
@@ -143,7 +143,6 @@
       border-top:1px solid #334155;
     }
 
-    /* ปรับ popup ของ Leaflet ให้อ่านง่ายบนธีมมืด */
     .leaflet-popup-content-wrapper {
       background:#1e293b;
       color:#f8fafc;
@@ -168,7 +167,6 @@
       line-height:1.4;
     }
 
-    /* ปรับ layer control ของ Leaflet (มุมขวาบน) ให้อ่านง่าย */
     .leaflet-control-layers {
       background:#1e293b !important;
       border:1px solid #334155 !important;
@@ -192,306 +190,3 @@
     }
   </style>
 </head>
-<body>
-
-  <!-- HEADER / NAV -->
-  <header>
-    <div style="font-weight:600;color:#fff;font-size:14px;white-space:nowrap;">
-      🗺️ แผนที่โรงงาน & จุดตั้งลานกระทิงแดง
-    </div>
-    <nav style="display:flex;flex-wrap:wrap;align-items:center;">
-      <a href="./index.html">หน้าหลัก</a>
-      <a href="./map.html" style="color:#fff;">แผนที่ / โรงงาน</a>
-      <a href="./demographic.html">โครงสร้างประชากร</a>
-      <a href="./competition.html">การแข่งขัน</a>
-    </nav>
-  </header>
-
-  <!-- MAP AREA -->
-  <section id="map-wrapper">
-    <!-- กล่องข้อมูลอธิบาย -->
-    <aside class="info-panel">
-      <h2>
-        <span>พื้นที่วิเคราะห์</span>
-        <span style="font-size:12px;color:#94a3b8;font-weight:400;">(รัศมีรอบลาน)</span>
-      </h2>
-      <div>
-        <div style="color:#fff;font-size:13px;font-weight:500;line-height:1.4;">
-          ลานกระทิงแดงใหม่ 📌
-        </div>
-        <div style="font-size:12px;line-height:1.4;color:#cbd5e1;">
-          พิกัด: 13.565126, 100.279895<br/>
-          ถนนสายใยรัก, จ.สมุทรสาคร
-        </div>
-      </div>
-
-      <div style="height:8px;"></div>
-
-      <div style="font-size:12px;line-height:1.4;">
-        ไฮไลต์:
-        <ul style="margin:4px 0 0 16px;padding:0;">
-          <li>โรงงานอาหาร/ห้องเย็น (ลูกค้าเป้าหมาย)</li>
-          <li>โรงงานรีไซเคิล/เคมี (ความเสี่ยงสิ่งแวดล้อม)</li>
-          <li>คลัสเตอร์โลจิสติกส์มหาชัย</li>
-        </ul>
-      </div>
-
-      <div style="height:8px;"></div>
-
-      <div style="font-size:11px;color:#64748b;line-height:1.4;">
-        ปรับชั้นข้อมูลได้ที่ปุ่มมุมขวาบนของแผนที่
-        (Street / ดาวเทียม / ผสม / ประเภทโรงงาน / Heatmap)
-      </div>
-    </aside>
-
-    <!-- Legend -->
-    <aside class="legend-panel">
-      <div class="legend-row">
-        <div class="legend-dot" style="background:#ef4444;">📌</div>
-        <div>ลานกระทิงแดง</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot" style="background:#10b981;">♻</div>
-        <div>รีไซเคิล / จัดการของเสีย</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot" style="background:#38bdf8;">❄</div>
-        <div>ห้องเย็น / ชำแหละสัตว์น้ำ</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot" style="background:#facc15;">🍤</div>
-        <div>อาหาร / เครื่องดื่ม</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot" style="background:#94a3b8;">⚙</div>
-        <div>อื่นๆ / โลหะ / ชิ้นส่วน</div>
-      </div>
-    </aside>
-
-    <!-- แผนที่จริง -->
-    <div id="map"></div>
-  </section>
-
-  <footer>
-    © สมุทรสาคร Analysis Dashboard — แผนที่อุตสาหกรรมและโลจิสติกส์
-  </footer>
-
-
-  <!-- สคริปต์แผนที่ -->
-  <script>
-    // 1) จุดกึ่งกลาง: ลานกระทิงแดงใหม่
-    const siteLat = 13.565126;
-    const siteLng = 100.279895;
-
-    // 2) เตรียม map instance
-    const map = L.map("map", {
-      center: [siteLat, siteLng],
-      zoom: 12,
-    });
-
-    // -----------------------------
-    // 3) Base layers (ถนน / ดาวเทียม / ผสม)
-    // -----------------------------
-
-    // แผนที่ถนน (OpenStreetMap)
-    const streetLayer = L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution: "© OpenStreetMap contributors",
-      }
-    );
-
-    // แผนที่ดาวเทียม (Esri World Imagery)
-    const satelliteLayer = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      {
-        maxZoom: 19,
-        attribution: "Tiles © Esri",
-      }
-    );
-
-    // "ผสม" = ดาวเทียม + เส้นถนนโปร่งใส
-    // ทำเป็นกลุ่มเลเยอร์ (LayerGroup)
-    const hybridGroup = L.layerGroup([
-      satelliteLayer,
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        opacity: 0.35, // โปร่งใสเห็นถนนลอยบนภาพถ่าย
-        attribution: "© OpenStreetMap contributors + Esri",
-      }),
-    ]);
-
-    // ใส่ layer เริ่มต้นเข้าแผนที่
-    streetLayer.addTo(map);
-
-    // -----------------------------
-    // 4) ฟังก์ชันช่วยสร้าง icon แบบ bubble สี + อีโมจิ
-    // -----------------------------
-    function makeDivIcon(emoji, bgColor) {
-      return L.divIcon({
-        className: "",
-        html: `
-          <div style="
-            background:${bgColor};
-            color:#fff;
-            border-radius:9999px;
-            border:2px solid #fff;
-            font-size:14px;
-            line-height:20px;
-            width:28px;
-            height:28px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            box-shadow:0 8px 16px rgba(0,0,0,0.45);
-            font-weight:600;
-          ">
-            ${emoji}
-          </div>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
-        popupAnchor: [0, -14],
-      });
-    }
-
-    const ICONS = {
-      site: makeDivIcon("📌", "#ef4444"),      // ลานกระทิงแดง
-      recycle: makeDivIcon("♻", "#10b981"),   // รีไซเคิล / จัดการของเสีย
-      cold: makeDivIcon("❄", "#38bdf8"),      // ห้องเย็น / สัตว์น้ำ
-      food: makeDivIcon("🍤", "#facc15"),      // อาหาร / เครื่องดื่ม
-      other: makeDivIcon("⚙", "#94a3b8"),     // อื่นๆ / โลหะ / ส่วนประกอบ
-    };
-
-    // -----------------------------
-    // 5) ข้อมูลโรงงานตัวอย่าง (เดี๋ยว Step ถัดไปเราจะใส่ทั้งหมดของคุณ)
-    //    ตอนนี้เอาไม่กี่แห่งรอบมหาชัย / นาดี / บางหญ้าแพรก
-    // -----------------------------
-    const factories = [
-      {
-        name: "บริษัท พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด",
-        desc: "แปรรูปสัตว์น้ำ + แช่แข็ง",
-        type: "cold",
-        lat: 13.5633684,
-        lng: 100.2471886,
-      },
-      {
-        name: "บริษัท ว่านฟิชเชอรี่ส์ จำกัด",
-        desc: "อาหารทะเลแช่แข็ง",
-        type: "cold",
-        lat: 13.5354972,
-        lng: 100.2577222,
-      },
-      {
-        name: "บริษัท ฮุยเนง หงเชง อินดัสทรี จำกัด",
-        desc: "คัดแยกวัสดุที่ไม่ใช้แล้ว (รีไซเคิล)",
-        type: "recycle",
-        lat: 13.525662,
-        lng: 100.226612,
-      },
-      {
-        name: "บริษัท ซีพีเอฟ ฟู้ด แอนด์ เบฟเวอร์เรจ จำกัด",
-        desc: "แปรรูปอาหาร / ผัก / ผลไม้",
-        type: "food",
-        lat: 13.512959,
-        lng: 100.158482,
-      },
-      {
-        name: "บริษัท ไทย คอมพิวเตอร์ แมนูแฟคเตอร์ริ่ง จำกัด",
-        desc: "ประกอบอุปกรณ์ไฟฟ้า / คอมพิวเตอร์",
-        type: "other",
-        lat: 13.60547,
-        lng: 100.27761,
-      },
-    ];
-
-    // -----------------------------
-    // 6) กลุ่ม marker แยกตามหมวด
-    //    เพื่อให้เราสามารถเปิด/ปิดใน Layer Control ได้
-    // -----------------------------
-    const layerSite = L.layerGroup().addTo(map);      // ลานกระทิงแดง
-    const layerRecycle = L.layerGroup().addTo(map);   // รีไซเคิล
-    const layerCold = L.layerGroup().addTo(map);      // ห้องเย็น/สัตว์น้ำ
-    const layerFood = L.layerGroup().addTo(map);      // อาหาร/เครื่องดื่ม
-    const layerOther = L.layerGroup().addTo(map);     // อื่นๆ
-
-    // ลานกระทิงแดงใหม่
-    L.marker([siteLat, siteLng], { icon: ICONS.site })
-      .addTo(layerSite)
-      .bindPopup(`
-        <div class="popup-title">ลานกระทิงแดงใหม่ 📌</div>
-        <div class="popup-desc">
-          พิกัด 13.565126, 100.279895<br/>
-          ถนนสายใยรัก จ.สมุทรสาคร
-        </div>
-      `);
-
-    // โรงงานตามกลุ่ม
-    factories.forEach((f) => {
-      const layerMapByType = {
-        recycle: layerRecycle,
-        cold: layerCold,
-        food: layerFood,
-        other: layerOther,
-      };
-
-      const iconByType = {
-        recycle: ICONS.recycle,
-        cold: ICONS.cold,
-        food: ICONS.food,
-        other: ICONS.other,
-      };
-
-      const targetLayer = layerMapByType[f.type] || layerOther;
-      const icon = iconByType[f.type] || ICONS.other;
-
-      L.marker([f.lat, f.lng], { icon })
-        .addTo(targetLayer)
-        .bindPopup(`
-          <div class="popup-title">${f.name}</div>
-          <div class="popup-desc">${f.desc}</div>
-        `);
-    });
-
-    // -----------------------------
-    // 7) (เตรียมไว้) Heatmap Layer
-    //    NOTE: ตอนนี้เรายังไม่โหลดปลั๊กอิน heatmap.js
-    //    เดี๋ยวใน Step ถัดไปฉันจะให้คุณเพิ่ม CDN heatmap และเปิดใช้งานจริง
-    // -----------------------------
-    // ตอนนี้เราวาง placeholder ไว้เฉย ๆ
-    const layerHeatmap = L.layerGroup();
-    // เราจะใส่จุดหนาแน่นโรงงานรอบมหาชัย/ท่าทราย/บางหญ้าแพรกใน Step ถัดไป
-
-    // -----------------------------
-    // 8) Layer Control (มุมขวาบน)
-    //    - สลับ Base layer: ถนน / ดาวเทียม / ผสม
-    //    - เปิด/ปิด Overlay: ประเภทโรงงาน, Heatmap
-    // -----------------------------
-    const baseMaps = {
-      "ถนน (Street)": streetLayer,
-      "ดาวเทียม (Satellite)": satelliteLayer,
-      "ผสม (Hybrid)": hybridGroup,
-    };
-
-    const overlayMaps = {
-      "📌 ลานกระทิงแดง": layerSite,
-      "♻ รีไซเคิล / ของเสีย": layerRecycle,
-      "❄ ห้องเย็น / สัตว์น้ำ": layerCold,
-      "🍤 อาหาร / เครื่องดื่ม": layerFood,
-      "⚙ อื่นๆ / ชิ้นส่วน": layerOther,
-      "🔥 Heatmap ความหนาแน่น": layerHeatmap,
-    };
-
-    L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
-
-    // -----------------------------
-    // 9) Zoom map ให้เห็นทั้ง cluster โรงงานตัวอย่างและไซต์
-    // -----------------------------
-    const bounds = L.latLngBounds([
-      [siteLat, siteLng],
-      ...factories.map(f => [f.lat, f.lng]),
-    ]);
-    map.fitBounds(bounds.pad(0.2)); // ขยายขอบนิดหน่อยให้มองสบายๆ
-  </script>
-</body>
-</html>
