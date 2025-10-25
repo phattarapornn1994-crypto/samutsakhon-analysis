@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>สมุทรสาคร Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>สมุทรสาคร Spatial Intelligence - หน้าหลัก</title>
 
-  <!-- UI เบื้องต้น -->
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -14,128 +12,429 @@
       color: #f8fafc;
       margin: 0;
       padding: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
     }
+
     header {
       background: #1e293b;
-      padding: 16px 24px;
+      padding: 12px 16px;
       border-bottom: 1px solid #334155;
+      font-size: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
-    nav a {
+    header .brand {
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    header nav a {
       color: #94a3b8;
-      margin-right: 16px;
+      margin-left: 14px;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
     }
-    nav a:hover {
+    header nav a:hover {
       color: #fff;
     }
-    .container {
-      padding: 24px;
+    header nav a.active {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    main {
+      padding: 24px 16px 64px;
       max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
-    }
-    .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-      gap: 16px;
+      grid-template-columns: 1fr;
+      gap: 24px;
     }
-    .card {
-      background: #1e293b;
+
+    /* hero card */
+    .hero-card {
+      background: radial-gradient(circle at 20% 20%, rgba(56,189,248,.12) 0%, rgba(15,23,42,0) 60%), #1e293b;
       border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 16px 20px;
-      box-shadow: 0 20px 60px rgb(0 0 0 / .6);
+      border-radius: 20px;
+      padding: 24px 24px 20px;
+      box-shadow: 0 30px 80px rgb(0 0 0 / .8);
     }
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 16px;
+    .hero-topline {
+      font-size: 12px;
+      color: #38bdf8;
+      font-weight: 500;
+      letter-spacing: .03em;
+      margin-bottom: 6px;
+    }
+    .hero-headline {
+      font-size: clamp(16px, 1vw, 18px);
+      font-weight: 600;
       color: #fff;
-    }
-    .card p {
-      margin: 0;
-      font-size: 14px;
-      color: #94a3b8;
       line-height: 1.5;
+      margin-bottom: 12px;
     }
+    .hero-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      max-width: 900px;
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(min(250px,100%),1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .hero-pill {
+      background: rgba(15,23,42,.6);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #cbd5e1;
+      box-shadow: 0 20px 60px rgb(0 0 0 /.7);
+    }
+    .hero-pill-title {
+      color:#fff;
+      font-weight:600;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-bottom:4px;
+    }
+    .hero-chip {
+      font-size:10px;
+      line-height:1;
+      background:#38bdf8;
+      color:#0f172a;
+      font-weight:600;
+      border-radius:999px;
+      padding:3px 6px;
+    }
+
+    /* 2-col layout below hero */
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) 1fr;
+      gap: 24px;
+    }
+
+    /* left column cards = quick-summary */
+    .summary-card {
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:16px;
+      padding:16px 20px 14px;
+      box-shadow:0 24px 60px rgb(0 0 0 /.8);
+      font-size:13px;
+      color:#cbd5e1;
+      line-height:1.5;
+    }
+    .summary-card + .summary-card {
+      margin-top:16px;
+    }
+    .summary-card h3 {
+      font-size:13px;
+      font-weight:600;
+      color:#fff;
+      margin:0 0 8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge-green { background:#10b981; color:#0f172a; }
+    .badge-yellow{ background:#facc15; color:#0f172a; }
+    .badge-orange{ background:#fb923c; color:#0f172a; }
+    .badge-red   { background:#ef4444; color:#fff;   }
+    .risk-chip {
+      font-size:10px;
+      font-weight:600;
+      line-height:1;
+      border-radius:999px;
+      padding:3px 6px;
+      display:inline-block;
+    }
+
+    .mini-list {
+      margin:0;
+      padding-left:18px;
+      font-size:12px;
+      line-height:1.5;
+      color:#94a3b8;
+    }
+
+    /* right column cards = deep-sections */
+    .section-card {
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:16px;
+      padding:20px 20px 16px;
+      color:#cbd5e1;
+      box-shadow:0 24px 60px rgb(0 0 0 /.8);
+    }
+    .section-card h2 {
+      font-size:14px;
+      font-weight:600;
+      color:#fff;
+      margin:0 0 8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      line-height:1.4;
+    }
+    .section-desc {
+      font-size:13px;
+      color:#94a3b8;
+      line-height:1.6;
+      margin-bottom:16px;
+      max-width:800px;
+    }
+
+    .link-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      font-size:12px;
+      line-height:1.4;
+    }
+    .dash-link {
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:10px;
+      padding:8px 10px;
+      color:#38bdf8;
+      text-decoration:none;
+      font-weight:500;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .dash-link span.icon {
+      width:18px;
+      height:18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:600;
+      color:#0f172a;
+      background:#38bdf8;
+      border-radius:999px;
+    }
+    .dash-link:hover {
+      background:#0f172a;
+      color:#7dd3fc;
+      border-color:#38bdf8;
+    }
+
     footer {
       color:#475569;
+      background:#0f172a;
       font-size:12px;
       text-align:center;
-      padding:32px 0;
+      padding:12px 0 16px;
+      border-top:1px solid #334155;
+    }
+
+    @media(max-width:840px){
+      .two-col {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- NAVBAR -->
   <header>
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
-      <div style="font-weight:600;color:#fff;font-size:14px;">
-        📊 สมุทรสาคร Intelligence Dashboard
-      </div>
-      <nav style="display:flex;flex-wrap:wrap;align-items:center;">
-    <a href="index.html">หน้าแรก</a>
-    <a href="map.html">แผนที่</a>
-    <a href="competition.html">การแข่งขัน / ลูกค้า</a>
-    <a href="population.html">ประชากร</a>
-    <a href="supply.html">ประมาณการสินค้า</a>
-    <a href="risk.html">ความเสี่ยง</a>
-      </nav>
-    </div>
+    <div class="brand">สมุทรสาคร Spatial Intelligence</div>
+    <nav>
+      <a href="index.html" class="active">หน้าแรก</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html">การแข่งขัน / ลูกค้า</a>
+      <a href="population.html">ประชากร</a>
+      <a href="supply.html">ประมาณการสินค้า</a>
+      <a href="risk.html">ความเสี่ยง</a>
+    </nav>
   </header>
 
-  <main class="container">
-    <h1 style="font-size:20px;color:#fff;font-weight:600;margin:0 0 20px;">
-      ภาพรวมจังหวัดสมุทรสาคร
-    </h1>
+  <main>
+    <!-- HERO: บอกว่าเครื่องมือนี้คืออะไร ใช้ตัดสินใจอะไร -->
+    <section class="hero-card">
+      <div class="hero-topline">ภาพรวมโอกาสธุรกิจรีไซเคิล · สมุทรสาคร</div>
+      <div class="hero-headline">
+        แดชบอร์ดเชิงพื้นที่สำหรับตัดสินใจตั้งจุดรับซื้อ/คัดแยกวัสดุรีไซเคิล
+        และการกระจายสินค้าเชิงอุตสาหกรรม
+      </div>
+      <div class="hero-desc">
+        ระบบนี้รวมข้อมูลโรงงานคู่แข่ง, ลูกค้าอุตสาหกรรม (เช่น กระดาษ / เม็ดพลาสติก /
+        สุรา / บรรจุภัณฑ์), ความหนาแน่นประชากร, ปริมาณวัตถุดิบรีไซเคิลที่เกิดขึ้นในจังหวัด,
+        ระยะทางโลจิสติกส์ และความเสี่ยงด้านชุมชน / สิ่งแวดล้อม / กฎระเบียบ
+        — เพื่อใช้คัดเลือก “จุดตั้งลาน/ฐานปฏิบัติการ” ที่เหมาะสมเชิงธุรกิจ
+      </div>
 
-    <div class="card-grid">
-      <section class="card">
-        <h2>จุดตั้งลานกระทิงแดงใหม่ 📌</h2>
-        <p>
-          พิกัด 13.565126, 100.279895 (ถนนสายใยรัก)<br/>
-          วิเคราะห์รอบข้าง: โรงงานแปรรูปอาหาร / ห้องเย็น / รีไซเคิล / พลาสติก / โลจิสติกส์
-        </p>
+      <div class="hero-grid">
+        <div class="hero-pill">
+          <div class="hero-pill-title">
+            <span class="hero-chip">1</span> ทำเล / พื้นที่ตั้ง
+          </div>
+          <div>ดูแผนที่หมุดโรงงาน + Heatmap ความหนาแน่น + ขอบเขตอำเภอ/ชุมชน
+            เพื่อเห็น Demand รอบพื้นที่เป้าหมาย
+          </div>
+        </div>
+
+        <div class="hero-pill">
+          <div class="hero-pill-title">
+            <span class="hero-chip">2</span> คู่แข่ง & ลูกค้า
+          </div>
+          <div>วัดรัศมีรอบจุดเป้าหมาย, ดูรายชื่อคู่แข่งในระยะทางสั้น,
+            และดูว่าเราขาย/รับของจากใครใกล้สุด (ลูกค้าอุตสาหกรรม)
+          </div>
+        </div>
+
+        <div class="hero-pill">
+          <div class="hero-pill-title">
+            <span class="hero-chip">3</span> ปริมาณของรีไซเคิล
+          </div>
+          <div>คำนวณศักยภาพ “ของคืนได้” (กระดาษ / พลาสติก / กระป๋อง ฯลฯ)
+            จากจำนวนประชากรและโครงสร้างอุตสาหกรรมในพื้นที่
+          </div>
+        </div>
+
+        <div class="hero-pill">
+          <div class="hero-pill-title">
+            <span class="hero-chip">4</span> ความเสี่ยงพื้นที่
+          </div>
+          <div>ประเมินความเสี่ยงชุมชนรอบไซต์ เช่น ความหนาแน่นชุมชน,
+            ความอ่อนไหวด้านกลิ่น/เสียง, ความใกล้แหล่งน้ำ, ภาระการขนส่งรถบรรทุก
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT ZONE: ซ้าย = bullet exec summary เร็ว, ขวา = ลิงก์เจาะ -->
+    <section class="two-col">
+
+      <!-- ซ้าย: Executive bullets -->
+      <aside>
+        <div class="summary-card">
+          <h3>
+            จุดแข็งเชิงธุรกิจ
+            <span class="risk-chip badge-green">โอกาส</span>
+          </h3>
+          <ul class="mini-list">
+            <li>ฐานลูกค้าอุตสาหกรรมหนาแน่น (กระดาษ / เม็ดพลาสติก / บรรจุภัณฑ์)</li>
+            <li>มีแหล่งคู่แข่งรับซื้อของเก่าจำนวนมาก → ของไหลเวียนจริง</li>
+            <li>ทำเลติดกรุงเทพฯ ขนส่งง่าย / วิ่งรถสั้น / กลับรถได้เร็ว</li>
+            <li>ปริมาณประชากรและนิคมรอบพื้นที่ = แหล่งของรีไซเคิลต่อเนื่อง</li>
+          </ul>
+        </div>
+
+        <div class="summary-card">
+          <h3>
+            ความท้าทาย
+            <span class="risk-chip badge-orange">เฝ้าระวัง</span>
+          </h3>
+          <ul class="mini-list">
+            <li>การแข่งขันสูงมากในระยะใกล้ (จุดรับซื้อเดิม / เจ้าเก่าในพื้นที่)</li>
+            <li>ความอ่อนไหวชุมชน: กลิ่น, เสียง, รถบรรทุก</li>
+            <li>อาจมีข้อกำกับด้านสิ่งแวดล้อม / น้ำเสีย / ขยะอุตสาหกรรม</li>
+          </ul>
+        </div>
+
+        <div class="summary-card">
+          <h3>
+            สิ่งที่ต้องเลือก
+            <span class="risk-chip badge-yellow">ต้องตัดสินใจ</span>
+          </h3>
+          <ul class="mini-list">
+            <li>เราจะโฟกัสฐานลูกค้ากลุ่มไหนเป็นหลัก? (กระดาษ / พลาสติก / สุรา ฯลฯ)</li>
+            <li>จุดตั้งหลักควรอยู่ใกล้ซัพพลาย (ของเข้า) หรือใกล้ลูกค้า (ของออก)</li>
+            <li>รับความเสี่ยงด้านชุมชนได้ระดับไหน</li>
+          </ul>
+        </div>
+
+        <div class="summary-card">
+          <h3>
+            สถานะความเสี่ยงพื้นที่รวม
+            <span class="risk-chip badge-red">ตัวอย่าง: ปานกลาง-สูง</span>
+          </h3>
+          <div style="font-size:12px; color:#94a3b8;">
+            ดูคะแนนจริงแบบ Live ได้ที่หน้า “ความเสี่ยง”<br/>
+            ระบบจะให้สี: เขียว 🟢 ปลอดภัย / เหลือง 🟡 เฝ้าระวัง / ส้ม 🟠 อ่อนไหว /
+            แดง 🔴 เสี่ยงสูง
+          </div>
+        </div>
+      </aside>
+
+      <!-- ขวา: ลิงก์ไปแต่ละหน้าที่เจาะลึก -->
+      <section class="section-card">
+        <h2>ขั้นตอนการวิเคราะห์</h2>
+        <div class="section-desc">
+          กดเข้าแต่ละโมดูลด้านล่างเพื่อเจาะลึก (ข้อมูลเป็นแบบ Live จาก CSV / จุดพิกัด)
+        </div>
+
+        <div class="link-row">
+          <a class="dash-link" href="map.html">
+            <span class="icon">🗺</span>
+            แผนที่ & Heatmap
+            <div style="font-weight:400;color:#94a3b8;">ดูตำแหน่งจริง</div>
+          </a>
+
+          <a class="dash-link" href="competition.html">
+            <span class="icon">📍</span>
+            การแข่งขัน / ลูกค้า
+            <div style="font-weight:400;color:#94a3b8;">รัศมี, คู่แข่ง, ลูกค้า</div>
+          </a>
+
+          <a class="dash-link" href="population.html">
+            <span class="icon">👥</span>
+            ประชากร
+            <div style="font-weight:400;color:#94a3b8;">ชุมชน & Demand</div>
+          </a>
+
+          <a class="dash-link" href="supply.html">
+            <span class="icon">♻</span>
+            ประมาณการสินค้า
+            <div style="font-weight:400;color:#94a3b8;">ปริมาณของคืนได้</div>
+          </a>
+
+          <a class="dash-link" href="risk.html">
+            <span class="icon">⚠</span>
+            ความเสี่ยง
+            <div style="font-weight:400;color:#94a3b8;">ผลกระทบพื้นที่</div>
+          </a>
+        </div>
+
+        <h2 style="margin-top:24px;">สรุปวิธีใช้</h2>
+        <div class="section-desc" style="margin-bottom:8px;">
+          1. เลือกจุดตั้ง (ลาน/ฐาน) บนแผนที่  
+          2. ดูคู่แข่งและลูกค้าในระยะจริง (กม.)  
+          3. ประเมินว่าพื้นที่นั้นมีของให้เก็บกลับได้เท่าไหร่  
+          4. ประเมินความเสี่ยงการร้องเรียน / สิ่งแวดล้อม ก่อนตัดสินใจ
+        </div>
+        <div style="font-size:12px;color:#64748b;line-height:1.6;">
+          เป้าหมาย: เลือกทำเลที่ “ของเยอะ + ลูกค้าใกล้ + แข่งพอรับได้ + เสียงร้องเรียนน้อย”
+        </div>
       </section>
 
-      <section class="card">
-        <h2>โครงสร้างอุตสาหกรรม</h2>
-        <p>
-          โรงงานอาหารทะเล ห้องเย็น แช่แข็ง บรรจุภัณฑ์พลาสติก
-          และโรงงานรีไซเคิลกระจุกตัวหนาแน่นโดยรอบมหาชัย
-          และแนวท่าทราย / บางหญ้าแพรก / นาดี
-        </p>
-      </section>
-
-      <section class="card">
-        <h2>แรงงานกลางวัน</h2>
-        <p>
-          ประชากรแฝงช่วงกลางวันรวม ~30,408 คน
-          โดยมีกลุ่มการบริหารราชการ ~10,287 คน
-          การผลิต ~4,798 คน
-          และค้าส่งค้าปลีก ~4,286 คน
-        </p>
-      </section>
-
-      <section class="card">
-        <h2>โซนอันตราย/เสี่ยงชุมชน</h2>
-        <p>
-          คลัสเตอร์สารเคมี / รีไซเคิลอิเล็กทรอนิกส์ / ห้องเย็นสัตว์น้ำ
-          จะไฮไลต์เป็น Heatmap ในหน้าแผนที่
-        </p>
-      </section>
-    </div>
-
-    <div style="margin-top:32px;font-size:13px;color:#94a3b8;line-height:1.6;max-width:800px;">
-      <strong style="color:#fff;">เป้าหมาย:</strong><br/>
-      • ระบุศักยภาพเชิงโลจิสติกส์รอบลานกระทิงแดง<br/>
-      • ดูคู่แข่ง / ซัพพลายเออร์รอบพื้นที่<br/>
-      • วิเคราะห์ประชากรและแรงงานสนับสนุน
-    </div>
+    </section>
   </main>
 
   <footer>
-    © สมุทรสาคร Analysis Dashboard
+    © สมุทรสาคร Spatial Intelligence · Prototype วิเคราะห์ทำเลเชิงธุรกิจ
   </footer>
 
-  <script src="app.js"></script>
 </body>
 </html>
