@@ -3,481 +3,1059 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>การประเมินความเสี่ยงพื้นที่ - สมุทรสาคร</title>
+  <title>ความเสี่ยงพื้นที่ & ความยอมรับชุมชน</title>
 
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100vh;
+    :root {
+      --bg-page: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-alt: #f8fafc;
+      --border-card: #e2e8f0;
+      --text-main: #0f172a;
+      --text-dim: #475569;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-bg: #eff6ff;
+      --radius-card: 12px;
+
+      --chip-bg: #f1f5f9;
+      --chip-border: #cbd5e1;
     }
 
-    header {
-      background: #1e293b;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Thai", sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+
+    header.topbar {
+      background: #0f172a;
+      color: #fff;
       padding: 12px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 14px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-    }
-    header .brand {
-      color: #fff;
-      font-weight: 600;
       font-size: 14px;
     }
-    header nav a {
-      color: #94a3b8;
-      margin-right: 12px;
-      text-decoration: none;
-      font-size: 13px;
-    }
-    header nav a:hover {
-      color: #fff;
-    }
-    header nav a.active {
-      color: #38bdf8;
+
+    .brand {
       font-weight: 600;
-    }
-
-    main {
-      padding: 24px 16px 48px;
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: rgba(15,23,42,.8);
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 24px 64px rgb(0 0 0 / .7);
-    }
-
-    .section-title {
       font-size: 14px;
-      font-weight: 600;
       color: #fff;
-      margin: 0 0 12px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .metric-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      border-bottom: 1px solid #334155;
-      padding: 8px 0 12px;
-      margin-bottom: 8px;
+    .brand-emoji {
+      font-size: 16px;
+    }
+
+    nav.topnav a {
+      color: #94a3b8;
+      text-decoration: none;
+      margin-right: 16px;
       font-size: 13px;
-      line-height: 1.4;
-      color: #cbd5e1;
     }
-    .metric-left {
-      max-width: 70%;
-    }
-    .metric-right {
-      text-align: right;
-      min-width: 90px;
+    nav.topnav a:last-child { margin-right: 0; }
+    nav.topnav a.active {
+      color: #38bdf8;
       font-weight: 600;
+    }
+    nav.topnav a:hover {
       color: #fff;
     }
 
-    .score-box {
-      font-size: 32px;
+    main.page {
+      max-width: 1300px;
+      margin: 24px auto 64px;
+      padding: 0 16px 80px;
+    }
+
+    h1.page-title {
+      font-size: 20px;
       font-weight: 600;
-      line-height: 1.2;
+      color: var(--text-main);
+      margin: 0 0 4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* --- block wrapper --- */
+    section.block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
+      padding: 16px 20px 20px;
+      margin-bottom: 24px;
+    }
+
+    .block-headline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .block-head-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--accent-bg);
+      border: 1px solid #bfdbfe;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .block-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    /* --- helper box / hint --- */
+    .tips-box {
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .tips-box ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+      color: var(--text-main);
+    }
+    .tips-box li {
+      margin-bottom: 4px;
+    }
+
+    /* --- input grid --- */
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(min(320px,100%),1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      border-left: 4px solid #93c5fd; /* เส้นสีด้านซ้ายเป็น accent */
+    }
+
+    .row-top {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: 8px;
       margin-bottom: 8px;
     }
-    .score-emoji {
+
+    .icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 20px;
-      margin-left: 8px;
+      font-weight: 500;
+      line-height: 1;
+      flex-shrink: 0;
+      border: 1px solid #bfdbfe;
     }
-    .score-interpret {
-      font-size: 13px;
-      color: #cbd5e1;
+
+    .label-wrap {
+      flex: 1;
+    }
+
+    .label-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
       line-height: 1.4;
     }
 
-    footer {
-      color:#475569;
-      background:#0f172a;
-      font-size:12px;
-      text-align:center;
-      padding:12px 0 16px;
-      border-top:1px solid #334155;
+    .label-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    .small-note {
-      color:#64748b;
-      font-size:12px;
-      line-height:1.5;
+    .input-wrap input,
+    .input-wrap select,
+    .input-wrap textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-main);
+      background: #f8fafc;
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      outline: none;
+      resize: vertical;
+      min-height: 42px;
+    }
+    .input-wrap textarea {
+      min-height: 120px;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
-    .flex-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:16px;
+    .input-wrap input:focus,
+    .input-wrap select:focus,
+    .input-wrap textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+      background: #fff;
     }
 
-    .half {
-      flex:1 1 260px;
-      min-width:260px;
+    /* --- two-column flex for risk sub-blocks --- */
+    .flex-two {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .flex-col {
+      flex: 1 1 260px;
+      min-width: 260px;
     }
 
-    .danger-pill {
-      display:inline-block;
-      font-size:11px;
-      line-height:1.3;
-      padding:4px 8px;
-      border-radius:999px;
+    /* --- summary grid --- */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(min(260px,100%),1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .summary-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.4;
+      border-left: 4px solid #94a3b8;
+    }
+    .summary-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .summary-title .mini-icon {
+      font-size: 14px;
+    }
+    .summary-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .summary-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* --- risk badges --- */
+    .risk-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      line-height: 1.4;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .risk-green {
+      background:#dcfce7;
+      color:#166534;
+      border-color:#86efac;
+    }
+    .risk-yellow {
+      background:#fef9c3;
+      color:#854d0e;
+      border-color:#fde047;
+    }
+    .risk-orange {
+      background:#ffedd5;
+      color:#9a3412;
+      border-color:#fdba74;
+    }
+    .risk-red {
+      background:#fee2e2;
+      color:#991b1b;
+      border-color:#fca5a5;
+    }
+
+    /* --- flood / terrain box --- */
+    .terrain-box {
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-card);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.5;
+      border-left: 4px solid #93c5fd;
+    }
+
+    .terrain-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .terrain-left {
+      flex: 1 1 220px;
+      min-width: 220px;
+    }
+    .terrain-left .t-label {
       font-weight:600;
-      color:#0f172a;
-      background:#eab308;
+      font-size:14px;
+      color:var(--text-main);
+      margin-bottom:4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .terrain-left .t-desc {
+      font-size:12px;
+      color:var(--text-muted);
+      line-height:1.4;
+    }
+
+    .terrain-right {
+      flex: 1 1 220px;
+      min-width: 220px;
+    }
+    .terrain-right select {
+      width:100%;
+      box-sizing:border-box;
+      padding:10px 12px;
+      font-size:14px;
+      font-family:inherit;
+      color:var(--text-main);
+      background:#fff;
+      border:1px solid var(--border-card);
+      border-radius:8px;
+      outline:none;
+    }
+    .terrain-right select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+    }
+
+    /* --- competitor chip list --- */
+    .chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+      background: #f8fafc;
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .chip {
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      color: var(--text-main);
+      font-size: 12px;
+      line-height: 1.4;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .chip .dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#ef4444;
+      flex-shrink:0;
+    }
+
+    /* --- print btn --- */
+    .print-row {
+      text-align: right;
+      margin-top: 12px;
+    }
+    .print-btn {
+      background: #1e293b;
+      color: #fff;
+      font-size: 13px;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    .print-btn:hover {
+      background: #0f172a;
+    }
+
+    footer.page-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      padding: 24px 16px 48px;
+    }
+
+    @media print {
+      header.topbar, .print-row {
+        display: none;
+      }
+      body {
+        background: #fff;
+        color: #000;
+      }
+      section.block {
+        page-break-inside: avoid;
+      }
     }
   </style>
 </head>
-<body>
 
-  <header>
-    <div class="brand">สมุทรสาคร Spatial Intelligence</div>
-    <nav>
-    <a href="index.html">หน้าแรก</a>
-    <a href="map.html">แผนที่</a>
-    <a href="competition.html">การแข่งขัน / ลูกค้า</a>
-    <a href="population.html">ประชากร</a>
-    <a href="supply.html">ประมาณการสินค้า</a>
-    <a href="risk.html">ความเสี่ยง</a>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-emoji">📊</span>
+      <span>สมุทรสาคร · ความเสี่ยงพื้นที่ & ความยอมรับชุมชน</span>
+    </div>
+    <nav class="topnav">
+      <a href="index.html">หน้าแรก</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html">คู่แข่ง & ลูกค้า</a>
+      <a href="population.html">ประชากร</a>
+      <a href="capacity.html">กำลังการผลิต</a>
+      <a href="risk.html" class="active">ความเสี่ยง</a>
     </nav>
   </header>
 
-  <main>
-    <!-- สรุปคะแนนรวม -->
-    <section class="card" id="summary-card">
-      <div class="section-title">
-        <span>สรุประดับความเสี่ยงโดยรวม (รัศมี <span id="radius-km-label">5</span> กม.)</span>
-      </div>
-
-      <div class="score-box" id="total-risk-score">
-        --<span class="score-emoji" id="total-risk-emoji">🟢</span>
-      </div>
-      <div class="score-interpret" id="total-risk-interpret">
-        กำลังประเมิน...
-      </div>
-
-      <div class="small-note" style="margin-top:12px;">
-        วิธีคิด: ใช้ความหนาแน่นของคู่แข่ง (โรงงานรีไซเคิล) + ความหนาแน่นกิจกรรมอุตสาหกรรมรอบไซต์ เป็น proxy ของ
-        <span class="danger-pill">การแข่งขัน + มลพิษ + ความอ่อนไหวชุมชน</span>
-      </div>
-    </section>
-
-    <div class="flex-row">
-      <!-- ความเสี่ยงเชิงแข่งขัน -->
-      <section class="card half">
-        <div class="section-title">
-          <span>1. ความเสี่ยงเชิงแข่งขัน</span>
-        </div>
-
-        <div class="metric-row">
-          <div class="metric-left">
-            คู่แข่งหลัก (รีไซเคิล / ของเก่า) ภายในรัศมี <span id="radius-km-a">5</span> กม.
-          </div>
-          <div class="metric-right" id="competitor-count">-</div>
-        </div>
-
-        <div class="metric-row">
-          <div class="metric-left">
-            ระดับความหนาแน่นคู่แข่ง
-            <div class="small-note">
-              ถ้าคู่แข่งหลายเจ้าอยู่ใกล้ลูกค้ากลุ่มเดียวกัน → โอกาสถูกแย่งซัพพลายสูง
-            </div>
-          </div>
-          <div class="metric-right" id="competition-risk-score">- /100</div>
-        </div>
-
-        <div class="small-note" id="competition-interpret">
-          ...
-        </div>
-      </section>
-
-      <!-- ความเสี่ยงผลกระทบพื้นที่ -->
-      <section class="card half">
-        <div class="section-title">
-          <span>2. ความเสี่ยงผลกระทบพื้นที่</span>
-        </div>
-
-        <div class="metric-row">
-          <div class="metric-left">
-            โรงงาน/กิจกรรมอุตสาหกรรมทั้งหมดในพื้นที่
-            <div class="small-note">
-              เป็นตัวแทนโอกาสเรื่องมลพิษ การร้องเรียนชุมชน การตรวจสอบจากรัฐ
-            </div>
-          </div>
-          <div class="metric-right" id="allfactories-count">-</div>
-        </div>
-
-        <div class="metric-row">
-          <div class="metric-left">
-            คะแนนความหนาแน่นอุตสาหกรรม
-          </div>
-          <div class="metric-right" id="impact-risk-score">- /100</div>
-        </div>
-
-        <div class="small-note" id="impact-interpret">
-          ...
-        </div>
-      </section>
+  <main class="page">
+    <h1 class="page-title">
+      ประเมินความเสี่ยงรอบไซต์ (ชุมชน / น้ำท่วม / การแข่งขัน)
+    </h1>
+    <div class="subtitle">
+      เครื่องมือนี้ตอบคำถาม: “ตั้งลานที่นี่แล้วจะอยู่ยาวไหม?”  
+      เรามอง 4 ด้าน: ระยะห่างชุมชน, ประวัติร้องเรียน, น้ำท่วม/ภูมิประเทศ, ความหนาแน่นคู่แข่งรีไซเคิล (คนแย่งของ + ความกดดันพื้นที่)
     </div>
 
-    <!-- รายชื่อคู่แข่งรอบไซต์ -->
-    <section class="card">
-      <div class="section-title">3. รายชื่อคู่แข่งรอบไซต์ (รีไซเคิล)</div>
-      <div id="competitor-list" style="font-size:13px;line-height:1.5;color:#cbd5e1;">
-        กำลังโหลด...
+    <!-- SECTION 1 : INPUT FACTORS -->
+    <section class="block">
+      <div class="block-headline">
+        <div class="block-head-icon">⚙️</div>
+        <div>1) ปัจจัยความเสี่ยงรอบพื้นที่ (ใส่ตัวเลขของไซต์คุณ)</div>
+      </div>
+      <div class="block-desc">
+        ปรับค่าด้านล่าง ระบบจะคำนวณคะแนนเสี่ยง + สีไฟจราจรให้อัตโนมัติ
+      </div>
+
+      <div class="grid-inputs">
+        <!-- community distance -->
+        <div class="card-input">
+          <div class="row-top">
+            <div class="icon-box">🏠</div>
+            <div class="label-wrap">
+              <div class="label-title">ระยะถึงชุมชนหนาแน่นที่สุด</div>
+              <div class="label-sub">เมตร (หมู่บ้านจัดสรร / หอพักคนงาน / ชุมชนริมน้ำ)</div>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <input type="number" id="distToCommunity" value="300" min="0" step="10" />
+          </div>
+        </div>
+
+        <!-- how many communities -->
+        <div class="card-input">
+          <div class="row-top">
+            <div class="icon-box">👥</div>
+            <div class="label-wrap">
+              <div class="label-title">จำนวนกลุ่มชุมชนหนาแน่นในรัศมี 1 กม.</div>
+              <div class="label-sub">กลุ่ม/หมู่บ้าน/ชุมชนแรงงานที่อาจร้องเรียน</div>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <input type="number" id="communityCount" value="2" min="0" step="1" />
+          </div>
+        </div>
+
+        <!-- complaint -->
+        <div class="card-input">
+          <div class="row-top">
+            <div class="icon-box">📢</div>
+            <div class="label-wrap">
+              <div class="label-title">ประวัติร้องเรียนสิ่งแวดล้อมในพื้นที่</div>
+              <div class="label-sub">กลิ่น / ฝุ่น / น้ำเสีย / รถบรรทุกเสียงดัง / ไลฟ์สดดราม่า</div>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <select id="complaintLevel">
+              <option value="low">ต่ำ (เงียบ ไม่มีดราม่า)</option>
+              <option value="mid" selected>กลาง (มีบ้างเป็นช่วงๆ)</option>
+              <option value="high">สูง (มีเรื่องบ่อย / ลงโซเชียลบ่อย)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- competitor count live from list -->
+        <div class="card-input">
+          <div class="row-top">
+            <div class="icon-box">🏭</div>
+            <div class="label-wrap">
+              <div class="label-title">จำนวนคู่แข่งรีไซเคิลรอบไซต์ (~3 กม.)</div>
+              <div class="label-sub">
+                ระบบจะนับอัตโนมัติจากรายชื่อด้านล่าง (แต่คุณแก้มือได้)
+              </div>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <input type="number" id="competitorCount" value="20" min="0" step="1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- quick summary after inputs -->
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-title"><span class="mini-icon">🏠</span>ความเสี่ยงชุมชน / ร้องเรียน</div>
+          <div class="summary-value">
+            <span id="communityRiskText">ปานกลาง</span>
+            <span id="communityRiskBadge" class="risk-badge risk-yellow">🟡 ปานกลาง</span>
+          </div>
+          <div class="summary-note">
+            ใกล้คนเยอะ = โดนถ่ายคลิปง่าย / ฟ้องหน่วยงานง่าย / ข่าวไว
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-title"><span class="mini-icon">🏭</span>ความเสี่ยงเชิงการแข่งขัน</div>
+          <div class="summary-value">
+            <span id="competitionRiskText">เริ่มหนาแน่น</span>
+            <span id="competitionRiskBadge" class="risk-badge risk-orange">🟠 หนาแน่น</span>
+          </div>
+          <div class="summary-note">
+            คู่แข่งเยอะ = แย่งซื้อของดุ / รถวิ่งทั้งวัน / พื้นที่ถูกจับตามอง
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-title"><span class="mini-icon">🚚</span>ผลกระทบพื้นที่ (รถบรรทุก / เสียง / ฝุ่น)</div>
+          <div class="summary-value">
+            <span id="impactRiskText">ควรควบคุม</span>
+            <span id="impactRiskBadge" class="risk-badge risk-orange">🟠 ควรควบคุม</span>
+          </div>
+          <div class="summary-note">
+            ตีความรวมเรื่องรถขนเข้า-ออกถี่ เสียงรบกวนเวลากลางคืน และภาพลักษณ์ “กองขยะ”
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="card">
-      <div class="section-title">วิธีอ่านสี</div>
-      <div class="small-note">
-        🟢 ความเสี่ยงต่ำ – ยังมีช่องว่างให้ตั้งฐาน กระทิงแดงอาจได้เปรียบ<br/>
-        🟡 ปานกลาง – เริ่มมีผู้เล่นคล้ายกัน / ชุมชนเริ่มหนาแน่น ต้องวางกลยุทธ์<br/>
-        🟠 สูง – คู่แข่งเยอะหรืออุตสาหกรรมหนาแน่นมาก ต้องมีจุดต่างชัดเจน<br/>
-        🔴 วิกฤต – อิ่มตัว/อ่อนไหวสูง เสี่ยงแรงต้านหรือถูกตรวจถี่
+    <!-- SECTION 2 : FLOOD / TERRAIN -->
+    <section class="block">
+      <div class="block-headline">
+        <div class="block-head-icon">🌧️</div>
+        <div>2) ภูมิประเทศและน้ำท่วม</div>
+      </div>
+      <div class="block-desc">
+        น้ำท่วมแบบไหนที่ต้องกลัว? น้ำฝนขัง vs น้ำทะเลหนุน vs ระบายไม่ทันในพื้นที่อุตสาหกรรม
+      </div>
+
+      <div class="terrain-box">
+        <div class="terrain-row">
+          <div class="terrain-left">
+            <div class="t-label">
+              <span>ภูมิประเทศหลักของไซต์</span>
+            </div>
+            <div class="t-desc">
+              เลือกสถานการณ์ที่ใกล้ความจริงที่สุดตอนนี้
+            </div>
+          </div>
+          <div class="terrain-right">
+            <select id="terrainType">
+              <option value="highfill">
+                ถมสูงกว่าถนน + มีท่อระบายตรง (เสี่ยงน้ำขังต่ำ)
+              </option>
+              <option value="industrialfill" selected>
+                ลานถมอุตสาหกรรม (น้ำไม่ขึ้นฉับพลัน แต่ขังนานถ้าฝนหนัก)
+              </option>
+              <option value="canal">
+                ใกล้คลอง/ที่ลุ่มชุมชน (ฝนหนัก = เอ่อท่วมเร็ว)
+              </option>
+              <option value="riverlow">
+                แนวปากแม่น้ำ/น้ำเค็มหนุน (น้ำทะเลดันขึ้นจากด้านล่าง)
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="terrain-row">
+          <div class="terrain-left">
+            <div class="t-label">การตีความ</div>
+            <div class="t-desc" id="terrainExplain">
+              ดินถมระดับลานอุตสาหกรรม → น้ำไม่ทะลักเร็วแบบน้ำขึ้น แต่ถ้าฝนหนักมากอาจมีน้ำขัง ต้องมีทางระบาย / บ่อพักน้ำเอง
+            </div>
+          </div>
+          <div class="terrain-right">
+            <div class="t-label">ระดับความเสี่ยงน้ำท่วม</div>
+            <div class="summary-value" style="font-size:16px;">
+              <span id="floodRiskText">ปานกลาง</span>
+              <span id="floodRiskBadge" class="risk-badge risk-yellow">🟡 ปานกลาง</span>
+            </div>
+            <div class="summary-note">
+              แนวลดเสี่ยง: ยกโซนเก็บของมีค่า (ขวดแก้วดี / ก้อนอัด) สูงกว่าถนน
+              + ปั๊มน้ำ + รางระบายถาวร
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-title"><span class="mini-icon">📝</span>ข้อความไว้คุยกับผู้ใหญ่ / หน่วยงาน</div>
+          <div class="summary-value" style="font-size:14px;font-weight:500;">
+            <span id="floodNote">
+              พื้นที่เป็นลานอุตสาหกรรมถมแล้ว ไม่ได้อยู่ริมน้ำโดยตรง
+              ความเสี่ยงหลักคือฝนหนักแล้วน้ำระบายช้า ไม่ใช่น้ำทะเลหนุน
+            </span>
+          </div>
+          <div class="summary-note">
+            ใช้ข้อความนี้แนบใน memo / หนังสือชี้แจง
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- SECTION 3 : COMPETITOR LIST -->
+    <section class="block">
+      <div class="block-headline">
+        <div class="block-head-icon">📍</div>
+        <div>3) รายชื่อคู่แข่งรีไซเคิลรอบไซต์ (~3 กม.)</div>
+      </div>
+      <div class="block-desc">
+        รายชื่อกลุ่ม “ลานของเก่า / รีไซเคิล / รับซื้อเศษ” ที่อยู่ละแวกเดียวกัน  
+        ยิ่งแน่น = ซื้อของแข่งกันดุ, คนขับรถวิ่งเข้า-ออกถี่, พื้นที่ถูกจับตาเรื่องกลิ่น/เสียงง่าย
+      </div>
+
+      <div class="flex-two">
+        <div class="flex-col">
+          <div class="label-title" style="font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+            <span style="font-size:16px;">📝</span>
+            รายชื่อคู่แข่ง (1 บรรทัด = 1 ราย)
+          </div>
+          <div class="input-wrap">
+            <textarea id="competitorListArea">บริษัท ช่วนยี่ อินดัสทรี จำกัด
+บริษัท ประเสริฐสุข รีไซเคิล จำกัด
+บริษัท มณีสยาม เปเปอร์ จำกัด
+บจก ยงเฮง มหาชัย รีไซเคิ้ล
+ง่วนเซ้ง
+ร้านรุ่งนภา รีไซเคิล
+พิรัช รีไซเคิล
+ร้านของเก่าประนอม
+เจตนาค้าของเก่า
+ร้านรับซื้อของเก่า เจ้เมย์
+โคกขามรีไซเคิล
+หนึ่งราชาของเก่ารีไซเคิล</textarea>
+          </div>
+          <div class="summary-note" style="margin-top:6px;">
+            ระบบจะนับจำนวนบรรทัดให้อัตโนมัติ แล้วส่งไปคำนวณ “ความเสี่ยงเชิงแข่งขัน” และ “ผลกระทบพื้นที่”
+          </div>
+        </div>
+
+        <div class="flex-col">
+          <div class="label-title" style="font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+            <span style="font-size:16px;">👀</span>
+            แสดงแบบอ่านง่าย
+          </div>
+
+          <div class="chip-wrap" id="competitorChips">
+            <!-- จะถูกเติม chip รายชื่อ -->
+          </div>
+
+          <div class="summary-note" style="margin-top:6px;">
+            ถ้าเห็นว่ามีโรงงานประเภท “เสียงดัง / เผา / กลิ่นแรง” อยู่ติดกันหลายเจ้า
+            ความเสี่ยงภาพลักษณ์จะพุ่งเป็นสีส้ม/แดงได้ง่าย
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 : OVERALL SCORE -->
+    <section class="block">
+      <div class="block-headline">
+        <div class="block-head-icon">🚦</div>
+        <div>4) ไฟจราจรภาพรวม (ความอยู่รอดเชิงชุมชน/กฎหมาย)</div>
+      </div>
+
+      <div class="block-desc">
+        คะแนนรวม “โอกาสโดนต่อต้าน/โดนปิด” เพื่อใช้คุยเชิงกลยุทธ์กับผู้บริหาร
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card" style="border-left-color:#f87171;">
+          <div class="summary-title">
+            <span class="mini-icon">🔥</span>คะแนนรวมความเสี่ยง
+          </div>
+          <div class="summary-value">
+            <span id="totalRiskScore">2.8 / 4.0</span>
+            <span id="overallRiskBadge" class="risk-badge risk-orange">🟠 ควรควบคุม</span>
+          </div>
+          <div class="summary-note">
+            สูตรถ่วงน้ำหนัก:
+            <br/>35% ระยะ+ความหนาแน่นชุมชน
+            <br/>25% ประวัติร้องเรียน
+            <br/>25% น้ำท่วม/ภูมิประเทศ
+            <br/>15% ความหนาแน่นคู่แข่งรีไซเคิล
+          </div>
+        </div>
+
+        <div class="summary-card" style="border-left-color:#60a5fa;">
+          <div class="summary-title">
+            <span class="mini-icon">💡</span>สรุปเชิงกลยุทธ์
+          </div>
+          <div class="summary-value" style="font-size:14px;font-weight:500;">
+            <span id="overallNarrative">
+              พื้นที่นี้ “ทำได้แต่ต้องบริหารภาพลักษณ์”
+              ชุมชนเริ่มเห็น/จับตา และรถบรรทุกอาจสร้างเสียงรบกวน
+              แต่ไม่ได้อยู่โซนเสี่ยงน้ำท่วมฉับพลันจากแม่น้ำโดยตรง
+            </span>
+          </div>
+          <div class="summary-note">
+            ลดความเสี่ยง: จำกัดรถกลางคืน, กั้นฝุ่น/เสียง, โชว์ว่าเราคัดแยกสะอาด ไม่ใช่กองขยะเลอะเทอะ
+          </div>
+        </div>
+      </div>
+
+      <div class="print-row">
+        <button class="print-btn" onclick="window.print()">พิมพ์รายงาน / แนบเสนอกรรมการ</button>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      © Prototype การประเมินความเสี่ยงพื้นที่ · สมุทรสาคร
+    </footer>
   </main>
 
-  <footer>
-    © วิเคราะห์เชิงพื้นที่ สมุทรสาคร · Prototype วิเคราะห์ความเสี่ยงรอบลานกระทิงแดง
-  </footer>
-
   <script>
-    // ---------- parser CSV เหมือน map.html ----------
-    function parseFactoriesCSV(csvText) {
-      const lines = csvText.trim().split('\n');
-      const factories = [];
+    // ---------------------------------------
+    // DOM refs
+    // ---------------------------------------
+    const distToCommunityEl   = document.getElementById('distToCommunity');
+    const communityCountEl    = document.getElementById('communityCount');
+    const complaintLevelEl    = document.getElementById('complaintLevel');
+    const competitorCountEl   = document.getElementById('competitorCount');
+    const terrainTypeEl       = document.getElementById('terrainType');
 
-      let startIndex = 0;
-      const firstLineLower = lines[0].toLowerCase();
-      const looksLikeHeader =
-        firstLineLower.includes('category') ||
-        firstLineLower.includes('name') ||
-        firstLineLower.includes('lat');
-      if (looksLikeHeader) {
-        startIndex = 1;
-      }
+    const competitorListAreaEl = document.getElementById('competitorListArea');
+    const competitorChipsEl    = document.getElementById('competitorChips');
 
-      for (let i = startIndex; i < lines.length; i++) {
-        let row = lines[i].trim();
-        if (!row) continue;
+    // outputs
+    const communityRiskTextEl     = document.getElementById('communityRiskText');
+    const communityRiskBadgeEl    = document.getElementById('communityRiskBadge');
+    const competitionRiskTextEl   = document.getElementById('competitionRiskText');
+    const competitionRiskBadgeEl  = document.getElementById('competitionRiskBadge');
+    const impactRiskTextEl        = document.getElementById('impactRiskText');
+    const impactRiskBadgeEl       = document.getElementById('impactRiskBadge');
+    const floodRiskTextEl         = document.getElementById('floodRiskText');
+    const floodRiskBadgeEl        = document.getElementById('floodRiskBadge');
+    const terrainExplainEl        = document.getElementById('terrainExplain');
+    const floodNoteEl             = document.getElementById('floodNote');
 
-        // address ครอบด้วย "" ข้างในมีคอมม่า
-        let address = '';
-        let addressMatch = row.match(/"([^"]*)"/);
-        if (addressMatch) {
-          address = addressMatch[1].trim();
-          row = row.replace(addressMatch[0], '##ADDRESS_PLACEHOLDER##');
-        }
+    const totalRiskScoreEl        = document.getElementById('totalRiskScore');
+    const overallRiskBadgeEl      = document.getElementById('overallRiskBadge');
+    const overallNarrativeEl      = document.getElementById('overallNarrative');
 
-        const parts = row.split(',').map(p => p.trim());
-        if (parts.length < 6) continue;
-
-        const category = parts[0] || '';
-        const name = parts[1] || '';
-        const detail = parts[2] || '';
-
-        let reconstructedAddress = parts[3];
-        if (reconstructedAddress === '##ADDRESS_PLACEHOLDER##') {
-          reconstructedAddress = address;
-        }
-
-        const lat = parseFloat(parts[4]);
-        const lng = parseFloat(parts[5]);
-        if (isNaN(lat) || isNaN(lng)) continue;
-
-        factories.push({
-          category,
-          name,
-          detail,
-          address: reconstructedAddress,
-          lat,
-          lng
-        });
-      }
-
-      return factories;
-    }
-
-    // ---------- คำนวณระยะทาง (กม.) ----------
-    function distanceKm(lat1, lng1, lat2, lng2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI/180;
-      const dLng = (lng2 - lng1) * Math.PI/180;
-      const a =
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1*Math.PI/180) *
-        Math.cos(lat2*Math.PI/180) *
-        Math.sin(dLng/2) * Math.sin(dLng/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c;
-    }
-
-    // ---------- จุดลานกระทิงแดง (ต้องตรงกับ map.html) ----------
-    const redBullSite = {
-      name: "ลานกระทิงแดง (จุดตั้งใหม่)",
-      address: "ถนนสายใยรัก สมุทรสาคร",
-      lat: 13.565126,
-      lng: 100.279895
-    };
-
-    // ---------- รัศมีวิเคราะห์ (กม.) ----------
-    const ANALYSIS_RADIUS_KM = 5;
-
-    // ---------- กติกาว่าใครคือคู่แข่งหลัก ----------
-    function isRecyclingFactory(f) {
-      return f.category.includes("รีไซเคิล");
-    }
-
-    // ---------- แปลงคะแนน -> สี/คำอธิบาย ----------
-    function getRiskLevelInfo(score) {
-      if (score <= 25) {
-        return { color:"🟢", text:"ความเสี่ยงต่ำ / ช่องว่างตลาดยังเปิดกว้าง" };
-      } else if (score <= 50) {
-        return { color:"🟡", text:"ความเสี่ยงปานกลาง / เริ่มมีแรงกดดันจากรอบข้าง" };
-      } else if (score <= 75) {
-        return { color:"🟠", text:"ความเสี่ยงสูง / ต้องมีข้อได้เปรียบเชิงปฏิบัติการ" };
+    // ---------------------------------------
+    // Utils
+    // ---------------------------------------
+    function riskClassAndLabel(score){
+      // score ~1 = ดี (เขียว) ... ~4 = แดง
+      if(score < 1.75){
+        return {cls:'risk-green', label:'🟢 ต่ำ'};
+      } else if(score < 2.5){
+        return {cls:'risk-yellow', label:'🟡 ปานกลาง'};
+      } else if(score < 3.25){
+        return {cls:'risk-orange', label:'🟠 ควรควบคุม'};
       } else {
-        return { color:"🔴", text:"ความเสี่ยงวิกฤต / คู่แข่งหนาแน่นหรือพื้นที่อ่อนไหวมาก" };
+        return {cls:'risk-red', label:'🔴 สูง'};
       }
     }
 
-    // ---------- วิเคราะห์ตัวเลขความเสี่ยง ----------
-    function analyzeRisk(factories) {
-      // คัดโรงงานในรัศมี
-      const inside = factories.filter(f => {
-        const d = distanceKm(redBullSite.lat, redBullSite.lng, f.lat, f.lng);
-        return d <= ANALYSIS_RADIUS_KM;
-      });
+    // ---------------------------------------
+    // 1) ความเสี่ยงชุมชน / ระยะ
+    // ---------------------------------------
+    function calcCommunityScore(distMeters, communityCount){
+      // ระยะ: ใกล้มาก = เสี่ยงร้องเรียนสูง
+      // <200m =>4, 200-500=>3, 500-1000=>2, >1000=>1
+      let base;
+      if(distMeters < 200) base = 4;
+      else if(distMeters < 500) base = 3;
+      else if(distMeters < 1000) base = 2;
+      else base = 1;
 
-      // นับคู่แข่ง (รีไซเคิล)
-      const competitors = inside.filter(isRecyclingFactory);
+      // ถ้า communityCount >=4 คือรอบๆมีคนเยอะมาก => บวก 0.5
+      if(communityCount >= 4) base += 0.5;
+      if(base > 4) base = 4;
+      return base;
+    }
 
-      // สร้างคะแนนแบบง่าย
-      // สมมติ: 20 คู่แข่ง = เต็ม 100
-      const maxCompetitorRef = 20;
-      const competitionScoreRaw = (competitors.length / maxCompetitorRef) * 100;
-      const competitionScore = Math.min(100, Math.round(competitionScoreRaw));
+    // ---------------------------------------
+    // 2) ประวัติร้องเรียน
+    // ---------------------------------------
+    function calcComplaintScore(level){
+      // low=1, mid=3, high=4
+      if(level === 'low') return 1;
+      if(level === 'mid') return 3;
+      return 4; // high
+    }
 
-      // สมมติ: 50 โรงงานรวม = เต็ม 100
-      const maxAllRef = 50;
-      const impactScoreRaw = (inside.length / maxAllRef) * 100;
-      const impactScore = Math.min(100, Math.round(impactScoreRaw));
-
-      // คะแนนรวม = เฉลี่ยสองอัน
-      const totalScore = Math.round((competitionScore + impactScore) / 2);
-
-      // ตีความระดับสี
+    // ---------------------------------------
+    // 3) Flood / Terrain
+    // ---------------------------------------
+    function calcFloodScoreAndText(terrainVal){
+      // คืน {score, explain, floodText, note}
+      if(terrainVal === 'highfill'){
+        return {
+          score: 1.2,
+          explain: "พื้นที่ยกสูงกว่าถนนหลัก + มีระบายน้ำตรง → น้ำฝนท่วมแอ่งยากและระบายเร็ว",
+          floodText: "ต่ำ",
+          note: "จุดตั้งสูงกว่าพื้นถนนรอบ ๆ ระบายได้ ไม่ใช่แนวรับน้ำหนุนโดยตรง"
+        };
+      }
+      if(terrainVal === 'industrialfill'){
+        return {
+          score: 2.5,
+          explain: "ดินถมลานอุตสาหกรรม → น้ำไม่ขึ้นฉับพลัน แต่ฝนหนักอาจขังนาน ต้องมีปั๊มน้ำ/รางระบาย",
+          floodText: "ปานกลาง",
+          note: "พื้นที่ถมอุตสาหกรรม ไม่ได้ติดน้ำโดยตรง ความเสี่ยงหลักคือฝนหนักแล้วระบายช้า"
+        };
+      }
+      if(terrainVal === 'canal'){
+        return {
+          score: 3.2,
+          explain: "พื้นที่ลุ่ม/ใกล้คลอง → ฝนหนักหรือคลองเอ่อ ท่วมเร็ว",
+          floodText: "ควรควบคุม",
+          note: "ใกล้คลองชุมชน น้ำฝนเอ่อเข้าพื้นที่ได้ ต้องเตรียมคันดิน/ปั๊มน้ำ"
+        };
+      }
+      // riverlow
       return {
-        radiusKm: ANALYSIS_RADIUS_KM,
-        allFactoriesInRadius: inside,
-        competitorsInRadius: competitors,
-        competitionScore,
-        competitionExplain: getRiskLevelInfo(competitionScore),
-        impactScore,
-        impactExplain: getRiskLevelInfo(impactScore),
-        totalScore,
-        totalExplain: getRiskLevelInfo(totalScore)
+        score: 3.8,
+        explain: "โซนปากแม่น้ำ/น้ำเค็มหนุน → น้ำดันขึ้นจากล่าง ฉับพลัน",
+        floodText: "สูง",
+        note: "อยู่แนวน้ำหนุน ต้องยกระดับลานและกั้นปนเปื้อนตั้งแต่วันแรก"
       };
     }
 
-    // ---------- อัปเดต UI ----------
-    function renderRisk(result) {
-      // รัศมี
-      document.getElementById("radius-km-label").textContent = result.radiusKm;
-      document.getElementById("radius-km-a").textContent = result.radiusKm;
-
-      // จำนวน
-      document.getElementById("competitor-count").textContent =
-        result.competitorsInRadius.length + " ราย";
-
-      document.getElementById("allfactories-count").textContent =
-        result.allFactoriesInRadius.length + " ราย";
-
-      // competition score
-      document.getElementById("competition-risk-score").textContent =
-        result.competitionScore + " /100";
-      document.getElementById("competition-interpret").textContent =
-        result.competitionExplain.color + " " + result.competitionExplain.text;
-
-      // impact score
-      document.getElementById("impact-risk-score").textContent =
-        result.impactScore + " /100";
-      document.getElementById("impact-interpret").textContent =
-        result.impactExplain.color + " " + result.impactExplain.text;
-
-      // total summary
-      document.getElementById("total-risk-score").innerHTML =
-        result.totalScore +
-        '<span class="score-emoji" id="total-risk-emoji">' +
-        result.totalExplain.color +
-        "</span>";
-
-      document.getElementById("total-risk-interpret").textContent =
-        result.totalExplain.text;
-
-      // competitor list
-      const listDiv = document.getElementById("competitor-list");
-      if (result.competitorsInRadius.length === 0) {
-        listDiv.textContent = "ไม่มีคู่แข่งรีไซเคิลในรัศมีที่กำหนด";
-      } else {
-        let html = "<ol style='margin-top:0;padding-left:20px;'>";
-        result.competitorsInRadius.forEach(f => {
-          html += `
-            <li style="margin-bottom:8px;">
-              <div style="color:#fff;font-weight:600;">${f.name || "-"}</div>
-              <div style="color:#94a3b8;font-size:12px;line-height:1.4;">
-                ${f.address || ""}
-                <br/>
-                (${f.lat.toFixed(5)}, ${f.lng.toFixed(5)})
-              </div>
-            </li>
-          `;
-        });
-        html += "</ol>";
-        listDiv.innerHTML = html;
-      }
+    // ---------------------------------------
+    // 4) ความหนาแน่นคู่แข่งรีไซเคิล
+    // ---------------------------------------
+    function calcCompetitorScore(cnt){
+      // <=10 =>1.5, <=30 =>2.5, >30 =>3.5
+      if(cnt <= 10) return 1.5;
+      if(cnt <= 30) return 2.5;
+      return 3.5;
     }
 
-    // ---------- main: โหลด CSV ----------
-    fetch("data/factories.csv", { cache: "no-store" })
-      .then(res => res.text())
-      .then(csvText => {
-        const factories = parseFactoriesCSV(csvText);
-        const result = analyzeRisk(factories);
-        renderRisk(result);
-      })
-      .catch(err => {
-        console.error("โหลด factories.csv ไม่ได้:", err);
-        document.getElementById("total-risk-interpret").textContent =
-          "โหลดข้อมูลไม่สำเร็จ";
+    // ---------------------------------------
+    // 5) ผลกระทบพื้นที่ (รถ, เสียง, ฝุ่น)
+    //    เราจะผูกกับ: competitorScore + complaintScore
+    //    สมมติ: impact = avg(complaintScore, competitorScore)
+    // ---------------------------------------
+    function calcImpactScore(complaintScore, competitorScore){
+      return (complaintScore + competitorScore)/2;
+    }
+
+    // ---------------------------------------
+    // Competitor list -> chips + auto-count
+    // ---------------------------------------
+    function updateCompetitorListStuff(){
+      // แตกตามบรรทัด แล้วตัดช่องว่างว่าง
+      const raw = competitorListAreaEl.value || "";
+      const names = raw
+        .split("\n")
+        .map(t => t.trim())
+        .filter(t => t.length>0);
+
+      // render chip
+      competitorChipsEl.innerHTML = "";
+      names.forEach(n => {
+        const div = document.createElement("div");
+        div.className = "chip";
+        div.innerHTML = `<span class="dot"></span><span>${n}</span>`;
+        competitorChipsEl.appendChild(div);
       });
-  </script>
 
-</body>
-</html>
-  </script>
+      // sync count -> competitorCount input
+      competitorCountEl.value = names.length.toString();
+    }
 
+    // ---------------------------------------
+    // Recalc all + update UI badges/text
+    // ---------------------------------------
+    function recalc(){
+      // sync list first
+      updateCompetitorListStuff();
+
+      const distMeters = parseFloat(distToCommunityEl.value) || 0;
+      const commCount = parseFloat(communityCountEl.value) || 0;
+      const complaints = complaintLevelEl.value;
+      const competitors = parseFloat(competitorCountEl.value) || 0;
+      const terrainVal = terrainTypeEl.value;
+
+      const communityScore  = calcCommunityScore(distMeters, commCount);
+      const complaintScore  = calcComplaintScore(complaints);
+      const floodInfo       = calcFloodScoreAndText(terrainVal);
+      const competitorScore = calcCompetitorScore(competitors);
+      const impactScore     = calcImpactScore(complaintScore, competitorScore);
+
+      // --- Community Risk text/badge
+      let commRiskWord;
+      if(communityScore < 1.75) commRiskWord = "ต่ำ";
+      else if(communityScore < 2.5) commRiskWord = "ปานกลาง";
+      else if(communityScore < 3.25) commRiskWord = "ค่อนข้างสูง";
+      else commRiskWord = "สูง";
+
+      communityRiskTextEl.textContent = commRiskWord;
+      const commBadge = riskClassAndLabel(communityScore);
+      communityRiskBadgeEl.textContent = commBadge.label;
+      communityRiskBadgeEl.className = "risk-badge " + commBadge.cls;
+
+      // --- Competition Risk (ความเสี่ยงเชิงแข่งขัน)
+      let compWord;
+      if(competitorScore < 1.75) compWord = "บางเบา";
+      else if(competitorScore < 2.5) compWord = "เริ่มหนาแน่น";
+      else if(competitorScore < 3.25) compWord = "หนาแน่น";
+      else compWord = "หนาแน่นมาก";
+
+      competitionRiskTextEl.textContent = compWord;
+      const compBadge = riskClassAndLabel(competitorScore);
+      competitionRiskBadgeEl.textContent = compBadge.label;
+      competitionRiskBadgeEl.className = "risk-badge " + compBadge.cls;
+
+      // --- Impact Risk (ผลกระทบพื้นที่จากรถ/เสียง/ฝุ่น)
+      let impactWord;
+      if(impactScore < 1.75) impactWord = "ต่ำ";
+      else if(impactScore < 2.5) impactWord = "พอรับได้";
+      else if(impactScore < 3.25) impactWord = "ควรควบคุม";
+      else impactWord = "เสี่ยงโดนดราม่า";
+
+      impactRiskTextEl.textContent = impactWord;
+      const impactBadge = riskClassAndLabel(impactScore);
+      impactRiskBadgeEl.textContent = impactBadge.label;
+      impactRiskBadgeEl.className = "risk-badge " + impactBadge.cls;
+
+      // --- Flood / Terrain
+      floodRiskTextEl.textContent = floodInfo.floodText;
+      terrainExplainEl.textContent = floodInfo.explain;
+      floodNoteEl.textContent = floodInfo.note;
+      const floodBadge = riskClassAndLabel(floodInfo.score);
+      floodRiskBadgeEl.textContent = floodBadge.label;
+      floodRiskBadgeEl.className = "risk-badge " + floodBadge.cls;
+
+      // --- รวมเป็นคะแนนถ่วงน้ำหนัก (ไฟจราจรใหญ่)
+      // totalScore = 0.35*community + 0.25*complaints + 0.25*flood + 0.15*competitor
+      const totalScore =
+        0.35*communityScore +
+        0.25*complaintScore +
+        0.25*floodInfo.score +
+        0.15*competitorScore;
+
+      totalRiskScoreEl.textContent = totalScore.toFixed(1) + " / 4.0";
+
+      const overallBadge = riskClassAndLabel(totalScore);
+      overallRiskBadgeEl.textContent = overallBadge.label;
+      overallRiskBadgeEl.className = "risk-badge " + overallBadge.cls;
+
+      // Narrative สรุปสำหรับผู้บริหาร
+      let narrative;
+      if(totalScore < 1.75){
+        narrative = "ความเสี่ยงต่ำเชิงชุมชนและสิ่งแวดล้อม พื้นที่นี้ค่อนข้างปลอดภัยต่อการเริ่มตั้งลานอุตสาหกรรม (ถ้าบริหารตามมาตรฐาน)";
+      } else if(totalScore < 2.5){
+        narrative = "ความเสี่ยงปานกลาง ยังพออธิบายหน่วยงานได้ ถ้าคุมเสียงรถ ฝุ่น น้ำทิ้งให้ดี มีโอกาสอยู่ยาวและขยายสเกลได้";
+      } else if(totalScore < 3.25){
+        narrative = "พื้นที่นี้ “ทำได้แต่ต้องบริหารภาพลักษณ์” ชุมชนเริ่มจับตา รถบรรทุกเข้าออกถี่ และอาจมีประเด็นสิ่งแวดล้อม ต้องสื่อสารเชิงรุก";
+      } else {
+        narrative = "ความเสี่ยงสูง: ถ้าจะตั้งจริงต้องมีมาตรการป้องกันตั้งแต่วันแรก (เสียง กลิ่น น้ำท่วม น้ำเสีย) และพูดคุยเชิงป้องกันกับท้องถิ่น";
+      }
+      overallNarrativeEl.textContent = narrative;
+    }
+
+    // ---------------------------------------
+    // event binding
+    // ---------------------------------------
+    [
+      distToCommunityEl,
+      communityCountEl,
+      complaintLevelEl,
+      competitorCountEl,
+      terrainTypeEl,
+      competitorListAreaEl
+    ].forEach(el => {
+      el.addEventListener('input', recalc);
+      el.addEventListener('change', recalc);
+    });
+
+    // ---------------------------------------
+    // init
+    // ---------------------------------------
+    recalc();
+  </script>
 </body>
 </html>
