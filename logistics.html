@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>การวางแผนขนส่ง / โลจิสติกส์</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+    }
+
+    header {
+      background: #1e293b;
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      font-size: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    header .brand {
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    header nav a {
+      color: #94a3b8;
+      margin-right: 12px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    header nav a:hover {
+      color: #fff;
+    }
+    header nav a.active {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(240px, 320px) 1fr;
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* ด้านซ้าย: control + summary */
+    #side-panel {
+      background: #1e2538;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #side-panel h2 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-block {
+      background: rgba(15,23,42,.6);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .control-block label {
+      font-size: 12px;
+      color: #94a3b8;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #fff;
+      font-weight: 500;
+    }
+    .control-row input[type="range"] {
+      width: 100%;
+    }
+
+    .radio-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
+      gap: 8px;
+      font-size: 12px;
+    }
+    .radio-option {
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:8px;
+      padding:8px;
+      cursor:pointer;
+      color:#fff;
+      text-align:left;
+      line-height:1.4;
+    }
+    .radio-option input {
+      margin-right:6px;
+      accent-color:#38bdf8;
+    }
+
+    .stats-block {
+      background: rgba(15,23,42,.6);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #cbd5e1;
+    }
+
+    .stats-block .number-strong {
+      font-size: 16px;
+      font-weight:600;
+      color:#fff;
+    }
+
+    #topList {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      background: rgba(15,23,42,.6);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #cbd5e1;
+    }
+
+    .poi-item {
+      border-bottom:1px solid #334155;
+      padding:8px 0;
+    }
+    .poi-item:last-child {
+      border-bottom:0;
+    }
+    .poi-name {
+      color:#fff;
+      font-weight:600;
+      font-size:13px;
+      line-height:1.4;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .poi-meta {
+      font-size:12px;
+      color:#94a3b8;
+      line-height:1.4;
+      margin-top:2px;
+    }
+
+    .badge {
+      display:inline-block;
+      font-size:10px;
+      line-height:1.4;
+      font-weight:600;
+      border-radius:6px;
+      padding:2px 6px;
+      border:1px solid #475569;
+    }
+    .badge-red { background:#7f1d1d; color:#fff; border-color:#ef4444; }
+    .badge-blue { background:#1e3a8a; color:#fff; border-color:#3b82f6; }
+    .badge-green { background:#064e3b; color:#fff; border-color:#10b981; }
+
+    #strategyBox {
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:8px;
+      padding:10px 12px;
+      margin-top:12px;
+      font-size:12px;
+      line-height:1.5;
+      color:#cbd5e1;
+    }
+    #strategyBox .title {
+      font-size:12px;
+      font-weight:600;
+      color:#fff;
+      margin-bottom:4px;
+    }
+
+    /* ด้านขวา: แผนที่ */
+    #map-area {
+      position: relative;
+      background:#000;
+      min-height:0;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      position:absolute;
+      inset:0;
+    }
+
+    /* ปรับ popup ให้เป็น dark */
+    .leaflet-popup-content-wrapper {
+      background:#1e293b;
+      color:#f8fafc;
+      border-radius:12px;
+      border:1px solid #475569;
+      box-shadow:0 20px 60px rgb(0 0 0 / .8);
+    }
+    .leaflet-popup-tip {
+      background:#1e293b;
+      border:1px solid #475569;
+    }
+    .popup-title {
+      font-size:14px;
+      font-weight:600;
+      color:#fff;
+      margin-bottom:4px;
+      line-height:1.4;
+    }
+    .popup-desc {
+      font-size:12px;
+      color:#cbd5e1;
+      line-height:1.4;
+    }
+
+    footer {
+      color:#475569;
+      background:#0f172a;
+      font-size:12px;
+      text-align:center;
+      padding:12px 0 16px;
+      border-top:1px solid #334155;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">สมุทรสาคร Spatial Intelligence</div>
+    <nav>
+      <a href="index.html">ภาพรวม</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html">คู่แข่ง</a>
+      <a href="customers.html">ลูกค้า</a>
+      <a href="population.html">ประชากร</a>
+      <a href="forecast.html">ประมาณการสินค้า</a>
+      <a href="risk.html">ความเสี่ยง</a>
+      <a href="logistics.html" class="active">โลจิสติกส์</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ---------------------------------
+         PANEL ซ้าย
+    ----------------------------------- -->
+    <aside id="side-panel">
+      <h2>📦 วางแผนขนส่ง / จุดป้อนวัตถุดิบ</h2>
+
+      <!-- ระยะทาง -->
+      <div class="control-block">
+        <label>รัศมีรับของ / ส่งของ จากศูนย์กลาง (กม.)</label>
+        <div class="control-row">
+          <div><span id="radiusValue" style="color:#38bdf8;font-weight:600;">5</span> กม.</div>
+        </div>
+        <input id="radiusInput" type="range" min="1" max="30" step="1" value="5" />
+        <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.4;">
+          วงกลมสีแดงบนแผนที่ = พื้นที่ปฏิบัติการของเราในทริปเดียว
+        </div>
+      </div>
+
+      <!-- เลือกกลุ่มลูกค้า -->
+      <div class="control-block">
+        <label>โฟกัสเป้าหมายหลัก</label>
+        <div class="radio-group" id="focusGroup">
+          <label class="radio-option">
+            <input type="radio" name="focus" value="customer" checked />
+            ลูกค้าหลัก<br/> (โรงงานกระดาษ / เม็ดพลาสติก / สุรา)
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="focus" value="competitor" />
+            คู่แข่ง (รีไซเคิล)
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="focus" value="all" />
+            ดูทั้งหมด
+          </label>
+        </div>
+      </div>
+
+      <!-- สถิติ -->
+      <div class="stats-block">
+        <div><b style="color:#fff;">สรุปในรัศมี <span id="radiusKMText">5</span> กม.</b></div>
+        <div style="margin-top:6px;">
+          ลูกค้าศักยภาพ (รับของ/ขายของ):
+          <span class="number-strong" id="statCustomers">0</span> จุด
+        </div>
+        <div>
+          คู่แข่งรีไซเคิล:
+          <span class="number-strong" id="statCompetitors">0</span> จุด
+        </div>
+        <div>
+          ทั้งหมดรวม:
+          <span class="number-strong" id="statTotal">0</span> จุด
+        </div>
+      </div>
+
+      <!-- list จุดใกล้สุด -->
+      <div id="topList">
+        <div style="color:#fff;font-weight:600;font-size:13px;margin-bottom:8px;">
+          จุดที่ใกล้ที่สุด (Top 10)
+        </div>
+        <div id="topItems">
+          <!-- inject -->
+        </div>
+
+        <div id="strategyBox">
+          <div class="title">ข้อเสนอเชิงกลยุทธ์</div>
+          <div id="strategyText">
+            -
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ---------------------------------
+         MAP ขวา
+    ----------------------------------- -->
+    <section id="map-area">
+      <div id="map"></div>
+    </section>
+  </main>
+
+  <footer>
+    © เครือข่ายขนส่งต้นน้ำ-ปลายน้ำ · ระยะทางคำนวณเชิงเส้น (Haversine) · Prototype
+  </footer>
+
+  <script>
+    // -------------------------------------------------
+    // CONFIG หลัก
+    // -------------------------------------------------
+    // จุดศูนย์กลางฐานเรา = ลานกระทิงแดง (แกนหลักโลจิสติกส์)
+    const HUB = {
+      name: "ลานกระทิงแดง (ฐานปฏิบัติการ)",
+      lat: 13.565126,
+      lng: 100.279895,
+      address: "ถนนสายใยรัก สมุทรสาคร"
+    };
+
+    // เกณฑ์ระบุ "ลูกค้า" กับ "คู่แข่ง"
+    function isCompetitorRow(cat) {
+      // ถ้ามีคำว่า รีไซเคิล = คู่แข่ง
+      return cat.includes("รีไซเคิล");
+    }
+
+    function isCustomerRow(cat) {
+      // ลูกค้าหลักของธุรกิจเรา: กระดาษ / เม็ดพลาสติก / สุรา
+      // ปรับ keyword ตามหมวดจริงใน factories.csv ของคุณ
+      const keywords = ["กระดาษ", "เม็ดพลาสติก", "สุรา", "บรรจุภัณฑ์", "แพคเกจ"];
+      return keywords.some(k => cat.includes(k));
+    }
+
+    // -------------------------------------------------
+    // ฟังก์ชันคำนวณระยะทาง Haversine (กม.)
+    // -------------------------------------------------
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const dLat = (lat2 - lat1) * Math.PI/180;
+      const dLon = (lon2 - lon1) * Math.PI/180;
+      const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI/180) *
+        Math.cos(lat2 * Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // -------------------------------------------------
+    // อ่าน CSV (รูปแบบเดียวกับที่เราใช้ใน map/competition)
+    // columns:
+    // category,name,detail,"address ...",lat,lng
+    // -------------------------------------------------
+    function parseFactoriesCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      const rows = [];
+
+      let startIndex = 0;
+      const first = lines[0].toLowerCase();
+      const headerLike = first.includes('category') || first.includes('lat');
+      if (headerLike) startIndex = 1;
+
+      for (let i = startIndex; i < lines.length; i++) {
+        let row = lines[i].trim();
+        if (!row) continue;
+
+        // extract "address, maybe commas"
+        let addressFixed = "";
+        const quotedMatch = row.match(/"([^"]*)"/);
+        if (quotedMatch) {
+          addressFixed = quotedMatch[1].trim();
+          row = row.replace(quotedMatch[0], "##ADDRESS##");
+        }
+
+        const parts = row.split(',').map(p => p.trim());
+
+        if (parts.length < 6) continue;
+
+        const category = parts[0] || "";
+        const name = parts[1] || "";
+        const detail = parts[2] || "";
+
+        let address = parts[3] || "";
+        if (address === "##ADDRESS##") {
+          address = addressFixed;
+        }
+
+        const lat = parseFloat(parts[4]);
+        const lng = parseFloat(parts[5]);
+        if (isNaN(lat) || isNaN(lng)) continue;
+
+        rows.push({
+          category,
+          name,
+          detail,
+          address,
+          lat,
+          lng
+        });
+      }
+
+      return rows;
+    }
+
+    // -------------------------------------------------
+    // ตัวแปร global
+    // -------------------------------------------------
+    let map;
+    let baseStreet, baseSat;
+    let hubLayer;           // marker HUB
+    let poiLayer;           // markers จุดทั้งหมด
+    let radiusCircle;       // วงรัศมี
+    let allPOIs = [];       // เก็บข้อมูลทั้งหมดจาก CSV พร้อมคำนวณระยะ
+    let currentFocus = "customer"; // customer | competitor | all
+
+    // -------------------------------------------------
+    // popup HTML
+    // -------------------------------------------------
+    function popupHTML(p) {
+      return `
+        <div class="popup-title">${p.name || "-"}</div>
+        <div class="popup-desc">
+          <div><strong>หมวด:</strong> ${p.category || "-"}</div>
+          <div><strong>รายละเอียด:</strong> ${p.detail || "-"}</div>
+          <div><strong>ที่อยู่:</strong> ${p.address || "-"}</div>
+          <div><strong>ระยะจากศูนย์:</strong> ${p.distKm.toFixed(2)} กม.</div>
+          <div><strong>พิกัด:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</div>
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------
+    // render Top10 ใน panel ซ้าย + strategy สรุป
+    // -------------------------------------------------
+    function renderSideListAndStrategy(inRangePOIs, radiusKm) {
+      // sort by distance
+      const sorted = [...inRangePOIs].sort((a,b)=>a.distKm-b.distKm).slice(0,10);
+
+      const topItemsDiv = document.getElementById("topItems");
+      topItemsDiv.innerHTML = "";
+
+      sorted.forEach(p => {
+        // badge สีตามประเภท
+        let badgeClass = "badge-blue";
+        let badgeText = "ทั่วไป";
+
+        if (isCompetitorRow(p.category)) {
+          badgeClass = "badge-red";
+          badgeText = "คู่แข่ง";
+        } else if (isCustomerRow(p.category)) {
+          badgeClass = "badge-green";
+          badgeText = "ลูกค้า";
+        }
+
+        const el = document.createElement("div");
+        el.className = "poi-item";
+        el.innerHTML = `
+          <div class="poi-name">
+            <span>${p.name || "-"}</span>
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="poi-meta">
+            ระยะ ${p.distKm.toFixed(2)} กม.<br/>
+            ${p.category || "-"}<br/>
+            ${p.address || "-"}
+          </div>
+        `;
+        topItemsDiv.appendChild(el);
+      });
+
+      // strategy text
+      const totalCust = inRangePOIs.filter(p=>isCustomerRow(p.category)).length;
+      const totalComp = inRangePOIs.filter(p=>isCompetitorRow(p.category)).length;
+
+      let strategy = "";
+
+      // logic ง่าย ๆ:
+      // - ถ้าลูกค้าเยอะ > คู่แข่ง => จุดเรามี demand สูง
+      // - ถ้าคู่แข่งเยอะมาก => พื้นที่ saturated
+      // - ถ้าระยะสั้น=ได้หลายจุด => ต้นทุนขนส่งต่ำ
+      if (totalCust > totalComp * 1.5 && totalCust >= 3) {
+        strategy += "🔎 พื้นที่นี้มีลูกค้าเป้าหมายหนาแน่นกว่าคู่แข่ง → โอกาสเป็น Hub รับ/ส่งหลักสูง\n";
+      } else if (totalComp > totalCust && totalComp >= 3) {
+        strategy += "⚠ คู่แข่งรีไซเคิลหนาแน่นในระยะสั้น → ต้องแข่งราคา/บริการรับเร็วขึ้น หรือเจาะลูกค้าที่คู่แข่งยังไม่โฟกัส\n";
+      } else {
+        strategy += "ℹ พื้นที่มีทั้งลูกค้าและคู่แข่งคละกัน ปรับกลยุทธ์แบบจุดต่อจุด (ทำเส้นทางวิ่งรถรายวัน-รายโซน)\n";
+      }
+
+      if (inRangePOIs.length >= 8 && radiusKm <= 10) {
+        strategy += "💰 จุดป้อน/จุดระบายกระจุกตัวในระยะไม่ไกล (<10 กม.) → ค่าขนส่งต่อเที่ยวต่ำ มีศักยภาพทำรอบวิ่งถี่\n";
+      } else if (radiusKm > 15) {
+        strategy += "🚚 ระยะครอบคลุมกว้าง (>15 กม.) → ต้องวางแผนคัดเฉพาะลูกค้าที่ volume สูงเพื่อคุ้มรอบรถ\n";
+      }
+
+      if (!strategy) {
+        strategy = "ยังไม่มีข้อมูลพอสำหรับวิเคราะห์เชิงกลยุทธ์";
+      }
+
+      document.getElementById("strategyText").innerText = strategy;
+    }
+
+    // -------------------------------------------------
+    // update สถิติด้านซ้าย
+    // -------------------------------------------------
+    function updateStats(inRangePOIs, radiusKm) {
+      const totalCust = inRangePOIs.filter(p=>isCustomerRow(p.category)).length;
+      const totalComp = inRangePOIs.filter(p=>isCompetitorRow(p.category)).length;
+      const totalAll  = inRangePOIs.length;
+
+      document.getElementById("radiusKMText").textContent = radiusKm;
+      document.getElementById("statCustomers").textContent = totalCust;
+      document.getElementById("statCompetitors").textContent = totalComp;
+      document.getElementById("statTotal").textContent = totalAll;
+    }
+
+    // -------------------------------------------------
+    // สร้าง / อัพเดท marker layer ภายใต้ filter
+    // -------------------------------------------------
+    function redrawPOILayer(radiusKm) {
+      if (!map || !poiLayer) return;
+
+      poiLayer.clearLayers();
+
+      // filter ตาม focus group
+      let filtered = allPOIs;
+      if (currentFocus === "customer") {
+        filtered = filtered.filter(p => isCustomerRow(p.category));
+      } else if (currentFocus === "competitor") {
+        filtered = filtered.filter(p => isCompetitorRow(p.category));
+      } // "all" = ทั้งหมด
+
+      // filter ตามระยะ
+      const inRange = filtered.filter(p => p.distKm <= radiusKm);
+
+      // วาด marker
+      inRange.forEach(p => {
+        // สีตามประเภท
+        let fillColor = "#3b82f6"; // น้ำเงิน=ทั่วไป/ลูกค้าอื่น
+        if (isCompetitorRow(p.category)) fillColor = "#ef4444"; // แดง = คู่แข่งรีไซเคิล
+        else if (isCustomerRow(p.category)) fillColor = "#10b981"; // เขียว = ลูกค้าหลัก
+
+        const m = L.circleMarker([p.lat,p.lng], {
+          radius: 6,
+          color: "#fff",
+          weight: 1.5,
+          fillColor,
+          fillOpacity: 0.9
+        }).bindPopup(popupHTML(p));
+        m.addTo(poiLayer);
+      });
+
+      // อัพเดทวงกลมรัศมี
+      if (radiusCircle) {
+        radiusCircle.setRadius(radiusKm * 1000);
+      }
+
+      // อัพเดท panel ซ้าย
+      updateStats(inRange, radiusKm);
+      renderSideListAndStrategy(inRange, radiusKm);
+    }
+
+    // -------------------------------------------------
+    // initMap
+    // -------------------------------------------------
+    function initMap() {
+      baseStreet = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+      });
+
+      baseSat = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          maxZoom: 19,
+          attribution: "Tiles © Esri"
+        }
+      );
+
+      map = L.map("map", {
+        center: [HUB.lat, HUB.lng],
+        zoom: 11,
+        layers: [baseStreet]
+      });
+
+      // marker HUB
+      hubLayer = L.layerGroup();
+      const hubMarker = L.circleMarker([HUB.lat, HUB.lng], {
+        radius: 10,
+        color: "#fb923c",
+        fillColor: "#f97316",
+        fillOpacity: 0.9,
+        weight: 2
+      }).bindPopup(`
+        <div class="popup-title">★ ${HUB.name}</div>
+        <div class="popup-desc">
+          <div><strong>ที่อยู่ศูนย์:</strong> ${HUB.address}</div>
+          <div><strong>พิกัด:</strong> ${HUB.lat}, ${HUB.lng}</div>
+        </div>
+      `);
+      hubMarker.addTo(hubLayer);
+      hubLayer.addTo(map);
+
+      // radiusCircle
+      radiusCircle = L.circle([HUB.lat, HUB.lng], {
+        radius: 5000, // 5 กม. เริ่มต้น
+        color: "#ef4444",
+        weight: 1,
+        fillColor: "#ef4444",
+        fillOpacity: 0.08
+      }).addTo(map);
+
+      // poiLayer
+      poiLayer = L.layerGroup().addTo(map);
+
+      // layer control
+      const baseMaps = {
+        "ถนน (OSM)": baseStreet,
+        "ดาวเทียม (Esri)": baseSat
+      };
+      const overlayMaps = {
+        "ฐานของเรา": hubLayer,
+        "พื้นที่ปฏิบัติการ": radiusCircle,
+        "จุดเป้าหมาย": poiLayer
+      };
+      L.control.layers(baseMaps, overlayMaps, {collapsed:false}).addTo(map);
+
+      // fit view
+      const bounds = L.latLngBounds([
+        [HUB.lat, HUB.lng]
+      ]);
+      map.fitBounds(bounds.pad(0.3));
+    }
+
+    // -------------------------------------------------
+    // main start
+    // -------------------------------------------------
+    function initApp() {
+      initMap();
+
+      // โหลด factories.csv
+      fetch("data/factories.csv", { cache:"no-store" })
+        .then(r => r.text())
+        .then(text => {
+          const raw = parseFactoriesCSV(text);
+
+          // คำนวณระยะจาก HUB ให้ทุกจุด
+          allPOIs = raw.map(p => {
+            const d = haversineKm(HUB.lat, HUB.lng, p.lat, p.lng);
+            return {
+              ...p,
+              distKm: d
+            };
+          });
+
+          // render เริ่มต้น
+          const initRadius = parseFloat(document.getElementById("radiusInput").value);
+          redrawPOILayer(initRadius);
+        })
+        .catch(err => {
+          console.error("โหลด factories.csv ไม่ได้", err);
+          alert("โหลดข้อมูลโลจิสติกส์ไม่สำเร็จ");
+        });
+
+      // listener radius slider
+      const rInput = document.getElementById("radiusInput");
+      const rVal   = document.getElementById("radiusValue");
+      rInput.addEventListener("input", () => {
+        const km = parseFloat(rInput.value);
+        rVal.textContent = km;
+        redrawPOILayer(km);
+      });
+
+      // listener radio focus
+      document.querySelectorAll('input[name="focus"]').forEach(r => {
+        r.addEventListener("change", (e)=>{
+          currentFocus = e.target.value;
+          const km = parseFloat(document.getElementById("radiusInput").value);
+          redrawPOILayer(km);
+        });
+      });
+    }
+
+    // run
+    initApp();
+  </script>
+</body>
+</html>
