@@ -1,9 +1,11 @@
+<!DOCTYPE html>
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>แผนที่โรงงาน & ลานกระทิงแดง - สมุทรสาคร</title>
 
-  <!-- Leaflet CSS จาก CDN (เอาไว้ให้แผนที่แสดงผลและ control สวยงาม) -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -11,7 +13,7 @@
     crossorigin=""
   />
 
-  <!-- Leaflet JS จาก CDN (ตัวแผนที่หลัก) -->
+  <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -19,11 +21,9 @@
   ></script>
 
   <!-- Leaflet.heat (ปลั๊กอิน Heatmap) -->
-  <script
-    src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"
-  ></script>
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
-  <!-- พื้นหลัง / UI / layout -->
+  <!-- Styling หน้าตา/เลย์เอาต์ -->
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -46,6 +46,23 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+    }
+
+    header .title-block {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.4;
+    }
+
+    header .title-block .title {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    header .title-block .subtitle {
+      font-size: 12px;
+      color: #94a3b8;
     }
 
     header nav a {
@@ -143,6 +160,7 @@
       border-top:1px solid #334155;
     }
 
+    /* popup dark theme */
     .leaflet-popup-content-wrapper {
       background:#1e293b;
       color:#f8fafc;
@@ -167,6 +185,7 @@
       line-height:1.4;
     }
 
+    /* layer control theme */
     .leaflet-control-layers {
       background:#1e293b !important;
       border:1px solid #334155 !important;
@@ -188,5 +207,255 @@
       gap:6px;
       margin-bottom:4px;
     }
+
+    /* custom marker badge */
+    .badge-marker {
+      background:#ef4444;
+      color:#fff;
+      border-radius:999px;
+      border:2px solid #fff;
+      padding:4px 8px;
+      font-size:11px;
+      font-weight:600;
+      box-shadow:0 12px 24px rgb(0 0 0 / .6);
+      white-space:nowrap;
+    }
+
+    .badge-factory-recycle {
+      background:#22c55e;
+    }
+    .badge-factory-cold {
+      background:#0ea5e9;
+    }
+    .badge-factory-food {
+      background:#facc15;
+      color:#000;
+      border-color:#000;
+    }
+    .badge-factory-other {
+      background:#a855f7;
+    }
   </style>
 </head>
+
+<body>
+  <!-- ส่วนหัวเว็บ -->
+  <header>
+    <div class="title-block">
+      <div class="title">วิเคราะห์พื้นที่ สมุทรสาคร</div>
+      <div class="subtitle">ลานกระทิงแดงใหม่ & กลุ่มโรงงานรอบพื้นที่ (Heatmap อุตสาหกรรม)</div>
+    </div>
+    <nav>
+      <a href="map.html">แผนที่</a>
+      <a href="demographic.html">ประชากร</a>
+      <a href="competition.html">การแข่งขัน</a>
+    </nav>
+  </header>
+
+  <!-- ตัวแผนที่ -->
+  <main id="map-wrapper">
+    <div id="map"></div>
+
+    <!-- กล่อง info มุมซ้ายบน -->
+    <section class="info-panel">
+      <h2>
+        <span>📍</span>
+        <span>ลานกระทิงแดง (จุดตั้งใหม่)</span>
+      </h2>
+      <div style="font-size:12px;line-height:1.5;color:#94a3b8;">
+        ถนนสายใยรัก<br/>
+        พิกัด: 13.565126, 100.279895<br/>
+        จังหวัดสมุทรสาคร<br/><br/>
+        การวิเคราะห์:
+        <ul style="margin:4px 0 0 16px;padding:0;">
+          <li>ศูนย์กลางกลุ่มโรงงานอาหารทะเล / ห้องเย็น</li>
+          <li>ล้อมรอบด้วยโรงงานรีไซเคิล / เคมี / โลจิสติกส์</li>
+          <li>มีแรงงานแฝงกลางวันเข้ามา ~30K คน (ปี 2567)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- กล่อง legend มุมซ้ายล่าง -->
+    <section class="legend-panel">
+      <div class="legend-row">
+        <div class="legend-dot" style="background:#ef4444;border-color:#fff;">RD</div>
+        <div>ลานกระทิงแดง</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot badge-factory-recycle" style="border-color:#fff;">♻</div>
+        <div>รีไซเคิล / จัดการของเสีย</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot badge-factory-cold" style="border-color:#fff;">❄</div>
+        <div>ห้องเย็น / สัตว์น้ำ</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot badge-factory-food" style="border-color:#000;">🍤</div>
+        <div>อาหาร / เครื่องดื่ม</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot badge-factory-other" style="border-color:#fff;">⚙</div>
+        <div>อื่นๆ / ชิ้นส่วน / เคมี</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:linear-gradient(to right,#3b82f6,#ef4444);border-color:#fff;">🔥</div>
+        <div>Heatmap ความหนาแน่นอุตสาหกรรม</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ฟุตเตอร์ -->
+  <footer>
+    Spatial Clustering: K-means • Classification: Geometrical Interval • ข้อมูลปี 2567
+  </footer>
+
+  <!-- สคริปต์แผนที่ -->
+  <script>
+    // 1) ตั้งค่าพิกัดเริ่มต้น (ย่านสมุทรสาคร)
+    const siteLat = 13.565126;
+    const siteLng = 100.279895;
+    const initialZoom = 12;
+
+    const map = L.map("map", {
+      center: [siteLat, siteLng],
+      zoom: initialZoom,
+      preferCanvas: true,
+    });
+
+    // 2) Base layers
+    const streetLayer = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 20,
+        attribution: '&copy; OpenStreetMap contributors'
+      }
+    );
+
+    // ดาวเทียม (ใช้ Esri WorldImagery)
+    const satelliteLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 20,
+        attribution:
+          "Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics"
+      }
+    );
+
+    // ถนนโปร่งใส (สำหรับ Hybrid)
+    const labelsLayer = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 20,
+        opacity: 0.35,
+        attribution: '&copy; OpenStreetMap contributors'
+      }
+    );
+
+    // ผสม ดาวเทียม + ถนนจางๆ
+    const hybridGroup = L.layerGroup([satelliteLayer, labelsLayer]);
+
+    // ใส่ชั้นเริ่มต้น
+    streetLayer.addTo(map);
+
+
+    // 3) Custom Marker Icon แบบ badge สวยๆ (HTML div)
+    function makeBadgeIcon(htmlContent, bgClass) {
+      return L.divIcon({
+        className: "",
+        html: `<div class="badge-marker ${bgClass}">${htmlContent}</div>`,
+        iconSize: [10, 10],
+        iconAnchor: [10, 10],
+      });
+    }
+
+    // 4) ข้อมูล "โรงงาน" ตัวอย่าง (ย่อมาจาก list ใหญ่ของคุณ)
+    //    คุณสามารถเพิ่มจุดต่อเองได้เรื่อย ๆ
+    const factories = [
+      {
+        type: "recycle",
+        name: "บริษัท ฮุยเนง หงเชง อินดัสทรี จำกัด",
+        desc: "คัดแยกวัสดุที่ไม่ใช้แล้วฯ (รีไซเคิล)",
+        lat: 13.525662,
+        lng: 100.226612,
+      },
+      {
+        type: "recycle",
+        name: "บริษัท วิธ บีเอ็นไอ จำกัด",
+        desc: "คัดแยกขยะชุมชน → ปุ๋ย/เม็ดพลาสติก",
+        lat: 13.5125726,
+        lng: 100.2957658,
+      },
+      {
+        type: "cold",
+        name: "บริษัท ขายดี ซีฟู้ดส์ จำกัด",
+        desc: "ห้องเย็น/ชำแหละสัตว์น้ำ",
+        lat: 13.5234108,
+        lng: 100.2799553,
+      },
+      {
+        type: "cold",
+        name: "บริษัท ศิริคุณ ซีฟู้ดส์ จำกัด",
+        desc: "ห้องเย็น",
+        lat: 13.52381,
+        lng: 100.2966341,
+      },
+      {
+        type: "cold",
+        name: "บริษัท ว่านฟิชเชอรี่ส์ จำกัด",
+        desc: "อาหารทะเลแช่แข็ง",
+        lat: 13.5354972,
+        lng: 100.2577222,
+      },
+      {
+        type: "food",
+        name: "บริษัท ซีพีเอฟ ฟู้ด แอนด์ เบฟเวอร์เรจ จำกัด",
+        desc: "อาหารจากผัก/พืช, บรรจุภัณฑ์ปิดสนิท",
+        lat: 13.512959,
+        lng: 100.158482,
+      },
+      {
+        type: "food",
+        name: "บริษัท เวลล์-โกรว์ จำกัด",
+        desc: "เครื่องปรุงรส / วัตถุดิบอาหาร",
+        lat: 13.5733863,
+        lng: 100.3596824,
+      },
+      {
+        type: "food",
+        name: "บริษัท พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด",
+        desc: "แปรรูปสัตว์น้ำ แช่แข็ง",
+        lat: 13.5633684,
+        lng: 100.2471886,
+      },
+      {
+        type: "other",
+        name: "บริษัท ไดเทค (ประเทศไทย) จำกัด",
+        desc: "ชิ้นส่วนพลาสติกเครื่องใช้ไฟฟ้า/ยานยนต์",
+        lat: 13.55588333,
+        lng: 100.3742667,
+      },
+      {
+        type: "other",
+        name: "บริษัท พี.เอ.ที.อินเตอร์เทรด จำกัด",
+        desc: "ชิ้นส่วนโลหะ รางสายไฟ ตู้สวิทช์บอร์ด",
+        lat: 13.5652123,
+        lng: 100.3738011,
+      },
+      {
+        type: "other",
+        name: "บริษัท ตาดีเทคโนโลยี (998) จำกัด",
+        desc: "โคมไฟ LED / อุปกรณ์ไฟฟ้า",
+        lat: 13.5675743,
+        lng: 100.3610691,
+      },
+      {
+        type: "other",
+        name: "บริษัท อัลตามาร์ เซอร์วิส เทค จำกัด",
+        desc: "ตัด/เชื่อมชิ้นส่วนเหล็ก (ชิ้นส่วนเรือ)",
+        lat: 13.5639088,
+        lng: 100.3567337,
+      },
+      {
+        type: "other",
+        name: "บริษัท ไทย คอมพิวเตอร์ แมนูแฟคเตอร์ริ่ง จำกัด",
+        desc:
