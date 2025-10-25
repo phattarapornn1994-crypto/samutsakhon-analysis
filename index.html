@@ -3,437 +3,607 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>สมุทรสาคร Spatial Intelligence - หน้าหลัก</title>
+  <title>ภาพรวมโครงการรีไซเคิล - สมุทรสาคร</title>
 
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100vh;
+    :root {
+      --bg-page: #ffffff;
+      --bg-alt: #f8fafc;
+      --border-card: #e2e8f0;
+      --text-main: #0f172a;
+      --text-dim: #475569;
+      --radius-lg: 16px;
+      --radius-md: 10px;
     }
 
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans Thai", sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* ---------- HEADER / NAV TOP ---------- */
     header {
-      background: #1e293b;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-card);
       padding: 12px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 14px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
+      row-gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 10px;
+      line-height: 1.2;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    nav a.active {
+      color: var(--text-main);
+      border: 1px solid var(--border-card);
+      background: var(--bg-alt);
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      background: var(--bg-alt);
+      color: var(--text-main);
+      border: 1px solid var(--border-card);
+    }
+
+    .nav-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    /* ---------- PAGE WRAPPER ---------- */
+    main {
+      max-width: 1280px;
+      width: 100%;
+      margin: 24px auto 48px;
+      padding: 0 16px 64px;
+    }
+
+    .page-headline {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.3;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
       gap: 12px;
     }
-    header .brand {
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    header nav a {
-      color: #94a3b8;
-      margin-left: 14px;
-      text-decoration: none;
+
+    .page-desc {
       font-size: 13px;
-    }
-    header nav a:hover {
-      color: #fff;
-    }
-    header nav a.active {
-      color: #38bdf8;
-      font-weight: 600;
-    }
-
-    main {
-      padding: 24px 16px 64px;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-
-    /* hero card */
-    .hero-card {
-      background: radial-gradient(circle at 20% 20%, rgba(56,189,248,.12) 0%, rgba(15,23,42,0) 60%), #1e293b;
-      border: 1px solid #334155;
-      border-radius: 20px;
-      padding: 24px 24px 20px;
-      box-shadow: 0 30px 80px rgb(0 0 0 / .8);
-    }
-    .hero-topline {
-      font-size: 12px;
-      color: #38bdf8;
-      font-weight: 500;
-      letter-spacing: .03em;
-      margin-bottom: 6px;
-    }
-    .hero-headline {
-      font-size: clamp(16px, 1vw, 18px);
-      font-weight: 600;
-      color: #fff;
+      color: var(--text-dim);
       line-height: 1.5;
-      margin-bottom: 12px;
-    }
-    .hero-desc {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.6;
       max-width: 900px;
-      margin-bottom: 16px;
+      margin-top: 4px;
     }
 
-    .hero-grid {
+    /* ---------- GRID OF SECTION CARDS ---------- */
+    .grid-sections {
+      margin-top: 24px;
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(min(250px,100%),1fr));
-      gap: 16px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(min(360px,100%),1fr));
+      gap: 20px;
     }
 
-    .hero-pill {
-      background: rgba(15,23,42,.6);
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #cbd5e1;
-      box-shadow: 0 20px 60px rgb(0 0 0 /.7);
-    }
-    .hero-pill-title {
-      color:#fff;
-      font-weight:600;
-      font-size:12px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-bottom:4px;
-    }
-    .hero-chip {
-      font-size:10px;
-      line-height:1;
-      background:#38bdf8;
-      color:#0f172a;
-      font-weight:600;
-      border-radius:999px;
-      padding:3px 6px;
-    }
-
-    /* 2-col layout below hero */
-    .two-col {
-      display: grid;
-      grid-template-columns: minmax(260px, 320px) 1fr;
-      gap: 24px;
-    }
-
-    /* left column cards = quick-summary */
-    .summary-card {
-      background:#1e293b;
-      border:1px solid #334155;
-      border-radius:16px;
-      padding:16px 20px 14px;
-      box-shadow:0 24px 60px rgb(0 0 0 /.8);
-      font-size:13px;
-      color:#cbd5e1;
-      line-height:1.5;
-    }
-    .summary-card + .summary-card {
-      margin-top:16px;
-    }
-    .summary-card h3 {
-      font-size:13px;
-      font-weight:600;
-      color:#fff;
-      margin:0 0 8px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .badge-green { background:#10b981; color:#0f172a; }
-    .badge-yellow{ background:#facc15; color:#0f172a; }
-    .badge-orange{ background:#fb923c; color:#0f172a; }
-    .badge-red   { background:#ef4444; color:#fff;   }
-    .risk-chip {
-      font-size:10px;
-      font-weight:600;
-      line-height:1;
-      border-radius:999px;
-      padding:3px 6px;
-      display:inline-block;
-    }
-
-    .mini-list {
-      margin:0;
-      padding-left:18px;
-      font-size:12px;
-      line-height:1.5;
-      color:#94a3b8;
-    }
-
-    /* right column cards = deep-sections */
     .section-card {
-      background:#0f172a;
-      border:1px solid #334155;
-      border-radius:16px;
-      padding:20px 20px 16px;
-      color:#cbd5e1;
-      box-shadow:0 24px 60px rgb(0 0 0 /.8);
-    }
-    .section-card h2 {
-      font-size:14px;
-      font-weight:600;
-      color:#fff;
-      margin:0 0 8px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      line-height:1.4;
-    }
-    .section-desc {
-      font-size:13px;
-      color:#94a3b8;
-      line-height:1.6;
-      margin-bottom:16px;
-      max-width:800px;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px rgb(0 0 0 / 0.04);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .link-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      font-size:12px;
-      line-height:1.4;
-    }
-    .dash-link {
-      background:#1e293b;
-      border:1px solid #334155;
-      border-radius:10px;
-      padding:8px 10px;
-      color:#38bdf8;
-      text-decoration:none;
-      font-weight:500;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-    }
-    .dash-link span.icon {
-      width:18px;
-      height:18px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:11px;
-      font-weight:600;
-      color:#0f172a;
-      background:#38bdf8;
-      border-radius:999px;
-    }
-    .dash-link:hover {
-      background:#0f172a;
-      color:#7dd3fc;
-      border-color:#38bdf8;
+    .section-header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
     }
 
+    .section-icon-bubble {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border-card);
+      box-shadow: 0 12px 24px rgb(0 0 0 / 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .section-title-wrap {
+      flex: 1;
+    }
+
+    .section-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .section-badge {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.2;
+      border-radius: 999px;
+      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid transparent;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #065f46;
+      border-color: #86efac;
+    }
+    .badge-yellow {
+      background: #fef9c3;
+      color: #78350f;
+      border-color: #fde047;
+    }
+    .badge-orange {
+      background: #ffedd5;
+      color: #7c2d12;
+      border-color: #fdba74;
+    }
+    .badge-red {
+      background: #fee2e2;
+      color: #7f1d1d;
+      border-color: #fca5a5;
+    }
+
+    .section-short {
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-dim);
+    }
+
+    /* bullet info in each card */
+    .bullet-block {
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .bullet-block ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .bullet-block li {
+      margin-bottom: 4px;
+    }
+
+    /* footer zone in card */
+    .card-footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .note-box {
+      flex: 1;
+      min-width: 140px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--text-dim);
+    }
+
+    .goto-btn {
+      display: inline-block;
+      background: #0f172a;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.2;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid #0f172a;
+      box-shadow: 0 8px 20px rgb(0 0 0 / 0.2);
+      white-space: nowrap;
+    }
+
+    .goto-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* ---------- LOWER SUMMARY PANEL ---------- */
+    .overall-panel {
+      background: var(--bg-alt);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 32px;
+      box-shadow: 0 20px 40px rgb(0 0 0 / 0.03);
+    }
+
+    .overall-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.4;
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .overall-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(min(260px,100%),1fr));
+      gap: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .overall-block h4 {
+      margin: 0 0 4px;
+      font-size: 13px;
+      line-height: 1.4;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .overall-block p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ---------- FOOTER ---------- */
     footer {
-      color:#475569;
-      background:#0f172a;
-      font-size:12px;
-      text-align:center;
-      padding:12px 0 16px;
-      border-top:1px solid #334155;
+      border-top: 1px solid var(--border-card);
+      background: #ffffff;
+      color: var(--text-dim);
+      font-size: 12px;
+      text-align: center;
+      padding: 16px;
+      line-height: 1.4;
     }
 
-    @media(max-width:840px){
-      .two-col {
-        grid-template-columns: 1fr;
-      }
+    @media (min-width:768px){
+      .page-headline { font-size: 22px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- NAV HEADER -->
   <header>
-    <div class="brand">สมุทรสาคร Spatial Intelligence</div>
+    <div class="brand">
+      สมุทรสาคร · โครงการ Hub รีไซเคิลจังหวัด
+    </div>
     <nav>
-      <a href="index.html" class="active">หน้าแรก</a>
-      <a href="map.html">แผนที่</a>
-      <a href="competition.html">การแข่งขัน / ลูกค้า</a>
-      <a href="population.html">ประชากร</a>
-      <a href="supply.html">ประมาณการสินค้า</a>
-      <a href="risk.html">ความเสี่ยง</a>
+      <a href="index.html" class="active"><span class="nav-icon">🏠</span><span>หน้าแรก</span></a>
+      <a href="map.html"><span class="nav-icon">🗺️</span><span>แผนที่</span></a>
+      <a href="competition.html"><span class="nav-icon">⚔️</span><span>คู่แข่ง</span></a>
+      <a href="customers.html"><span class="nav-icon">🤝</span><span>ลูกค้า</span></a>
+      <a href="population.html"><span class="nav-icon">👥</span><span>ประชากร</span></a>
+      <a href="forecast.html"><span class="nav-icon">📦</span><span>ประมาณการสินค้า</span></a>
+      <a href="risk.html"><span class="nav-icon">🚦</span><span>ความเสี่ยง</span></a>
     </nav>
   </header>
 
   <main>
-    <!-- HERO: บอกว่าเครื่องมือนี้คืออะไร ใช้ตัดสินใจอะไร -->
-    <section class="hero-card">
-      <div class="hero-topline">ภาพรวมโอกาสธุรกิจรีไซเคิล · สมุทรสาคร</div>
-      <div class="hero-headline">
-        แดชบอร์ดเชิงพื้นที่สำหรับตัดสินใจตั้งจุดรับซื้อ/คัดแยกวัสดุรีไซเคิล
-        และการกระจายสินค้าเชิงอุตสาหกรรม
-      </div>
-      <div class="hero-desc">
-        ระบบนี้รวมข้อมูลโรงงานคู่แข่ง, ลูกค้าอุตสาหกรรม (เช่น กระดาษ / เม็ดพลาสติก /
-        สุรา / บรรจุภัณฑ์), ความหนาแน่นประชากร, ปริมาณวัตถุดิบรีไซเคิลที่เกิดขึ้นในจังหวัด,
-        ระยะทางโลจิสติกส์ และความเสี่ยงด้านชุมชน / สิ่งแวดล้อม / กฎระเบียบ
-        — เพื่อใช้คัดเลือก “จุดตั้งลาน/ฐานปฏิบัติการ” ที่เหมาะสมเชิงธุรกิจ
-      </div>
+    <!-- PAGE INTRO -->
+    <div class="page-headline">
+      ภาพรวมการตั้ง “ศูนย์รับซื้อ–คัดแยก–อัดก้อน–กระจายวัสดุรีไซเคิล” ในจังหวัดสมุทรสาคร
+    </div>
+    <div class="page-desc">
+      แนวคิดคือสร้าง Hub กลาง: รับวัสดุ (แก้ว, PET, HDPE, กระดาษลูกฟูก, กระป๋องอลูมิเนียม) จากจุดรับซื้อในจังหวัด →
+      คัดแยก/อัดก้อน → ส่งต่อโรงงานปลายน้ำ. ด้านล่างคือสรุป 6 มุมวิเคราะห์หลักในโปรเจกต์นี้
+      (กดปุ่ม “ดูรายละเอียด” เพื่อเจาะหน้าที่เกี่ยวข้อง).
+    </div>
 
-      <div class="hero-grid">
-        <div class="hero-pill">
-          <div class="hero-pill-title">
-            <span class="hero-chip">1</span> ทำเล / พื้นที่ตั้ง
-          </div>
-          <div>ดูแผนที่หมุดโรงงาน + Heatmap ความหนาแน่น + ขอบเขตอำเภอ/ชุมชน
-            เพื่อเห็น Demand รอบพื้นที่เป้าหมาย
+    <!-- GRID OF SIX MAIN SECTIONS -->
+    <section class="grid-sections">
+
+      <!-- 1. MAP -->
+      <article class="section-card">
+        <div class="section-header">
+          <div class="section-icon-bubble">🗺️</div>
+          <div class="section-title-wrap">
+            <div class="section-title-row">
+              <div class="section-title">แผนที่พื้นที่ (map.html)</div>
+              <div class="section-badge badge-green">พร้อมใช้งาน</div>
+            </div>
+            <div class="section-short">
+              จุดตั้ง Hub + หมุดโรงงานทั้งหมด + Heatmap ความหนาแน่นอุตสาหกรรม
+            </div>
           </div>
         </div>
 
-        <div class="hero-pill">
-          <div class="hero-pill-title">
-            <span class="hero-chip">2</span> คู่แข่ง & ลูกค้า
+        <div class="bullet-block">
+          <ul>
+            <li>เห็นตำแหน่ง “ลานกระทิงแดง” (จุดศูนย์กลางเรา)</li>
+            <li>โรงงานรีไซเคิล = สีแดง / โรงงานอื่น = สีน้ำเงิน</li>
+            <li>เปิด/ปิดชั้นข้อมูล: ถนน, ดาวเทียม, Heatmap</li>
+          </ul>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="note-box">
+            ใช้ดูว่าโซนไหนเป็นฮอตสปอตซัพพลาย และใกล้กับจุดเรามากที่สุด
           </div>
-          <div>วัดรัศมีรอบจุดเป้าหมาย, ดูรายชื่อคู่แข่งในระยะทางสั้น,
-            และดูว่าเราขาย/รับของจากใครใกล้สุด (ลูกค้าอุตสาหกรรม)
+          <a class="goto-btn" href="map.html">ดูรายละเอียด</a>
+        </div>
+      </article>
+
+      <!-- 2. COMPETITION -->
+      <article class="section-card">
+        <div class="section-header">
+          <div class="section-icon-bubble">⚔️</div>
+          <div class="section-title-wrap">
+            <div class="section-title-row">
+              <div class="section-title">คู่แข่งรอบไซต์ (competition.html)</div>
+              <div class="section-badge badge-orange">สำคัญ</div>
+            </div>
+            <div class="section-short">
+              วัดรัศมีรอบจุดเรา → บอกว่ามีคู่แข่งรีไซเคิลกี่รายในพื้นที่ใกล้เคียง
+            </div>
           </div>
         </div>
 
-        <div class="hero-pill">
-          <div class="hero-pill-title">
-            <span class="hero-chip">3</span> ปริมาณของรีไซเคิล
+        <div class="bullet-block">
+          <ul>
+            <li>เลือกระยะเป็นวงกลม (เช่น 5 กม.) แล้วโชว์รายชื่อคู่แข่ง</li>
+            <li>คู่แข่ง = จุดรับซื้อ/รีไซเคิล ที่แย่งวัตถุดิบจากเรา</li>
+            <li>ใช้ดู “ศึกแย่งของเข้า” จริงบริเวณรอบ Hub</li>
+          </ul>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="note-box">
+            คู่แข่งหนาแน่น = เราต้องจ่ายแพงขึ้นเพื่อแย่งของ
           </div>
-          <div>คำนวณศักยภาพ “ของคืนได้” (กระดาษ / พลาสติก / กระป๋อง ฯลฯ)
-            จากจำนวนประชากรและโครงสร้างอุตสาหกรรมในพื้นที่
+          <a class="goto-btn" href="competition.html">ดูรายละเอียด</a>
+        </div>
+      </article>
+
+      <!-- 3. CUSTOMERS -->
+      <article class="section-card">
+        <div class="section-header">
+          <div class="section-icon-bubble">🤝</div>
+          <div class="section-title-wrap">
+            <div class="section-title-row">
+              <div class="section-title">ลูกค้าปลายน้ำ (customers.html)</div>
+              <div class="section-badge badge-green">Demand</div>
+            </div>
+            <div class="section-short">
+              ใครซื้อของเราไปต่อ? (โรงงานสุรา, หลอมพลาสติก, กระดาษลูกฟูก ฯลฯ)
+            </div>
           </div>
         </div>
 
-        <div class="hero-pill">
-          <div class="hero-pill-title">
-            <span class="hero-chip">4</span> ความเสี่ยงพื้นที่
+        <div class="bullet-block">
+          <ul>
+            <li>แสดงโรงงานปลายทางทีละหมวด เช่น โรงงานกระดาษ / โรงงานพลาสติก / โรงงานสุรา</li>
+            <li>กดเลือกกลุ่มลูกค้า → วัดระยะทางขนส่งจากไซต์เรา</li>
+            <li>วิเคราะห์ “จุดขายของเรา” เทียบคู่แข่ง เช่น ใกล้กว่า ขนส่งง่ายกว่า</li>
+          </ul>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="note-box">
+            ถ้ายิ่งใกล้ลูกค้า = ต้นทุนโลจิสติกส์ต่ำ = เราปิดดีลง่ายขึ้น
           </div>
-          <div>ประเมินความเสี่ยงชุมชนรอบไซต์ เช่น ความหนาแน่นชุมชน,
-            ความอ่อนไหวด้านกลิ่น/เสียง, ความใกล้แหล่งน้ำ, ภาระการขนส่งรถบรรทุก
+          <a class="goto-btn" href="customers.html">ดูรายละเอียด</a>
+        </div>
+      </article>
+
+      <!-- 4. POPULATION -->
+      <article class="section-card">
+        <div class="section-header">
+          <div class="section-icon-bubble">👥</div>
+          <div class="section-title-wrap">
+            <div class="section-title-row">
+              <div class="section-title">ประชากร / ชุมชน (population.html)</div>
+              <div class="section-badge badge-yellow">ชุมชน</div>
+            </div>
+            <div class="section-short">
+              ระบุตำบล / อำเภอ / จำนวนประชากร / พิกัดชุมชนหลัก
+            </div>
           </div>
         </div>
-      </div>
+
+        <div class="bullet-block">
+          <ul>
+            <li>ไฮไลท์เขตชุมชนหนาแน่น (เสียงร้องเรียน, ความอ่อนไหวด้านกลิ่น/เสียง)</li>
+            <li>ใช้ดูว่าเราควรหลีกเลี่ยงกิจกรรมดัง/ฝุ่นในจุดไหน</li>
+            <li>ช่วยดีไซน์วิธีสื่อสารชุมชนล่วงหน้า</li>
+          </ul>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="note-box">
+            “อยู่กลางชุมชนหนาแน่น” = เสี่ยงดราม่าสังคมสูง
+          </div>
+          <a class="goto-btn" href="population.html">ดูรายละเอียด</a>
+        </div>
+      </article>
+
+      <!-- 5. FORECAST -->
+      <article class="section-card">
+        <div class="section-header">
+          <div class="section-icon-bubble">📦</div>
+          <div class="section-title-wrap">
+            <div class="section-title-row">
+              <div class="section-title">ประมาณการสินค้า (forecast.html)</div>
+              <div class="section-badge badge-green">ปริมาณเข้า</div>
+            </div>
+            <div class="section-short">
+              ประมาณของรีไซเคิลทั้งจังหวัด (PET, HDPE, กระดาษ, อะลูมิเนียม, ขวดแก้ว)
+            </div>
+          </div>
+        </div>
+
+        <div class="bullet-block">
+          <ul>
+            <li>คำนวณจาก “ขยะรีไซเคิลต่อหัวประชากร/ปี” × จำนวนคน</li>
+            <li>บอกว่าในจังหวัดมีของให้เรากี่ตัน/ปี (หรือกี่ใบ/ปีในกรณีขวดแก้วดี)</li>
+            <li>ใช้บอกนักลงทุนว่า supply พอเลี้ยง Hub หรือไม่</li>
+          </ul>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="note-box">
+            ถ้า supply ทั้งจังหวัดใหญ่พอ → เรามีโอกาสเป็นศูนย์กลางซื้อ
+          </div>
+          <a class="goto-btn" href="forecast.html">ดูรายละเอียด</a>
+        </div>
+      </article>
+
+      <!-- 6. RISK -->
+      <article class="section-card">
+        <div class="section-header">
+          <div class="section-icon-bubble">🚦</div>
+          <div class="section-title-wrap">
+            <div class="section-title-row">
+              <div class="section-title">ความเสี่ยงพื้นที่ (risk.html)</div>
+              <div class="section-badge badge-red">ต้องจับตา</div>
+            </div>
+            <div class="section-short">
+              ความเสี่ยงเชิงแข่งขัน / ความเสี่ยงผลกระทบพื้นที่ / น้ำท่วม / การเข้าถึงโลจิสติกส์
+            </div>
+          </div>
+        </div>
+
+        <div class="bullet-block">
+          <ul>
+            <li>คู่แข่งรอบไซต์ในรัศมี (แย่งซื้อของเรา)</li>
+            <li>ความใกล้ชุมชนหนาแน่น → โอกาสร้องเรียนเรื่องเสียง/รถบรรทุก</li>
+            <li>ความเสี่ยงน้ำท่วม / น้ำเค็มหนุน / ระดับพื้นที่ลุ่มริมแม่น้ำ</li>
+          </ul>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="note-box">
+            มีไฟจราจร 🟢🟡🟠🔴 ให้ผู้บริหารเห็นความเสี่ยงรวมแบบเร็ว
+          </div>
+          <a class="goto-btn" href="risk.html">ดูรายละเอียด</a>
+        </div>
+      </article>
+
     </section>
 
-    <!-- CONTENT ZONE: ซ้าย = bullet exec summary เร็ว, ขวา = ลิงก์เจาะ -->
-    <section class="two-col">
+    <!-- OVERALL PANEL -->
+    <section class="overall-panel">
+      <div class="overall-title">
+        บทสรุปภาพใหญ่
+      </div>
 
-      <!-- ซ้าย: Executive bullets -->
-      <aside>
-        <div class="summary-card">
-          <h3>
-            จุดแข็งเชิงธุรกิจ
-            <span class="risk-chip badge-green">โอกาส</span>
-          </h3>
-          <ul class="mini-list">
-            <li>ฐานลูกค้าอุตสาหกรรมหนาแน่น (กระดาษ / เม็ดพลาสติก / บรรจุภัณฑ์)</li>
-            <li>มีแหล่งคู่แข่งรับซื้อของเก่าจำนวนมาก → ของไหลเวียนจริง</li>
-            <li>ทำเลติดกรุงเทพฯ ขนส่งง่าย / วิ่งรถสั้น / กลับรถได้เร็ว</li>
-            <li>ปริมาณประชากรและนิคมรอบพื้นที่ = แหล่งของรีไซเคิลต่อเนื่อง</li>
-          </ul>
+      <div class="overall-grid">
+        <div class="overall-block">
+          <h4>ศูนย์กลาง (Hub)</h4>
+          <p>
+            ถ้าคุม Hub ได้ = คุมเส้นทางวัสดุรีไซเคิลทั้งจังหวัด
+            ตั้งราคาได้ มีอำนาจต่อรองกับโรงงานปลายน้ำ
+            และป้องกันคู่แข่งกินของก่อนเรา
+          </p>
         </div>
 
-        <div class="summary-card">
-          <h3>
-            ความท้าทาย
-            <span class="risk-chip badge-orange">เฝ้าระวัง</span>
-          </h3>
-          <ul class="mini-list">
-            <li>การแข่งขันสูงมากในระยะใกล้ (จุดรับซื้อเดิม / เจ้าเก่าในพื้นที่)</li>
-            <li>ความอ่อนไหวชุมชน: กลิ่น, เสียง, รถบรรทุก</li>
-            <li>อาจมีข้อกำกับด้านสิ่งแวดล้อม / น้ำเสีย / ขยะอุตสาหกรรม</li>
-          </ul>
+        <div class="overall-block">
+          <h4>ต้นทุนโลจิสติกส์</h4>
+          <p>
+            โลเคชันเราต้องให้รถใหญ่เข้า-ออกง่าย
+            บีบอัดลงก้อน แล้วยิงออกทีละ ~30 ตัน/เที่ยว
+            ลดรอบวิ่ง = ต้นทุนต่อกิโลต่ำ
+          </p>
         </div>
 
-        <div class="summary-card">
-          <h3>
-            สิ่งที่ต้องเลือก
-            <span class="risk-chip badge-yellow">ต้องตัดสินใจ</span>
-          </h3>
-          <ul class="mini-list">
-            <li>เราจะโฟกัสฐานลูกค้ากลุ่มไหนเป็นหลัก? (กระดาษ / พลาสติก / สุรา ฯลฯ)</li>
-            <li>จุดตั้งหลักควรอยู่ใกล้ซัพพลาย (ของเข้า) หรือใกล้ลูกค้า (ของออก)</li>
-            <li>รับความเสี่ยงด้านชุมชนได้ระดับไหน</li>
-          </ul>
+        <div class="overall-block">
+          <h4>แรงกดดันชุมชน</h4>
+          <p>
+            ถ้าอยู่กลางเขตชุมชนหนาแน่นหรือแนวน้ำท่วม
+            ความเสี่ยงโดนร้องเรียนจะพุ่งเร็วมาก
+            ต้องสื่อสาร + ออกแบบการทำงานเสียง/กลิ่นต่ำ
+          </p>
         </div>
 
-        <div class="summary-card">
-          <h3>
-            สถานะความเสี่ยงพื้นที่รวม
-            <span class="risk-chip badge-red">ตัวอย่าง: ปานกลาง-สูง</span>
-          </h3>
-          <div style="font-size:12px; color:#94a3b8;">
-            ดูคะแนนจริงแบบ Live ได้ที่หน้า “ความเสี่ยง”<br/>
-            ระบบจะให้สี: เขียว 🟢 ปลอดภัย / เหลือง 🟡 เฝ้าระวัง / ส้ม 🟠 อ่อนไหว /
-            แดง 🔴 เสี่ยงสูง
-          </div>
+        <div class="overall-block">
+          <h4>สเกลธุรกิจ</h4>
+          <p>
+            เป้าคือเป็น Hub จังหวัด (ไม่ใช่ร้านเล็ก)
+            รับวัสดุหลายชนิด, คัดแยก, อัดก้อน,
+            ส่งต่อโรงงานรายใหญ่ได้ทันที
+          </p>
         </div>
-      </aside>
-
-      <!-- ขวา: ลิงก์ไปแต่ละหน้าที่เจาะลึก -->
-      <section class="section-card">
-        <h2>ขั้นตอนการวิเคราะห์</h2>
-        <div class="section-desc">
-          กดเข้าแต่ละโมดูลด้านล่างเพื่อเจาะลึก (ข้อมูลเป็นแบบ Live จาก CSV / จุดพิกัด)
-        </div>
-
-        <div class="link-row">
-          <a class="dash-link" href="map.html">
-            <span class="icon">🗺</span>
-            แผนที่ & Heatmap
-            <div style="font-weight:400;color:#94a3b8;">ดูตำแหน่งจริง</div>
-          </a>
-
-          <a class="dash-link" href="competition.html">
-            <span class="icon">📍</span>
-            การแข่งขัน / ลูกค้า
-            <div style="font-weight:400;color:#94a3b8;">รัศมี, คู่แข่ง, ลูกค้า</div>
-          </a>
-
-          <a class="dash-link" href="population.html">
-            <span class="icon">👥</span>
-            ประชากร
-            <div style="font-weight:400;color:#94a3b8;">ชุมชน & Demand</div>
-          </a>
-
-          <a class="dash-link" href="supply.html">
-            <span class="icon">♻</span>
-            ประมาณการสินค้า
-            <div style="font-weight:400;color:#94a3b8;">ปริมาณของคืนได้</div>
-          </a>
-
-          <a class="dash-link" href="risk.html">
-            <span class="icon">⚠</span>
-            ความเสี่ยง
-            <div style="font-weight:400;color:#94a3b8;">ผลกระทบพื้นที่</div>
-          </a>
-        </div>
-
-        <h2 style="margin-top:24px;">สรุปวิธีใช้</h2>
-        <div class="section-desc" style="margin-bottom:8px;">
-          1. เลือกจุดตั้ง (ลาน/ฐาน) บนแผนที่  
-          2. ดูคู่แข่งและลูกค้าในระยะจริง (กม.)  
-          3. ประเมินว่าพื้นที่นั้นมีของให้เก็บกลับได้เท่าไหร่  
-          4. ประเมินความเสี่ยงการร้องเรียน / สิ่งแวดล้อม ก่อนตัดสินใจ
-        </div>
-        <div style="font-size:12px;color:#64748b;line-height:1.6;">
-          เป้าหมาย: เลือกทำเลที่ “ของเยอะ + ลูกค้าใกล้ + แข่งพอรับได้ + เสียงร้องเรียนน้อย”
-        </div>
-      </section>
-
+      </div>
     </section>
   </main>
 
   <footer>
-    © สมุทรสาคร Spatial Intelligence · Prototype วิเคราะห์ทำเลเชิงธุรกิจ
+    © ศูนย์รีไซเคิลเชิงพื้นที่ · สมุทรสาคร · สำหรับการวิเคราะห์ก่อนลงทุน
   </footer>
 
 </body>
