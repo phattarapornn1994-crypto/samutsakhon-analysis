@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>แผนที่วิเคราะห์พื้นที่ - สมุทรสาคร</title>
+  <title>แผนที่โรงงาน & ความหนาแน่นประชากร - สมุทรสาคร</title>
 
   <!-- Leaflet CSS -->
   <link
@@ -20,151 +20,156 @@
     crossorigin=""
   ></script>
 
-  <!-- Leaflet.heat (ปลั๊กอิน Heatmap - เผื่อใช้ต่อยอด) -->
+  <!-- Leaflet.heat (ปลั๊กอิน Heatmap) -->
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
   <style>
-    /* พื้นหลังเว็บโทนเข้ม */
     body {
       font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      height: 100vh;
+      background:#0f172a;
+      color:#f8fafc;
+      margin:0;
+      padding:0;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      height:100vh;
     }
 
     header {
-      background: #1e293b;
-      padding: 12px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      background:#1e293b;
+      padding:12px 16px;
+      border-bottom:1px solid #334155;
+      font-size:14px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      z-index:1000;
     }
 
     header .title-block {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.3;
+      display:flex;
+      flex-direction:column;
+      line-height:1.3;
     }
 
     header .main-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
+      font-size:14px;
+      font-weight:600;
+      color:#fff;
     }
 
     header .sub-title {
-      font-size: 12px;
-      color: #94a3b8;
-      font-weight: 400;
+      font-size:12px;
+      color:#94a3b8;
+      font-weight:400;
     }
 
     header nav a {
-      color: #94a3b8;
-      margin-right: 12px;
-      text-decoration: none;
-      font-size: 13px;
+      color:#94a3b8;
+      margin-right:12px;
+      text-decoration:none;
+      font-size:13px;
     }
+
     header nav a:hover {
-      color: #fff;
+      color:#fff;
+    }
+
+    header nav a.active {
+      color:#fff;
+      font-weight:600;
     }
 
     #map-wrapper {
-      position: relative;
-      background: #000;
+      position:relative;
+      background:#000;
     }
 
     #map {
-      width: 100%;
-      height: 100%;
-      min-height: 400px;
-      position: absolute;
-      inset: 0;
+      width:100%;
+      height:100%;
+      min-height:400px;
+      position:absolute;
+      inset:0;
     }
 
-    /* กล่อง info มุมซ้ายบน */
+    /* กล่องข้อมูลซ้ายบน */
     .info-panel {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      z-index: 500;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(8px);
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 16px 20px;
-      max-width: 260px;
-      box-shadow: 0 20px 60px rgb(0 0 0 / .7);
-      font-size: 13px;
-      line-height: 1.5;
-      color: #cbd5e1;
+      position:absolute;
+      top:16px;
+      left:16px;
+      z-index:500;
+      background:rgba(15,23,42,0.8);
+      backdrop-filter:blur(8px);
+      border:1px solid #334155;
+      border-radius:16px;
+      padding:16px 20px;
+      max-width:260px;
+      box-shadow:0 20px 60px rgb(0 0 0 / .7);
+      font-size:13px;
+      line-height:1.5;
+      color:#cbd5e1;
     }
 
     .info-panel h2 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin:0 0 8px;
+      font-size:14px;
+      font-weight:600;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
-    /* กล่อง legend มุมล่างซ้าย */
+    /* กล่อง legend ล่างซ้าย */
     .legend-panel {
-      position: absolute;
-      bottom: 16px;
-      left: 16px;
-      z-index: 500;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 12px;
-      color: #cbd5e1;
-      line-height: 1.4;
-      box-shadow: 0 20px 60px rgb(0 0 0 / .7);
+      position:absolute;
+      bottom:16px;
+      left:16px;
+      z-index:500;
+      background:rgba(15,23,42,0.8);
+      border:1px solid #334155;
+      border-radius:12px;
+      padding:12px 16px;
+      font-size:12px;
+      color:#cbd5e1;
+      line-height:1.4;
+      box-shadow:0 20px 60px rgb(0 0 0 / .7);
+      min-width:200px;
+    }
+
+    .legend-title {
+      font-size:13px;
+      font-weight:600;
+      color:#fff;
+      margin-bottom:8px;
     }
 
     .legend-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      margin-bottom:6px;
+      line-height:1.4;
     }
 
     .legend-dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      border: 2px solid #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      box-shadow: 0 8px 16px rgb(0 0 0 / .5);
-      font-weight: 600;
-      color: #fff;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      border:2px solid #fff;
+      box-shadow:0 8px 16px rgb(0 0 0 / .5);
+      font-size:11px;
+      font-weight:600;
+      color:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    /* footer */
-    footer {
-      color:#475569;
-      background:#0f172a;
-      font-size:12px;
-      text-align:center;
-      padding:12px 0 16px;
-      border-top:1px solid #334155;
-    }
-
-    /* popup theme มืดๆ */
+    /* popup สวยขึ้นโทน dark */
     .leaflet-popup-content-wrapper {
       background:#1e293b;
       color:#f8fafc;
@@ -189,7 +194,7 @@
       line-height:1.4;
     }
 
-    /* layer control ให้เข้ม */
+    /* layer control ใหม่นิดนึง */
     .leaflet-control-layers {
       background:#1e293b !important;
       border:1px solid #334155 !important;
@@ -211,216 +216,306 @@
       gap:6px;
       margin-bottom:4px;
     }
+
+    footer {
+      color:#475569;
+      background:#0f172a;
+      font-size:12px;
+      text-align:center;
+      padding:12px 0 16px;
+      border-top:1px solid #334155;
+    }
   </style>
 </head>
-
 <body>
   <header>
     <div class="title-block">
-      <div class="main-title">สมุทรสาคร — แผนที่วิเคราะห์พื้นที่</div>
-      <div class="sub-title">ประชากร / คู่แข่งโรงงานรีไซเคิล / จุดที่น่าสนใจ</div>
+      <div class="main-title">สมุทรสาคร — แผนที่โรงงาน & ความหนาแน่นประชากร</div>
+      <div class="sub-title">
+        หมุดโรงงาน, ชั้น Heatmap ตามจำนวนประชากร, เลือกชั้นข้อมูลได้
+      </div>
     </div>
     <nav>
       <a href="index.html">หน้าแรก</a>
-      <a href="map.html" style="color:#fff;">แผนที่</a>
+      <a href="map.html" class="active">แผนที่</a>
       <a href="competition.html">การแข่งขัน</a>
       <a href="risk.html">ความเสี่ยง</a>
     </nav>
   </header>
 
-  <div id="map-wrapper">
-    <!-- กล่องอธิบาย -->
-    <div class="info-panel">
-      <h2>ข้อมูลบนแผนที่ 🗺</h2>
-      <div>
-        • วงสีฟ้า = ตำบล (ขนาดวง ≈ ประชากร)<br/>
-        • หมุดแดง = โรงงานรีไซเคิล / คู่แข่ง<br/>
-        • สลับพื้นหลัง: ถนน / ดาวเทียม<br/>
-      </div>
-    </div>
-
-    <!-- คำอธิบายสี -->
-    <div class="legend-panel">
-      <div class="legend-row">
-        <span class="legend-dot" style="background:#0ea5e9;border-color:#38bdf8;">ช</span>
-        <span>ชุมชน (ตำบล) + จำนวนประชากร</span>
-      </div>
-      <div class="legend-row">
-        <span class="legend-dot" style="background:#ef4444;border-color:#f87171;">ค</span>
-        <span>คู่แข่ง (โรงงานรีไซเคิล)</span>
-      </div>
-    </div>
-
-    <!-- ตัวแผนที่ -->
+  <section id="map-wrapper">
     <div id="map"></div>
-  </div>
+
+    <!-- กล่องข้อมูลบนซ้าย -->
+    <div class="info-panel">
+      <h2>แผนที่ข้อมูลภาคสนาม</h2>
+      <div>
+        - หมุด = โรงงาน / จุดรีไซเคิล / ลูกค้าเป้าหมาย<br/>
+        - Heatmap = โซนประชากรหนาแน่น (Demand พื้นฐาน)<br/><br/>
+        <b>Tips:</b> ใช้เครื่องมือมุมขวาบนเพื่อโชว์/ซ่อนชั้นข้อมูล เช่น Heatmap หรือหมุด
+      </div>
+    </div>
+
+    <!-- Legend ล่างซ้าย -->
+    <div class="legend-panel">
+      <div class="legend-title">คำอธิบายสัญลักษณ์</div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:#22c55e; border-color:#14532d; color:#000;">C</div>
+        <div>
+          ลูกค้าเป้าหมาย<br/>
+          (โรงงานกระดาษ / เม็ดพลาสติก / สุรา)
+        </div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:#ef4444; border-color:#450a0a; color:#fff;">R</div>
+        <div>
+          คู่แข่งรีไซเคิล / รับซื้อของเก่า
+        </div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:#94a3b8; border-color:#1e293b; color:#000;">F</div>
+        <div>
+          โรงงานอื่น ๆ
+        </div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:radial-gradient(circle at center, #ffffff 0%, #ff0000 60%, #000000 100%); border-color:#000; color:#000;"> </div>
+        <div>
+          Heatmap ความหนาแน่นประชากร<br/>
+          (สว่าง/แดง = หนาแน่น)
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer>
-    © สมุทรสาคร data demo | Leaflet + CSV | client-side only
+    © สมุทรสาคร spatial demo | client-side only
   </footer>
 
   <script>
-    // -----------------------
-    // 0) utils: parser CSV เบาๆ
-    // หมายเหตุ: ถ้าข้อมูลมีเครื่องหมายจุลภาคอยู่ในชื่อ (เช่น "บริษัท, จำกัด")
-    // จะต้องใช้ parser ที่ซับซ้อนขึ้น (split ด้วย regex / handle quotes)
-    // ตอนนี้เราสมมติว่าไม่มี comma ในช่องข้อความ (ยกเว้น lat,lng แยกคอลัมน์แล้ว)
-    // -----------------------
-    function parseCSV(text) {
-      const lines = text.trim().split("\n");
-      const headers = lines[0].split(",");
+    //---------------------------------
+    // 1) ตั้งค่าแผนที่ + base layers
+    //---------------------------------
+    const map = L.map('map', {
+      center: [13.57, 100.28], // กลางสมุทรสาครประมาณ ๆ
+      zoom: 11,
+      zoomControl: true
+    });
 
-      const rows = lines.slice(1).map(line => {
-        const cols = line.split(",");
-        const obj = {};
-        headers.forEach((h, i) => {
-          obj[h.trim()] = (cols[i] || "").trim();
-        });
-        return obj;
-      });
-
-      return rows;
-    }
-
-    // -----------------------
-    // 1) สร้างแผนที่ Leaflet
-    // -----------------------
-    const map = L.map("map").setView([13.55, 100.28], 11);
-
-    // พื้นหลังถนน OSM
+    // แผนที่ถนน
     const streetLayer = L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
         maxZoom: 20,
-        attribution: "&copy; OpenStreetMap contributors"
+        attribution: '© OpenStreetMap contributors'
       }
-    ).addTo(map);
+    ).addTo(map); // default on
 
-    // พื้นหลังดาวเทียม Esri
+    // แผนที่ดาวเทียม (ใช้ Esri WorldImagery)
     const satelliteLayer = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 20,
-        attribution: "Tiles &copy; Esri"
+        attribution: 'Tiles © Esri'
       }
     );
 
-    // กลุ่มชั้นข้อมูล
-    const subdistrictLayer = L.layerGroup().addTo(map); // วงกลมตำบล / ประชากร
-    const factoryLayer = L.layerGroup().addTo(map);     // หมุดคู่แข่ง (โรงงานรีไซเคิล)
+    //---------------------------------
+    // 2) ตัวเก็บชั้นข้อมูล overlay
+    //---------------------------------
+    const markerLayerGroup = L.layerGroup();     // หมุดโรงงาน
+    const heatLayerGroup = L.layerGroup();       // Heatmap
+    // เราจะเติม heat layer ด้านในทีหลัง
 
-    // -----------------------
-    // 2) โหลดข้อมูลตำบล/ประชากร
-    //    คาดหวัง header: district_th,subdistrict_th,subdistrict_en,population,lat,lng
-    // -----------------------
-    fetch("../data/subdistricts.csv")
-      .then(res => res.text())
-      .then(csvText => {
-        const data = parseCSV(csvText);
+    //---------------------------------
+    // 3) Helper: วาดหมุดตามประเภท
+    //---------------------------------
+    function isCustomerCategory(cat){
+      if(!cat) return false;
+      return (
+        cat.includes("โรงงานกระดาษ") ||
+        cat.includes("เม็ดพลาสติก")  ||
+        cat.includes("พลาสติก")      || // เผื่อเขียนย่อ
+        cat.includes("สุรา")          ||
+        cat.includes("เหล้า")         ||
+        cat.includes("เครื่องดื่มแอลกอฮอล์")
+      );
+    }
 
-        data.forEach(row => {
-          const lat = parseFloat(row.lat);
-          const lng = parseFloat(row.lng);
-          const pop = Number(row.population);
+    function isCompetitorCategory(cat){
+      if(!cat) return false;
+      return (
+        cat.includes("รีไซเคิล") ||
+        cat.includes("รับซื้อของเก่า") ||
+        cat.includes("ศูนย์รีไซเคิล")
+      );
+    }
 
-          if (isNaN(lat) || isNaN(lng)) return;
+    function makeFactoryMarker(lat, lng, row){
+      // สีหมุด
+      let fill = "#94a3b8"; // โรงงานทั่วไป = เทา
+      let textLetter = "F";
 
-          // popup
-          const popupHTML = `
-            <div class="popup-title">
-              ${row.subdistrict_th} (${row.subdistrict_en})
-            </div>
-            <div class="popup-desc">
-              อำเภอ: ${row.district_th}<br/>
-              ประชากร: ${pop.toLocaleString("th-TH")} คน
-            </div>
-          `;
+      if(isCustomerCategory(row.category)){
+        fill = "#22c55e"; // เขียว ลูกค้า
+        textLetter = "C";
+      } else if(isCompetitorCategory(row.category)){
+        fill = "#ef4444"; // แดง คู่แข่ง
+        textLetter = "R";
+      }
 
-          // radius เมตรบนแผนที่ (ยิ่งคนเยอะ วงยิ่งใหญ่)
-          const radiusMeters = 50 + (pop / 1000) * 5;
+      // ใช้ DivIcon เพื่อทำหมุดกลมกำหนดสีเอง
+      const iconHtml = `
+        <div style="
+          width:22px;
+          height:22px;
+          background:${fill};
+          border-radius:999px;
+          border:2px solid #000;
+          box-shadow:0 10px 20px rgb(0 0 0 / .7);
+          color:#000;
+          font-size:11px;
+          font-weight:600;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        ">
+          ${textLetter}
+        </div>
+      `;
 
-          const circle = L.circle([lat, lng], {
-            radius: radiusMeters,
-            color: "#38bdf8",     // เส้นขอบฟ้าอ่อน
-            weight: 1,
-            fillColor: "#0ea5e9", // น้ำเงินฟ้า
-            fillOpacity: 0.4
-          });
-
-          circle.bindPopup(popupHTML);
-          circle.addTo(subdistrictLayer);
-        });
-      })
-      .catch(err => {
-        console.error("โหลด subdistricts.csv ไม่ได้:", err);
+      const divIcon = L.divIcon({
+        className: "",
+        html: iconHtml,
+        iconSize: [22,22],
+        iconAnchor: [11,11],
+        popupAnchor: [0,-10]
       });
 
-    // -----------------------
-    // 3) โหลดข้อมูลโรงงานรีไซเคิล (คู่แข่ง)
-    //    คาดหวัง header เช่น:
-    //    category,name,type,address,lat,lng
-    //    และ lat,lng ต้องเป็นตัวเลข
-    // -----------------------
-    fetch("../data/factories.csv")
-      .then(res => res.text())
-      .then(csvText => {
-        const rows = parseCSV(csvText);
+      const marker = L.marker([lat,lng], { icon: divIcon });
 
-        // custom icon สีแดง
-        const redIcon = L.icon({
-          iconUrl:
-            "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-          iconSize:     [25, 41],
-          iconAnchor:   [12, 41],
-          popupAnchor:  [1, -34],
-          shadowUrl:
-            "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-          shadowSize:   [41, 41],
-          shadowAnchor: [12, 41]
+      // popup detail
+      const popupHtml = `
+        <div class="popup-title">${row.name || "(ไม่มีชื่อโรงงาน)"}</div>
+        <div class="popup-desc">
+          <b>หมวด:</b> ${row.category || "-"}<br/>
+          <b>ที่อยู่:</b> ${row.address || "-"}<br/>
+          <b>พิกัด:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}
+        </div>
+      `;
+
+      marker.bindPopup(popupHtml);
+      return marker;
+    }
+
+    //---------------------------------
+    // 4) โหลด factories.csv -> วางหมุด
+    //---------------------------------
+    function parseCSV(text){
+      const lines = text.trim().split("\n");
+      const headers = lines[0].split(",").map(h=>h.trim());
+
+      return lines.slice(1).map(line => {
+        // split แบบง่าย: ต้องไม่มีคอมม่าในช่อง
+        const cols = line.split(",").map(x=>x.trim());
+        const obj = {};
+        headers.forEach((h,i)=>{
+          obj[h] = cols[i] || "";
         });
+        return obj;
+      });
+    }
 
-        rows.forEach(r => {
-          const lat = parseFloat(r.lat);
-          const lng = parseFloat(r.lng);
-          if (isNaN(lat) || isNaN(lng)) return;
+    fetch("../data/factories.csv")
+      .then(r => r.text())
+      .then(txt => {
+        const rows = parseCSV(txt);
 
-          // popup โรงงาน
-          const popupHTML = `
-            <div class="popup-title">
-              ${r.name || "(ไม่มีชื่อ)"}
-            </div>
-            <div class="popup-desc">
-              ประเภท: ${r.category || "-"}<br/>
-              รายละเอียด: ${r.type || "-"}<br/>
-              ที่อยู่: ${r.address || "-"}<br/>
-              พิกัด: ${lat.toFixed(5)}, ${lng.toFixed(5)}
-            </div>
-          `;
+        rows.forEach(row => {
+          const lat = parseFloat(row.lat);
+          const lng = parseFloat(row.lng);
+          if(isNaN(lat) || isNaN(lng)) return;
 
-          const marker = L.marker([lat, lng], { icon: redIcon });
-          marker.bindPopup(popupHTML);
-          marker.addTo(factoryLayer);
+          const marker = makeFactoryMarker(lat, lng, row);
+          marker.addTo(markerLayerGroup);
         });
       })
       .catch(err => {
         console.error("โหลด factories.csv ไม่ได้:", err);
       });
 
-    // -----------------------
-    // 4) Layer control: ให้ผู้ใช้สลับชั้น
-    // -----------------------
-    const baseMaps = {
+    //---------------------------------
+    // 5) โหลด subdistricts.csv -> heatmap
+    //---------------------------------
+    // เราจะสร้าง heatData = [[lat,lng,intensity], ...]
+    // intensity = scale ประชากร / 50000 (จำกัด max=1)
+    fetch("../data/subdistricts.csv")
+      .then(r => r.text())
+      .then(txt => {
+        const rows = parseCSV(txt);
+
+        const heatData = [];
+        rows.forEach(r => {
+          const lat = parseFloat(r.lat);
+          const lng = parseFloat(r.lng);
+          const pop = parseFloat(r.population);
+
+          if(isNaN(lat) || isNaN(lng) || isNaN(pop)) return;
+
+          // normalize ความหนาแน่น
+          let intensity = pop / 50000;
+          if(intensity > 1) intensity = 1;
+          if(intensity < 0.05) intensity = 0.05; // อย่าให้หายไปเลย
+
+          heatData.push([lat, lng, intensity]);
+        });
+
+        if(heatData.length){
+          const heatLayer = L.heatLayer(heatData, {
+            radius: 30,
+            blur: 25,
+            maxZoom: 17
+          });
+          heatLayer.addTo(heatLayerGroup);
+        }
+      })
+      .catch(err => {
+        console.error("โหลด subdistricts.csv ไม่ได้:", err);
+      });
+
+    //---------------------------------
+    // 6) เพิ่ม layer control (มุมขวาบน)
+    //---------------------------------
+    const baseLayers = {
       "ถนน (OSM)": streetLayer,
       "ดาวเทียม (Esri)": satelliteLayer
     };
 
-    const overlayMaps = {
-      "ชุมชน / ประชากร (ตำบล)": subdistrictLayer,
-      "คู่แข่ง รีไซเคิล": factoryLayer
-      // ถ้าคุณมี heatmapLayer ในอนาคต ก็เพิ่มตรงนี้ได้เลย
+    const overlays = {
+      "หมุดโรงงาน / ลูกค้า / คู่แข่ง": markerLayerGroup,
+      "Heatmap ประชากร": heatLayerGroup
     };
 
-    L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+    L.control.layers(baseLayers, overlays, { collapsed:false }).addTo(map);
+
+    // เปิด overlay เริ่มต้น
+    markerLayerGroup.addTo(map);
+    heatLayerGroup.addTo(map);
+
+    //---------------------------------
+    // 7) ปรับขอบเขตเริ่มต้น (fitBounds)
+    //---------------------------------
+    // เราจะขยาย map ให้ครอบสมุทรสาครประมาณนี้
+    // ถ้าคุณอยาก auto-fit จากจุดจริงของโรงงาน ให้ย้าย fitBounds ไปหลังโหลด factories แล้วคำนวณ bounds
+    const approxBounds = L.latLngBounds(
+      [13.45, 100.05], // SW
+      [13.80, 100.50]  // NE
+    );
+    map.fitBounds(approxBounds);
   </script>
 </body>
 </html>
