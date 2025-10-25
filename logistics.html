@@ -3,753 +3,571 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>การวางแผนขนส่ง / โลจิสติกส์</title>
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+  <title>การขนส่ง & โลจิสติกส์ – สมุทรสาคร Hub รีไซเคิล</title>
 
   <style>
+    :root {
+      --bg-page: #ffffff;
+      --bg-card: #ffffff;
+      --border-card: #e5e7eb;
+      --text-main: #0f172a;
+      --text-dim: #6b7280;
+      --accent-soft: #eef2ff;
+      --accent-border: #6366f1;
+      --radius-card: 16px;
+      --radius-chip: 10px;
+      --shadow-card: 0 24px 48px rgba(0,0,0,0.06);
+      --shadow-card-strong: 0 32px 64px rgba(0,0,0,0.08);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
     body {
-      font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-main);
       margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      height: 100vh;
-    }
-
-    header {
-      background: #1e293b;
-      padding: 12px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    header .brand {
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    header nav a {
-      color: #94a3b8;
-      margin-right: 12px;
-      text-decoration: none;
-      font-size: 13px;
-    }
-    header nav a:hover {
-      color: #fff;
-    }
-    header nav a.active {
-      color: #38bdf8;
-      font-weight: 600;
-    }
-
-    main {
-      display: grid;
-      grid-template-columns: minmax(240px, 320px) 1fr;
-      height: 100%;
-      min-height: 0;
-    }
-
-    /* ด้านซ้าย: control + summary */
-    #side-panel {
-      background: #1e2538;
-      background: #1e293b;
-      border-right: 1px solid #334155;
-      padding: 16px;
-      font-size: 13px;
       line-height: 1.5;
-      color: #cbd5e1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
     }
 
-    #side-panel h2 {
-      margin: 0 0 8px;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    /* NAVBAR (ใช้โครงเดียวกับที่เราตกลง) */
+    .top-nav {
+      background:#ffffff;
+      border-bottom:1px solid #e5e7eb;
+      font-family: var(--font-main);
     }
 
-    .control-block {
-      background: rgba(15,23,42,.6);
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-    }
-    .control-block label {
-      font-size: 12px;
-      color: #94a3b8;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .control-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 12px;
-      color: #fff;
-      font-weight: 500;
-    }
-    .control-row input[type="range"] {
-      width: 100%;
-    }
-
-    .radio-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
-      gap: 8px;
-      font-size: 12px;
-    }
-    .radio-option {
-      background:#0f172a;
-      border:1px solid #334155;
-      border-radius:8px;
-      padding:8px;
-      cursor:pointer;
-      color:#fff;
-      text-align:left;
+    .top-nav-inner {
+      max-width:1400px;
+      margin:0 auto;
+      padding:10px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      color:#0f172a;
+      font-size:14px;
       line-height:1.4;
     }
-    .radio-option input {
-      margin-right:6px;
-      accent-color:#38bdf8;
-    }
 
-    .stats-block {
-      background: rgba(15,23,42,.6);
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #cbd5e1;
-    }
-
-    .stats-block .number-strong {
-      font-size: 16px;
+    .brand {
       font-weight:600;
-      color:#fff;
+      font-size:14px;
+      color:#0f172a;
+      text-decoration:none;
+      white-space:nowrap;
     }
 
-    #topList {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      background: rgba(15,23,42,.6);
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #cbd5e1;
+    .nav-links {
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
     }
 
-    .poi-item {
-      border-bottom:1px solid #334155;
-      padding:8px 0;
-    }
-    .poi-item:last-child {
-      border-bottom:0;
-    }
-    .poi-name {
-      color:#fff;
-      font-weight:600;
-      font-size:13px;
-      line-height:1.4;
+    .nav-item {
       display:flex;
       align-items:center;
-      gap:6px;
-    }
-    .poi-meta {
-      font-size:12px;
-      color:#94a3b8;
-      line-height:1.4;
-      margin-top:2px;
-    }
-
-    .badge {
-      display:inline-block;
-      font-size:10px;
-      line-height:1.4;
-      font-weight:600;
-      border-radius:6px;
-      padding:2px 6px;
-      border:1px solid #475569;
-    }
-    .badge-red { background:#7f1d1d; color:#fff; border-color:#ef4444; }
-    .badge-blue { background:#1e3a8a; color:#fff; border-color:#3b82f6; }
-    .badge-green { background:#064e3b; color:#fff; border-color:#10b981; }
-
-    #strategyBox {
-      background:#0f172a;
-      border:1px solid #334155;
+      gap:4px;
+      text-decoration:none;
+      color:#374151;
+      font-weight:500;
+      padding:6px 10px;
       border-radius:8px;
-      padding:10px 12px;
-      margin-top:12px;
+      line-height:1.2;
+      background:#fff;
+      border:1px solid transparent;
+      font-size:13px;
+    }
+
+    .nav-item:hover {
+      background:#f8fafc;
+      border-color:#d1d5db;
+      color:#111827;
+    }
+
+    .nav-icon {
+      font-size:15px;
+      line-height:1;
+    }
+
+    .nav-item.active {
+      background:#eef2ff;
+      border-color:#6366f1;
+      color:#1e1e2f;
+      font-weight:600;
+    }
+
+    @media(max-width:640px){
+      .top-nav-inner {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .nav-links {
+        flex-wrap:wrap;
+        row-gap:8px;
+      }
+    }
+
+    /* PAGE WRAPPER */
+    .page {
+      max-width:1400px;
+      margin:24px auto 80px auto;
+      padding:0 16px 40px;
+      display:grid;
+      grid-template-columns: minmax(0,1fr);
+      gap:24px;
+    }
+
+    /* HEADLINE SECTION */
+    .page-head {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      max-width:900px;
+    }
+
+    .page-title-row {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      gap:8px 12px;
+    }
+
+    .page-title-icon {
+      font-size:24px;
+      line-height:1;
+    }
+
+    .page-title-text {
+      font-size:20px;
+      font-weight:600;
+      color:#111827;
+      line-height:1.3;
+    }
+
+    .page-desc {
+      font-size:14px;
+      color:#6b7280;
+      line-height:1.5;
+    }
+
+    .chips-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .chip {
+      background:#f8fafc;
+      border:1px solid #d1d5db;
+      font-size:12px;
+      line-height:1.3;
+      padding:4px 8px;
+      border-radius:var(--radius-chip);
+      color:#374151;
+      display:flex;
+      align-items:center;
+      gap:4px;
+      font-weight:500;
+    }
+
+    .chip.good {
+      background:#ecfdf5;
+      border-color:#6ee7b7;
+      color:#065f46;
+    }
+    .chip.warn {
+      background:#fffbeb;
+      border-color:#fde68a;
+      color:#92400e;
+    }
+    .chip.bad {
+      background:#fef2f2;
+      border-color:#fecaca;
+      color:#991b1b;
+    }
+
+    /* GRID TWO-COLUMN FOR MAIN CARDS */
+    .main-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr));
+      gap:24px;
+    }
+
+    /* CARD */
+    .card {
+      background:var(--bg-card);
+      border:1px solid var(--border-card);
+      border-radius:var(--radius-card);
+      box-shadow:var(--shadow-card);
+      padding:20px 20px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .card-left {
+      display:flex;
+      flex-wrap:nowrap;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .icon-badge {
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
+      line-height:1;
+      background:#eef2ff;
+      border:1px solid #6366f1;
+      color:#1e1e2f;
+      font-weight:600;
+      box-shadow:0 12px 24px rgba(99,102,241,0.15);
+    }
+
+    .card-title-group {
+      display:flex;
+      flex-direction:column;
+      line-height:1.4;
+    }
+
+    .card-title {
+      font-size:15px;
+      font-weight:600;
+      color:#111827;
+    }
+
+    .card-subtitle {
+      font-size:13px;
+      font-weight:400;
+      color:#6b7280;
+    }
+
+    .card-body {
+      font-size:13px;
+      color:#374151;
+      line-height:1.5;
+      display:grid;
+      gap:12px;
+    }
+
+    .key-rows {
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:#f9fafb;
+      padding:12px 16px;
+      font-size:13px;
+      line-height:1.5;
+      display:grid;
+      gap:8px;
+    }
+
+    .kv-row {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      font-size:13px;
+    }
+    .kv-label {
+      color:#6b7280;
+      font-weight:500;
+    }
+    .kv-value {
+      color:#111827;
+      font-weight:600;
+      text-align:right;
+    }
+
+    .note-block {
       font-size:12px;
       line-height:1.5;
-      color:#cbd5e1;
-    }
-    #strategyBox .title {
-      font-size:12px;
-      font-weight:600;
-      color:#fff;
-      margin-bottom:4px;
+      color:#6b7280;
     }
 
-    /* ด้านขวา: แผนที่ */
-    #map-area {
-      position: relative;
-      background:#000;
-      min-height:0;
-    }
-    #map {
-      width: 100%;
-      height: 100%;
-      min-height: 400px;
-      position:absolute;
-      inset:0;
+    .note-strong {
+      font-weight:600;
+      color:#111827;
     }
 
-    /* ปรับ popup ให้เป็น dark */
-    .leaflet-popup-content-wrapper {
-      background:#1e293b;
-      color:#f8fafc;
-      border-radius:12px;
-      border:1px solid #475569;
-      box-shadow:0 20px 60px rgb(0 0 0 / .8);
+    /* WIDE CARD (for summary at bottom) */
+    .wide-card {
+      background:var(--bg-card);
+      border:1px solid var(--border-card);
+      border-radius:var(--radius-card);
+      box-shadow:var(--shadow-card-strong);
+      padding:20px 20px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
     }
-    .leaflet-popup-tip {
-      background:#1e293b;
-      border:1px solid #475569;
+
+    .wide-body {
+      font-size:13px;
+      line-height:1.6;
+      color:#374151;
+      display:grid;
+      gap:12px;
     }
-    .popup-title {
-      font-size:14px;
-      font-weight:600;
-      color:#fff;
-      margin-bottom:4px;
-      line-height:1.4;
+    .bullet-row {
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      font-size:13px;
+      line-height:1.5;
     }
-    .popup-desc {
-      font-size:12px;
-      color:#cbd5e1;
-      line-height:1.4;
+    .bullet-emoji {
+      font-size:16px;
+      line-height:1.2;
     }
 
     footer {
-      color:#475569;
-      background:#0f172a;
-      font-size:12px;
+      max-width:1400px;
+      margin:40px auto 40px;
+      padding:16px;
+      font-size:11px;
+      line-height:1.5;
+      color:#9ca3af;
       text-align:center;
-      padding:12px 0 16px;
-      border-top:1px solid #334155;
+      border-top:1px solid #e5e7eb;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">สมุทรสาคร Spatial Intelligence</div>
-    <nav>
-      <a href="index.html">ภาพรวม</a>
-      <a href="map.html">แผนที่</a>
-      <a href="competition.html">คู่แข่ง</a>
-      <a href="customers.html">ลูกค้า</a>
-      <a href="population.html">ประชากร</a>
-      <a href="forecast.html">ประมาณการสินค้า</a>
-      <a href="risk.html">ความเสี่ยง</a>
-      <a href="logistics.html" class="active">โลจิสติกส์</a>
+
+  <!-- NAVBAR -->
+  <header class="top-nav">
+    <nav class="top-nav-inner">
+      <a class="brand" href="index.html">
+        สมุทรสาคร · โครงการ Hub รีไซเคิลจังหวัด
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span><span>หน้าแรก</span>
+        </a>
+        <a href="map.html" class="nav-item">
+          <span class="nav-icon">🗺️</span><span>แผนที่</span>
+        </a>
+        <a href="competition.html" class="nav-item">
+          <span class="nav-icon">⚔️</span><span>คู่แข่งและลูกค้า</span>
+        </a>
+        <a href="logistic.html" class="nav-item active">
+          <span class="nav-icon">🚚</span><span>การขนส่ง</span>
+        </a>
+        <a href="population.html" class="nav-item">
+          <span class="nav-icon">👥</span><span>ประชากร</span>
+        </a>
+        <a href="demand.html" class="nav-item">
+          <span class="nav-icon">📦</span><span>ประมาณการสินค้า</span>
+        </a>
+        <a href="capacity.html" class="nav-item">
+          <span class="nav-icon">🏭</span><span>กำลังการผลิต</span>
+        </a>
+        <a href="risk.html" class="nav-item">
+          <span class="nav-icon">🚨</span><span>ความเสี่ยง</span>
+        </a>
+      </div>
     </nav>
   </header>
 
-  <main>
-    <!-- ---------------------------------
-         PANEL ซ้าย
-    ----------------------------------- -->
-    <aside id="side-panel">
-      <h2>📦 วางแผนขนส่ง / จุดป้อนวัตถุดิบ</h2>
-
-      <!-- ระยะทาง -->
-      <div class="control-block">
-        <label>รัศมีรับของ / ส่งของ จากศูนย์กลาง (กม.)</label>
-        <div class="control-row">
-          <div><span id="radiusValue" style="color:#38bdf8;font-weight:600;">5</span> กม.</div>
-        </div>
-        <input id="radiusInput" type="range" min="1" max="30" step="1" value="5" />
-        <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.4;">
-          วงกลมสีแดงบนแผนที่ = พื้นที่ปฏิบัติการของเราในทริปเดียว
-        </div>
+  <main class="page">
+    <!-- หน้า: หัวเรื่อง -->
+    <section class="page-head">
+      <div class="page-title-row">
+        <div class="page-title-icon">🚚</div>
+        <div class="page-title-text">การขนส่ง & การเข้าถึงพื้นที่</div>
+      </div>
+      <div class="page-desc">
+        โลจิสติกส์คือความได้เปรียบเชิงต้นทุน: ถ้ารถสิบล้อเข้า-ออกได้ง่าย
+        ใกล้ลูกค้าปลายทาง และไม่ต้องวิ่งลึกเข้าชุมชน
+        ต้นทุนต่อกิโล & ต่อเที่ยวจะต่ำกว่าคู่แข่งทันที
       </div>
 
-      <!-- เลือกกลุ่มลูกค้า -->
-      <div class="control-block">
-        <label>โฟกัสเป้าหมายหลัก</label>
-        <div class="radio-group" id="focusGroup">
-          <label class="radio-option">
-            <input type="radio" name="focus" value="customer" checked />
-            ลูกค้าหลัก<br/> (โรงงานกระดาษ / เม็ดพลาสติก / สุรา)
-          </label>
-          <label class="radio-option">
-            <input type="radio" name="focus" value="competitor" />
-            คู่แข่ง (รีไซเคิล)
-          </label>
-          <label class="radio-option">
-            <input type="radio" name="focus" value="all" />
-            ดูทั้งหมด
-          </label>
-        </div>
+      <div class="chips-row">
+        <div class="chip good">🚚 รถใหญ่เข้าได้</div>
+        <div class="chip warn">🏘 ผ่านชุมชนบางช่วง</div>
+        <div class="chip good">⛽ ต้นทุนวิ่งสั้น</div>
       </div>
+    </section>
 
-      <!-- สถิติ -->
-      <div class="stats-block">
-        <div><b style="color:#fff;">สรุปในรัศมี <span id="radiusKMText">5</span> กม.</b></div>
-        <div style="margin-top:6px;">
-          ลูกค้าศักยภาพ (รับของ/ขายของ):
-          <span class="number-strong" id="statCustomers">0</span> จุด
-        </div>
-        <div>
-          คู่แข่งรีไซเคิล:
-          <span class="number-strong" id="statCompetitors">0</span> จุด
-        </div>
-        <div>
-          ทั้งหมดรวม:
-          <span class="number-strong" id="statTotal">0</span> จุด
-        </div>
-      </div>
+    <!-- การ์ดหลัก 2 ใบด้านบน -->
+    <section class="main-grid">
 
-      <!-- list จุดใกล้สุด -->
-      <div id="topList">
-        <div style="color:#fff;font-weight:600;font-size:13px;margin-bottom:8px;">
-          จุดที่ใกล้ที่สุด (Top 10)
-        </div>
-        <div id="topItems">
-          <!-- inject -->
+      <!-- CARD 1: การเข้าถึงไซต์ -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="icon-badge">📍</div>
+            <div class="card-title-group">
+              <div class="card-title">การเข้าถึงพื้นที่ศูนย์กลาง</div>
+              <div class="card-subtitle">
+                โลเคชันโครงการ (ลานกระทิงแดง / จุดตั้งศูนย์รวบ)
+              </div>
+            </div>
+          </div>
+          <div class="chip good">พร้อมใช้งาน</div>
         </div>
 
-        <div id="strategyBox">
-          <div class="title">ข้อเสนอเชิงกลยุทธ์</div>
-          <div id="strategyText">
-            -
+        <div class="card-body">
+          <div class="key-rows">
+            <div class="kv-row">
+              <div class="kv-label">ถนนหลักหน้าพื้นที่</div>
+              <div class="kv-value">ถนนคอนกรีต / รถสิบล้อเข้าได้</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">ความกว้างช่องทาง</div>
+              <div class="kv-value">~6-8 เมตร (ประมาณ)</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">การเลี้ยวเข้าพื้นที่</div>
+              <div class="kv-value">รถยาวเลี้ยวได้ (ต้องจัดจุดกลับรถ)</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">ใกล้พื้นที่ชุมชนหนาแน่น?</div>
+              <div class="kv-value">ปานกลาง / ยังควบคุมได้</div>
+            </div>
+          </div>
+
+          <div class="note-block">
+            <span class="note-strong">ตีความ:</span>
+            รถบรรทุกหนักสามารถเข้าถึงจุด unload ได้โดยตรง
+            ไม่ต้องวิ่งลึกผ่านซอยแคบเหมือนบางลานรีไซเคิลรายเก่า
+            → ลดปัญหาร้องเรียนเรื่องเสียง/ฝุ่นจากชุมชนรอบข้าง
           </div>
         </div>
-      </div>
-    </aside>
+      </article>
 
-    <!-- ---------------------------------
-         MAP ขวา
-    ----------------------------------- -->
-    <section id="map-area">
-      <div id="map"></div>
+      <!-- CARD 2: ระยะทางไปปลายทางหลัก -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="icon-badge">📦</div>
+            <div class="card-title-group">
+              <div class="card-title">ระยะวิ่งไปลูกค้าปลายทาง</div>
+              <div class="card-subtitle">
+                (ขายออก: กระดาษ / พลาสติกอัด / โลหะ / ขวดแก้วดี)
+              </div>
+            </div>
+          </div>
+          <div class="chip good">ต้นทุนต่ำ</div>
+        </div>
+
+        <div class="card-body">
+          <div class="key-rows">
+            <div class="kv-row">
+              <div class="kv-label">โรงงานกระดาษ (รับ OCC/กล่องลูกฟูก)</div>
+              <div class="kv-value">~XX กม.</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">โรงงานเม็ดพลาสติก / หลอม HDPE/PET</div>
+              <div class="kv-value">~YY กม.</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">โรงงานสุรา (รับขวดแก้วดี)</div>
+              <div class="kv-value">~ZZ กม.</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">ท่าเรือ / โลจิสติกส์ทางน้ำ (ถ้ามี)</div>
+              <div class="kv-value">ใกล้โซนมหาชัย</div>
+            </div>
+          </div>
+
+          <div class="note-block">
+            ระยะสั้น = เติมเต็มรถง่ายขึ้น (ไม่ต้องรอโหลดเต็ม 30 ตัน)
+            และวิ่งหลายรอบต่อวันได้<br/>
+            → หมายความว่าเรา <span class="note-strong">หมุนสต็อกเร็ว</span>
+            ใช้พื้นที่ลานเก็บไม่ต้องใหญ่มาก แต่ยัง control ปริมาณออกได้
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CARD WIDE: ข้อได้เปรียบโลจิสติกส์ -->
+    <section class="wide-card">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="icon-badge">🚀</div>
+          <div class="card-title-group">
+            <div class="card-title">ข้อได้เปรียบด้านโลจิสติกส์เชิงธุรกิจ</div>
+            <div class="card-subtitle">
+              ทำไมโลเคชันนี้มีศักยภาพเป็น Hub ระดับจังหวัด
+            </div>
+          </div>
+        </div>
+        <div class="chip good">ศูนย์กลางได้</div>
+      </div>
+
+      <div class="wide-body">
+        <div class="bullet-row">
+          <div class="bullet-emoji">📍</div>
+          <div>
+            จุดตั้งอยู่ในโซนที่เป็นอุตสาหกรรม + ชุมชนแรงงาน
+            = มีทั้งเศษบรรจุภัณฑ์จากโรงงาน และของรีไซเคิลจากครัวเรือน
+            ในรัศมีใกล้ ๆ
+          </div>
+        </div>
+
+        <div class="bullet-row">
+          <div class="bullet-emoji">🚚</div>
+          <div>
+            รถสิบล้อ/รถพ่วงเข้าได้โดยไม่ต้องวิ่งซอยลึก → ลดความเสี่ยงร้องเรียนชุมชน
+            และลดเวลา load/unload ต่อเที่ยว
+          </div>
+        </div>
+
+        <div class="bullet-row">
+          <div class="bullet-emoji">💸</div>
+          <div>
+            ระยะส่งออกสั้นไปลูกค้าปลายทาง (เช่น โรงงานกระดาษ / หลอมพลาสติก /
+            โรงงานสุรา) = ต้นทุนขนส่งต่อกิโลต่ำกว่าคู่แข่งที่อยู่นอกจังหวัด
+          </div>
+        </div>
+
+        <div class="bullet-row">
+          <div class="bullet-emoji">📦</div>
+          <div>
+            เพราะหมุนของออกเร็ว สต็อกไม่พอง = ลดความเสี่ยงด้านไฟไหม้ลานกองกระดาษ/พลาสติก
+            และทำให้มองภาพ “ศูนย์กลางคัดแยก-อัด พร้อมออกสินค้า” ได้ชัดเจน
+          </div>
+        </div>
+
+        <div class="bullet-row">
+          <div class="bullet-emoji">🏭</div>
+          <div>
+            ถ้าวาง branding เป็น “Hub จังหวัด”:
+            โรงงานเล็ก/ซาเล้ง/ผู้คัดแยกตามชุมชนจะไม่ต้องลงทุนเครื่องอัดเอง
+            แค่ขนเข้ามาขายเรา → เรากลายเป็นศูนย์กลางรวบสภาพพร้อมขายออก
+          </div>
+        </div>
+
+        <div class="note-block">
+          สรุป: โลจิสติกส์ = ความได้เปรียบเชิงราคาหน้าลาน<br/>
+          ถ้าเรารับของเข้าได้ง่ายกว่า / จ่ายเงินไว / ระบายของออกไว
+          เรามีโอกาสดึงซัพพลายจากคู่แข่งรายย่อยในจังหวัด
+          และขึ้นเป็น Hub หลักได้จริง
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    © เครือข่ายขนส่งต้นน้ำ-ปลายน้ำ · ระยะทางคำนวณเชิงเส้น (Haversine) · Prototype
+    © สมุทรสาคร Spatial Ops · การขนส่ง & ศักยภาพ Hub รีไซเคิลระดับจังหวัด
   </footer>
 
-  <script>
-    // -------------------------------------------------
-    // CONFIG หลัก
-    // -------------------------------------------------
-    // จุดศูนย์กลางฐานเรา = ลานกระทิงแดง (แกนหลักโลจิสติกส์)
-    const HUB = {
-      name: "ลานกระทิงแดง (ฐานปฏิบัติการ)",
-      lat: 13.565126,
-      lng: 100.279895,
-      address: "ถนนสายใยรัก สมุทรสาคร"
-    };
-
-    // เกณฑ์ระบุ "ลูกค้า" กับ "คู่แข่ง"
-    function isCompetitorRow(cat) {
-      // ถ้ามีคำว่า รีไซเคิล = คู่แข่ง
-      return cat.includes("รีไซเคิล");
-    }
-
-    function isCustomerRow(cat) {
-      // ลูกค้าหลักของธุรกิจเรา: กระดาษ / เม็ดพลาสติก / สุรา
-      // ปรับ keyword ตามหมวดจริงใน factories.csv ของคุณ
-      const keywords = ["กระดาษ", "เม็ดพลาสติก", "สุรา", "บรรจุภัณฑ์", "แพคเกจ"];
-      return keywords.some(k => cat.includes(k));
-    }
-
-    // -------------------------------------------------
-    // ฟังก์ชันคำนวณระยะทาง Haversine (กม.)
-    // -------------------------------------------------
-    function haversineKm(lat1, lon1, lat2, lon2) {
-      const R = 6371; // km
-      const dLat = (lat2 - lat1) * Math.PI/180;
-      const dLon = (lon2 - lon1) * Math.PI/180;
-      const a =
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI/180) *
-        Math.cos(lat2 * Math.PI/180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c;
-    }
-
-    // -------------------------------------------------
-    // อ่าน CSV (รูปแบบเดียวกับที่เราใช้ใน map/competition)
-    // columns:
-    // category,name,detail,"address ...",lat,lng
-    // -------------------------------------------------
-    function parseFactoriesCSV(csvText) {
-      const lines = csvText.trim().split('\n');
-      const rows = [];
-
-      let startIndex = 0;
-      const first = lines[0].toLowerCase();
-      const headerLike = first.includes('category') || first.includes('lat');
-      if (headerLike) startIndex = 1;
-
-      for (let i = startIndex; i < lines.length; i++) {
-        let row = lines[i].trim();
-        if (!row) continue;
-
-        // extract "address, maybe commas"
-        let addressFixed = "";
-        const quotedMatch = row.match(/"([^"]*)"/);
-        if (quotedMatch) {
-          addressFixed = quotedMatch[1].trim();
-          row = row.replace(quotedMatch[0], "##ADDRESS##");
-        }
-
-        const parts = row.split(',').map(p => p.trim());
-
-        if (parts.length < 6) continue;
-
-        const category = parts[0] || "";
-        const name = parts[1] || "";
-        const detail = parts[2] || "";
-
-        let address = parts[3] || "";
-        if (address === "##ADDRESS##") {
-          address = addressFixed;
-        }
-
-        const lat = parseFloat(parts[4]);
-        const lng = parseFloat(parts[5]);
-        if (isNaN(lat) || isNaN(lng)) continue;
-
-        rows.push({
-          category,
-          name,
-          detail,
-          address,
-          lat,
-          lng
-        });
-      }
-
-      return rows;
-    }
-
-    // -------------------------------------------------
-    // ตัวแปร global
-    // -------------------------------------------------
-    let map;
-    let baseStreet, baseSat;
-    let hubLayer;           // marker HUB
-    let poiLayer;           // markers จุดทั้งหมด
-    let radiusCircle;       // วงรัศมี
-    let allPOIs = [];       // เก็บข้อมูลทั้งหมดจาก CSV พร้อมคำนวณระยะ
-    let currentFocus = "customer"; // customer | competitor | all
-
-    // -------------------------------------------------
-    // popup HTML
-    // -------------------------------------------------
-    function popupHTML(p) {
-      return `
-        <div class="popup-title">${p.name || "-"}</div>
-        <div class="popup-desc">
-          <div><strong>หมวด:</strong> ${p.category || "-"}</div>
-          <div><strong>รายละเอียด:</strong> ${p.detail || "-"}</div>
-          <div><strong>ที่อยู่:</strong> ${p.address || "-"}</div>
-          <div><strong>ระยะจากศูนย์:</strong> ${p.distKm.toFixed(2)} กม.</div>
-          <div><strong>พิกัด:</strong> ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</div>
-        </div>
-      `;
-    }
-
-    // -------------------------------------------------
-    // render Top10 ใน panel ซ้าย + strategy สรุป
-    // -------------------------------------------------
-    function renderSideListAndStrategy(inRangePOIs, radiusKm) {
-      // sort by distance
-      const sorted = [...inRangePOIs].sort((a,b)=>a.distKm-b.distKm).slice(0,10);
-
-      const topItemsDiv = document.getElementById("topItems");
-      topItemsDiv.innerHTML = "";
-
-      sorted.forEach(p => {
-        // badge สีตามประเภท
-        let badgeClass = "badge-blue";
-        let badgeText = "ทั่วไป";
-
-        if (isCompetitorRow(p.category)) {
-          badgeClass = "badge-red";
-          badgeText = "คู่แข่ง";
-        } else if (isCustomerRow(p.category)) {
-          badgeClass = "badge-green";
-          badgeText = "ลูกค้า";
-        }
-
-        const el = document.createElement("div");
-        el.className = "poi-item";
-        el.innerHTML = `
-          <div class="poi-name">
-            <span>${p.name || "-"}</span>
-            <span class="badge ${badgeClass}">${badgeText}</span>
-          </div>
-          <div class="poi-meta">
-            ระยะ ${p.distKm.toFixed(2)} กม.<br/>
-            ${p.category || "-"}<br/>
-            ${p.address || "-"}
-          </div>
-        `;
-        topItemsDiv.appendChild(el);
-      });
-
-      // strategy text
-      const totalCust = inRangePOIs.filter(p=>isCustomerRow(p.category)).length;
-      const totalComp = inRangePOIs.filter(p=>isCompetitorRow(p.category)).length;
-
-      let strategy = "";
-
-      // logic ง่าย ๆ:
-      // - ถ้าลูกค้าเยอะ > คู่แข่ง => จุดเรามี demand สูง
-      // - ถ้าคู่แข่งเยอะมาก => พื้นที่ saturated
-      // - ถ้าระยะสั้น=ได้หลายจุด => ต้นทุนขนส่งต่ำ
-      if (totalCust > totalComp * 1.5 && totalCust >= 3) {
-        strategy += "🔎 พื้นที่นี้มีลูกค้าเป้าหมายหนาแน่นกว่าคู่แข่ง → โอกาสเป็น Hub รับ/ส่งหลักสูง\n";
-      } else if (totalComp > totalCust && totalComp >= 3) {
-        strategy += "⚠ คู่แข่งรีไซเคิลหนาแน่นในระยะสั้น → ต้องแข่งราคา/บริการรับเร็วขึ้น หรือเจาะลูกค้าที่คู่แข่งยังไม่โฟกัส\n";
-      } else {
-        strategy += "ℹ พื้นที่มีทั้งลูกค้าและคู่แข่งคละกัน ปรับกลยุทธ์แบบจุดต่อจุด (ทำเส้นทางวิ่งรถรายวัน-รายโซน)\n";
-      }
-
-      if (inRangePOIs.length >= 8 && radiusKm <= 10) {
-        strategy += "💰 จุดป้อน/จุดระบายกระจุกตัวในระยะไม่ไกล (<10 กม.) → ค่าขนส่งต่อเที่ยวต่ำ มีศักยภาพทำรอบวิ่งถี่\n";
-      } else if (radiusKm > 15) {
-        strategy += "🚚 ระยะครอบคลุมกว้าง (>15 กม.) → ต้องวางแผนคัดเฉพาะลูกค้าที่ volume สูงเพื่อคุ้มรอบรถ\n";
-      }
-
-      if (!strategy) {
-        strategy = "ยังไม่มีข้อมูลพอสำหรับวิเคราะห์เชิงกลยุทธ์";
-      }
-
-      document.getElementById("strategyText").innerText = strategy;
-    }
-
-    // -------------------------------------------------
-    // update สถิติด้านซ้าย
-    // -------------------------------------------------
-    function updateStats(inRangePOIs, radiusKm) {
-      const totalCust = inRangePOIs.filter(p=>isCustomerRow(p.category)).length;
-      const totalComp = inRangePOIs.filter(p=>isCompetitorRow(p.category)).length;
-      const totalAll  = inRangePOIs.length;
-
-      document.getElementById("radiusKMText").textContent = radiusKm;
-      document.getElementById("statCustomers").textContent = totalCust;
-      document.getElementById("statCompetitors").textContent = totalComp;
-      document.getElementById("statTotal").textContent = totalAll;
-    }
-
-    // -------------------------------------------------
-    // สร้าง / อัพเดท marker layer ภายใต้ filter
-    // -------------------------------------------------
-    function redrawPOILayer(radiusKm) {
-      if (!map || !poiLayer) return;
-
-      poiLayer.clearLayers();
-
-      // filter ตาม focus group
-      let filtered = allPOIs;
-      if (currentFocus === "customer") {
-        filtered = filtered.filter(p => isCustomerRow(p.category));
-      } else if (currentFocus === "competitor") {
-        filtered = filtered.filter(p => isCompetitorRow(p.category));
-      } // "all" = ทั้งหมด
-
-      // filter ตามระยะ
-      const inRange = filtered.filter(p => p.distKm <= radiusKm);
-
-      // วาด marker
-      inRange.forEach(p => {
-        // สีตามประเภท
-        let fillColor = "#3b82f6"; // น้ำเงิน=ทั่วไป/ลูกค้าอื่น
-        if (isCompetitorRow(p.category)) fillColor = "#ef4444"; // แดง = คู่แข่งรีไซเคิล
-        else if (isCustomerRow(p.category)) fillColor = "#10b981"; // เขียว = ลูกค้าหลัก
-
-        const m = L.circleMarker([p.lat,p.lng], {
-          radius: 6,
-          color: "#fff",
-          weight: 1.5,
-          fillColor,
-          fillOpacity: 0.9
-        }).bindPopup(popupHTML(p));
-        m.addTo(poiLayer);
-      });
-
-      // อัพเดทวงกลมรัศมี
-      if (radiusCircle) {
-        radiusCircle.setRadius(radiusKm * 1000);
-      }
-
-      // อัพเดท panel ซ้าย
-      updateStats(inRange, radiusKm);
-      renderSideListAndStrategy(inRange, radiusKm);
-    }
-
-    // -------------------------------------------------
-    // initMap
-    // -------------------------------------------------
-    function initMap() {
-      baseStreet = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap contributors"
-      });
-
-      baseSat = L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        {
-          maxZoom: 19,
-          attribution: "Tiles © Esri"
-        }
-      );
-
-      map = L.map("map", {
-        center: [HUB.lat, HUB.lng],
-        zoom: 11,
-        layers: [baseStreet]
-      });
-
-      // marker HUB
-      hubLayer = L.layerGroup();
-      const hubMarker = L.circleMarker([HUB.lat, HUB.lng], {
-        radius: 10,
-        color: "#fb923c",
-        fillColor: "#f97316",
-        fillOpacity: 0.9,
-        weight: 2
-      }).bindPopup(`
-        <div class="popup-title">★ ${HUB.name}</div>
-        <div class="popup-desc">
-          <div><strong>ที่อยู่ศูนย์:</strong> ${HUB.address}</div>
-          <div><strong>พิกัด:</strong> ${HUB.lat}, ${HUB.lng}</div>
-        </div>
-      `);
-      hubMarker.addTo(hubLayer);
-      hubLayer.addTo(map);
-
-      // radiusCircle
-      radiusCircle = L.circle([HUB.lat, HUB.lng], {
-        radius: 5000, // 5 กม. เริ่มต้น
-        color: "#ef4444",
-        weight: 1,
-        fillColor: "#ef4444",
-        fillOpacity: 0.08
-      }).addTo(map);
-
-      // poiLayer
-      poiLayer = L.layerGroup().addTo(map);
-
-      // layer control
-      const baseMaps = {
-        "ถนน (OSM)": baseStreet,
-        "ดาวเทียม (Esri)": baseSat
-      };
-      const overlayMaps = {
-        "ฐานของเรา": hubLayer,
-        "พื้นที่ปฏิบัติการ": radiusCircle,
-        "จุดเป้าหมาย": poiLayer
-      };
-      L.control.layers(baseMaps, overlayMaps, {collapsed:false}).addTo(map);
-
-      // fit view
-      const bounds = L.latLngBounds([
-        [HUB.lat, HUB.lng]
-      ]);
-      map.fitBounds(bounds.pad(0.3));
-    }
-
-    // -------------------------------------------------
-    // main start
-    // -------------------------------------------------
-    function initApp() {
-      initMap();
-
-      // โหลด factories.csv
-      fetch("data/factories.csv", { cache:"no-store" })
-        .then(r => r.text())
-        .then(text => {
-          const raw = parseFactoriesCSV(text);
-
-          // คำนวณระยะจาก HUB ให้ทุกจุด
-          allPOIs = raw.map(p => {
-            const d = haversineKm(HUB.lat, HUB.lng, p.lat, p.lng);
-            return {
-              ...p,
-              distKm: d
-            };
-          });
-
-          // render เริ่มต้น
-          const initRadius = parseFloat(document.getElementById("radiusInput").value);
-          redrawPOILayer(initRadius);
-        })
-        .catch(err => {
-          console.error("โหลด factories.csv ไม่ได้", err);
-          alert("โหลดข้อมูลโลจิสติกส์ไม่สำเร็จ");
-        });
-
-      // listener radius slider
-      const rInput = document.getElementById("radiusInput");
-      const rVal   = document.getElementById("radiusValue");
-      rInput.addEventListener("input", () => {
-        const km = parseFloat(rInput.value);
-        rVal.textContent = km;
-        redrawPOILayer(km);
-      });
-
-      // listener radio focus
-      document.querySelectorAll('input[name="focus"]').forEach(r => {
-        r.addEventListener("change", (e)=>{
-          currentFocus = e.target.value;
-          const km = parseFloat(document.getElementById("radiusInput").value);
-          redrawPOILayer(km);
-        });
-      });
-    }
-
-    // run
-    initApp();
-  </script>
 </body>
 </html>
