@@ -1,0 +1,15 @@
+{
+  "year_be": 2567,
+  "total_daytime_workers": 30408,
+  "sectors": [
+    { "sector": "การผลิต (Manufacturing)", "workers": 4798 },
+    { "sector": "ค้าส่ง/ค้าปลีก/ซ่อมยานยนต์", "workers": 4286 },
+    { "sector": "ขนส่งและคลังสินค้า", "workers": 2594 },
+    { "sector": "ที่พักแรมและอาหาร", "workers": 1762 },
+    { "sector": "ข้อมูลข่าวสารและการสื่อสาร", "workers": 1121 },
+    { "sector": "การเงินและประกันภัย", "workers": 3013 },
+    { "sector": "การบริหารราชการ/ประกันสังคม", "workers": 10287 },
+    { "sector": "การศึกษา", "workers": 667 },
+    { "sector": "ศิลปะ/บันเทิง/นันทนาการ", "workers": 1248 }
+  ]
+}
