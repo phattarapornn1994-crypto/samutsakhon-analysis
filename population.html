@@ -1,436 +1,743 @@
 <!DOCTYPE html>
 <html lang="th">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ข้อมูลประชากร & แรงงานสมุทรสาคร</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>ประชากร & ชุมชนแรงงาน - สมุทรสาคร</title>
 
-    <style>
-      body {
-        background: #0f172a;
-        color: #f8fafc;
-        font-family: system-ui, sans-serif;
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-      }
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
 
-      header {
-        background: #1e293b;
-        padding: 12px 16px;
-        border-bottom: 1px solid #334155;
-        font-size: 14px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-      }
+  <style>
+    :root {
+      --bg-page: #ffffff;
+      --bg-card: #ffffff;
+      --bg-side: #f8fafc;
+      --border-card: #e2e8f0;
+      --text-main: #1e293b;
+      --text-dim: #64748b;
+      --accent: #0ea5e9;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow-card: 0 24px 40px rgb(0 0 0 / 0.06);
+    }
 
-      header nav a {
-        color: #94a3b8;
-        margin-right: 12px;
-        text-decoration: none;
-        font-size: 13px;
-      }
+    body {
+      margin: 0;
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+    }
 
-      header nav a:hover {
-        color: #fff;
-      }
+    /* ---------- TOP NAV (เหมือนทุกหน้า) ---------- */
+    header.site-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 12px 16px;
+      row-gap: 12px;
+    }
 
-      main {
-        padding: 24px clamp(16px, 2vw, 32px);
-        max-width: 1200px;
-        width: 100%;
-        margin: 0 auto;
-        display: grid;
-        gap: 24px;
-      }
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
 
-      .card {
-        background: #1e253b80;
-        background: radial-gradient(
-            circle at 0% 0%,
-            rgba(30, 41, 59, 0.9) 0%,
-            rgba(15, 23, 42, 0.8) 60%
-          ),
-          #0f172a;
-        border: 1px solid #334155;
-        border-radius: 16px;
-        padding: 20px 24px;
-        box-shadow: 0 30px 80px rgb(0 0 0 / 0.8);
-      }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-      .section-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: #fff;
-        margin: 0 0 8px;
-        line-height: 1.4;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 8px;
-      }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.3;
+    }
 
-      .subtle {
-        font-size: 12px;
-        color: #94a3b8;
-        font-weight: 400;
-        line-height: 1.4;
-      }
+    nav.main-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      column-gap: 12px;
+      row-gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-      .quick-stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        font-size: 13px;
-        color: #cbd5e1;
-      }
+    nav.main-nav a {
+      text-decoration: none;
+      color: var(--text-main);
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    nav.main-nav a span.emoji {
+      font-size: 14px;
+      line-height: 1;
+    }
 
-      .stat-box {
-        background: rgba(30, 41, 59, 0.4);
-        border: 1px solid #47556966;
-        border-radius: 12px;
-        padding: 12px 16px;
-        min-width: 140px;
-      }
+    nav.main-nav a.active {
+      background: #0ea5e9;
+      border-color: #0ea5e9;
+      color: #fff;
+      box-shadow: 0 12px 24px rgb(14 165 233 / 0.35);
+    }
 
-      .stat-label {
-        font-size: 11px;
-        line-height: 1.4;
-        color: #94a3b8;
-      }
+    /* ---------- LAYOUT MAIN ---------- */
+    main.page {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      height: calc(100vh - 64px); /* minus header height approx */
+      max-height: calc(100vh - 64px);
+      overflow: hidden;
+    }
 
-      .stat-value {
-        font-size: 16px;
-        font-weight: 600;
-        color: #fff;
-        line-height: 1.3;
-      }
+    /* ซ้าย = แผนที่ */
+    .map-area-wrapper {
+      position: relative;
+      border-right: 1px solid var(--border-card);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
 
-      .two-col {
-        display: grid;
+    .section-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-card);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      row-gap: 8px;
+    }
+
+    .section-head-left h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.3;
+    }
+    .section-head-left .hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .map-legend-card {
+      border: 1px solid var(--border-card);
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-main);
+      padding: 10px 12px;
+      box-shadow: var(--shadow-card);
+      max-width: 220px;
+    }
+
+    .map-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .dot-pop {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid #fff;
+      box-shadow: 0 8px 16px rgb(0 0 0 / 0.2);
+      background: radial-gradient(circle at 30% 30%, #fb923c 0%, #ea580c 70%);
+    }
+
+    #map {
+      flex: 1;
+      min-height: 300px;
+    }
+
+    /* ---------- PANEL ขวา ---------- */
+    aside.side-panel {
+      background: var(--bg-side);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 16px;
+      row-gap: 16px;
+    }
+
+    .panel-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 16px 20px;
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .tag-pop {
+      font-size: 11px;
+      font-weight: 500;
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fdba74;
+      padding: 2px 6px;
+      border-radius: 6px;
+      line-height: 1.2;
+    }
+
+    .panel-body {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 8px;
+      row-gap: 4px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .stat-value {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .toplist {
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 0;
+      padding-left: 16px;
+      color: var(--text-main);
+    }
+    .toplist li {
+      margin-bottom: 6px;
+    }
+    .toplist strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .risk-badge {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.2;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ecfccb;
+      border: 1px solid #84cc16;
+      color: #4d7c0f;
+      border-radius: 6px;
+      padding: 4px 6px;
+    }
+
+    .note-dim {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    /* -------- popup style override leaflet -------- */
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 24px 40px rgb(0 0 0 / .25);
+    }
+    .leaflet-popup-content {
+      margin: 12px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #1e293b;
+    }
+    .popup-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .popup-desc-line {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    /* scrollbar nice */
+    aside.side-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    aside.side-panel::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+    aside.side-panel::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 900px) {
+      main.page {
         grid-template-columns: 1fr;
-        gap: 24px;
+        grid-template-rows: auto auto;
+        height: auto;
+        max-height: none;
       }
-      @media (min-width: 900px) {
-        .two-col {
-          grid-template-columns: 1fr 1fr;
-        }
+      .map-area-wrapper {
+        border-right: none;
+        border-bottom: 1px solid var(--border-card);
+        height: 60vh;
+        max-height: 480px;
       }
+      aside.side-panel {
+        height: auto;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        line-height: 1.4;
-        color: #cbd5e1;
-        min-width: 100%;
-        overflow-x: auto;
-      }
-
-      thead {
-        background: #1e293b;
-        color: #fff;
-      }
-
-      th {
-        text-align: left;
-        font-weight: 500;
-        padding: 10px 12px;
-        border-bottom: 1px solid #334155;
-        font-size: 12px;
-        white-space: nowrap;
-      }
-
-      tbody tr:nth-child(even) {
-        background: rgba(30, 41, 59, 0.3);
-      }
-
-      td {
-        padding: 10px 12px;
-        border-bottom: 1px solid #33415566;
-        vertical-align: top;
-        white-space: nowrap;
-      }
-
-      .cluster-badge {
-        display: inline-block;
-        font-size: 11px;
-        line-height: 1.2;
-        padding: 4px 8px;
-        border-radius: 8px;
-        font-weight: 600;
-      }
-
-      .cluster-A {
-        background: rgba(220, 38, 38, 0.2);
-        color: #f87171;
-        border: 1px solid rgba(248, 113, 113, 0.4);
-      }
-
-      .cluster-B {
-        background: rgba(251, 191, 36, 0.15);
-        color: #facc15;
-        border: 1px solid rgba(250, 204, 21, 0.4);
-      }
-
-      .cluster-C {
-        background: rgba(34, 197, 94, 0.15);
-        color: #4ade80;
-        border: 1px solid rgba(74, 222, 128, 0.4);
-      }
-
-      footer {
-        color: #475569;
-        background: #0f172a;
-        font-size: 12px;
-        text-align: center;
-        padding: 12px 0 16px;
-        border-top: 1px solid #334155;
-      }
-
-      code.inline {
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid #334155;
-        border-radius: 6px;
-        padding: 2px 6px;
-        color: #7dd3fc;
-        font-size: 11px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- Navbar -->
-    <header>
-      <div style="font-weight:600; color:#fff; font-size:13px;">
-        📊 สมุทรสาคร Data Dashboard
+  <!-- HEADER / NAV -->
+  <header class="site-header">
+    <div class="brand-block">
+      <div class="brand-title">
+        <span>📊 สมุทรสาคร Spatial Intelligence</span>
       </div>
-      <nav>
-    <a href="index.html">หน้าแรก</a>
-    <a href="map.html">แผนที่</a>
-    <a href="competition.html">การแข่งขัน / ลูกค้า</a>
-    <a href="population.html">ประชากร</a>
-    <a href="supply.html">ประมาณการสินค้า</a>
-    <a href="risk.html">ความเสี่ยง</a>
-      </nav>
-    </header>
+      <div class="brand-sub">
+        ภาพรวมชุมชนแรงงาน / ผู้ผลิต / โลจิสติกส์ เพื่อการวางศูนย์รวบรวมวัสดุรีไซเคิล
+      </div>
+    </div>
 
-    <main>
-      <!-- การสรุปภาพรวม -->
-      <section class="card">
-        <div class="section-title">
-          <div>ภาพรวมประชากร & แรงงานในจังหวัดสมุทรสาคร</div>
-          <div class="subtle">
-            ข้อมูลจากไฟล์ API สาธารณะใน repo (<code class="inline">/data/*.json</code>)
+    <nav class="main-nav">
+      <a href="index.html"><span class="emoji">🏠</span><span>ภาพรวม</span></a>
+      <a href="map.html"><span class="emoji">🗺️</span><span>แผนที่</span></a>
+      <a href="competition.html"><span class="emoji">⚔️</span><span>คู่แข่ง&ลูกค้า</span></a>
+      <a href="logistics.html"><span class="emoji">🚚</span><span>การขนส่ง</span></a>
+      <a href="population.html" class="active"><span class="emoji">👥</span><span>ประชากร</span></a>
+      <a href="supply.html"><span class="emoji">♻️</span><span>ประมาณการสินค้า</span></a>
+      <a href="capacity.html"><span class="emoji">🏭</span><span>กำลังการผลิต</span></a>
+      <a href="risk.html"><span class="emoji">🚨</span><span>ความเสี่ยง</span></a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <!-- MAP SIDE -->
+    <section class="map-area-wrapper">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h1>
+            <span>👥 แผนที่ประชากรตามตำบล</span>
+          </h1>
+          <div class="hint">
+            วงกลมใหญ่/ส้มเข้ม = คนอยู่หนาแน่น (ฐานแรงงาน / ลูกค้าขายวัสดุรีไซเคิลกลับ)
           </div>
         </div>
 
-        <div class="quick-stats" id="quickStats">
-          <!-- จะเติมด้วย JS -->
+        <div class="map-legend-card">
+          <div class="map-legend-row">
+            <div class="dot-pop"></div>
+            <div>
+              ความหนาแน่นชุมชน / คนวัยทำงาน<br/>
+              (ขนาด = จำนวนประชากรตำบล)
+            </div>
+          </div>
+          <div class="map-legend-row" style="margin-bottom:0;">
+            <div style="font-size:11px;color:#64748b;line-height:1.4;">
+              แตะจุดดูข้อมูล: ชื่ออำเภอ-ตำบล, จำนวนประชากร
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </section>
+
+    <!-- ANALYSIS SIDE -->
+    <aside class="side-panel" id="sidePanel">
+      <!-- บล็อคสรุปภาพรวม -->
+      <section class="panel-block" id="panel-overview">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span>👥 โครงสร้างประชากร</span>
+            <span class="tag-pop">ฐานแรงงานหลัก</span>
+          </div>
+        </div>
+        <div class="panel-body" id="overviewBody">
+          <div class="stat-row">
+            <div class="stat-label">ประชากรรวม (ประมาณ)</div>
+            <div class="stat-value" id="totalPop">-</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">ตำบลที่มีคนเยอะสุด</div>
+            <div class="stat-value" id="maxTambon">-</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">Top โซนแรงงาน</div>
+            <div class="stat-value" id="topZonesShort">-</div>
+          </div>
+
+          <div class="note-dim">
+            การกระจุกตัวของแรงงาน = พื้นที่ที่สามารถตั้งจุดรวบรวมวัสดุ / คัดแยก / อัดก้อนได้
+            โดยไม่ต้องดึงคนจากไกลมาก
+          </div>
         </div>
       </section>
 
-      <div class="two-col">
-        <!-- ตารางประชากร -->
-        <section class="card">
-          <div class="section-title">
-            <div>ประชากรตามตำบล</div>
-            <div class="subtle">
-              ระบุ cluster (K-means) / class (ช่วงความหนาแน่น)
-            </div>
+      <!-- บล็อค Top ตำบล -->
+      <section class="panel-block">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span>🏘️ ตำบลที่คนอยู่เยอะ (Top 5)</span>
           </div>
-
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>อำเภอ</th>
-                  <th>ตำบล</th>
-                  <th>Population</th>
-                  <th>Cluster</th>
-                  <th>Lat</th>
-                  <th>Lng</th>
-                </tr>
-              </thead>
-              <tbody id="populationTableBody">
-                <!-- จะเติมด้วย JS -->
-              </tbody>
-            </table>
+          <div class="risk-badge" id="riskBadge">
+            🟢 ศักยภาพแรงงานสูง
           </div>
-        </section>
+        </div>
 
-        <!-- ตารางแรงงานกลางวัน -->
-        <section class="card">
-          <div class="section-title">
-            <div>แรงงานกลางวัน (ประชากรแฝงมาทำงาน)</div>
-            <div class="subtle">แยกตามหมวดอุตสาหกรรม ปี 2567</div>
+        <div class="panel-body">
+          <ol class="toplist" id="topList">
+            <!-- จะถูกเติมด้วย JS -->
+          </ol>
+
+          <div class="note-dim">
+            ตำบลที่มีประชากรสูง = มีแรงงาน/ชุมชนหนาแน่น → โอกาสรับซื้อวัสดุรีไซเคิลรายย่อยได้ง่าย
+            (PET, กระดาษลูกฟูก, กระป๋อง ฯลฯ)
           </div>
+        </div>
+      </section>
 
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>อุตสาหกรรม / ภาคธุรกิจ</th>
-                  <th>แรงงาน (คน)</th>
-                </tr>
-              </thead>
-              <tbody id="workforceTableBody">
-                <!-- จะเติมด้วย JS -->
-              </tbody>
-            </table>
+      <!-- บล็อคเชิงกลยุทธ์ -->
+      <section class="panel-block">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span>📦 มุมมองเชิงปฏิบัติการ</span>
           </div>
-        </section>
-      </div>
-    </main>
+        </div>
+        <div class="panel-body" id="bizInsight">
+          • โซนที่คนเยอะและอยู่ไม่ไกลฐานเรา = จุดรับซื้อหลัก / จุดตั้งทีมคัดแยกเบื้องต้น<br/><br/>
+          • โซนคนหนาแน่นมาก & โรงงานหลายแห่ง (จากหน้า "คู่แข่งและลูกค้า")
+          = มีความเป็นไปได้ที่จะเป็นแหล่งของเสียรีไซเคิลหมุนเวียนทุกวัน ไม่ใช่แค่ตามรอบเทศบาล<br/><br/>
+          • ถ้าชุมชนหนาแน่นอยู่ในตำบลอุตสาหกรรม
+          เราจะหาแรงงานที่คุ้นเคยงานยก/อัด/คัด ได้ง่าย
+          → ลดต้นทุนแรงงานเริ่มต้นเมื่อเปิดศูนย์
+        </div>
+      </section>
+    </aside>
+  </main>
 
-    <footer>
-      วิเคราะห์เชิงพื้นที่: ลานกระทิงแดง ถนนสายใยรัก พิกัด 13.565126,
-      100.279895 · Spatial Clustering: K-means · Classification: Geometrical Interval
-    </footer>
+  <script>
+    // -------------------------------------------------
+    // 1) ชี้ตำแหน่งศูนย์หลักของเรา (ลานกระทิงแดง)
+    //    ใช้เพื่อวิเคราะห์ระยะ/ศูนย์ถ่วงในอนาคต
+    // -------------------------------------------------
+    const HUB_POINT = {
+      name: "จุดลานกระทิงแดง (ฐานเรา)",
+      lat: 13.565126,
+      lng: 100.279895
+    };
 
-    <script>
-      // ---------- helper format ----------
-      function formatNumber(n) {
-        return n.toLocaleString("th-TH");
+    // -------------------------------------------------
+    // 2) เตรียมแผนที่ Leaflet
+    // -------------------------------------------------
+    const street = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
       }
+    );
 
-      // ---------- โหลดข้อมูลประชากร ----------
-      function loadPopulation() {
-        return fetch("data/population.json")
-          .then((res) => res.json())
-          .then((data) => {
-            // 1) เติมตารางประชากร
-            const tbody = document.getElementById("populationTableBody");
-            tbody.innerHTML = "";
+    const map = L.map("map", {
+      center: [13.58, 100.28],
+      zoom: 11,
+      layers: [street]
+    });
 
-            data.population_points.forEach((p) => {
-              const tr = document.createElement("tr");
+    // group marker
+    const populationLayer = L.layerGroup().addTo(map);
 
-              // cluster badge สีต่างกัน
-              const clusterClass = "cluster-" + p.cluster;
+    // จุด HUB (ศูนย์เรา)
+    const hubMarker = L.circleMarker([HUB_POINT.lat, HUB_POINT.lng], {
+      radius: 8,
+      color: "#0ea5e9",
+      weight: 2,
+      fillColor: "#0ea5e9",
+      fillOpacity: 0.9
+    }).bindPopup(`
+      <div class="popup-title">🚩 ${HUB_POINT.name}</div>
+      <div class="popup-desc-line">พิกัด: ${HUB_POINT.lat.toFixed(5)}, ${HUB_POINT.lng.toFixed(5)}</div>
+      <div class="popup-desc-line">ฐานโลจิสติกส์หลัก</div>
+    `);
+    hubMarker.addTo(populationLayer);
 
-              tr.innerHTML = `
-                <td>${p.amphoe}</td>
-                <td>
-                  <div style="color:#fff;font-weight:500;">${p.tambon_th}</div>
-                  <div class="subtle" style="font-size:11px;">${p.tambon_en}</div>
-                </td>
-                <td style="color:#fff;font-weight:600;">${formatNumber(
-                  p.population
-                )}</td>
-                <td>
-                  <span class="cluster-badge ${clusterClass}">
-                    ${p.cluster} · ${p.class}
-                  </span>
-                </td>
-                <td>${p.lat.toFixed(6)}</td>
-                <td>${p.lng.toFixed(6)}</td>
-              `;
-              tbody.appendChild(tr);
-            });
+    // -------------------------------------------------
+    // 3) อ่าน CSV ตำบล
+    //    ฟอร์แมต:
+    //    อำเภอ,ตำบล_TH,ตำบล_ENG,จำนวนประชากร,พิกัด
+    // -------------------------------------------------
+    function parseSubdistrictCSV(csvText) {
+      const lines = csvText.trim().split("\n");
+      const out = [];
 
-            // 2) สร้างสถิติรวมเพื่อโชว์ด้านบน
-            const totalPop = data.population_points.reduce(
-              (sum, p) => sum + (p.population || 0),
-              0
-            );
+      // สุ่มเช็ค header
+      const header = lines[0].split(",");
+      const looksHeader =
+        header[0].includes("อำเภอ") ||
+        header[1].includes("ตำบล") ||
+        header[3].includes("จำนวน");
 
-            // หาค่าประชากรมากที่สุด (hotspot)
-            let maxTambon = null;
-            data.population_points.forEach((p) => {
-              if (!maxTambon || p.population > maxTambon.population) {
-                maxTambon = p;
-              }
-            });
+      for (let i = looksHeader ? 1 : 0; i < lines.length; i++) {
+        const row = lines[i].trim();
+        if (!row) continue;
 
-            return {
-              totalPop,
-              maxTambon,
-              referencePoint: data.reference_point,
-            };
-          });
-      }
+        // ระวัง address หรือ comma ใน lat,lng
+        // ในข้อมูลของคุณเป็นแบบ:
+        // อำเภอเมืองสมุทรสาคร,มหาชัย,Maha Chai,38,607,13.5497804, 100.274131
+        // -> มีจุลภาค (,) ใน "38,607"
+        // เราต้องจัดการตัวเลขประชากรที่มีคอมมา
+        // แนวทาง: split โดย comma แล้วเย็บกลับ
 
-      // ---------- โหลดข้อมูลแรงงาน ----------
-      function loadWorkforce() {
-        return fetch("data/workforce.json")
-          .then((res) => res.json())
-          .then((data) => {
-            // เติมตาราง workforce
-            const tbody = document.getElementById("workforceTableBody");
-            tbody.innerHTML = "";
+        // ลอง split ชั่วคราว
+        let rawParts = row.split(",");
+        // เราคาดรูปแบบ:
+        // 0: อำเภอ
+        // 1: ตำบล_TH
+        // 2: ตำบล_ENG
+        // 3+: จำนวนประชากร (อาจมี , )
+        // last-1, last: lat, lng
 
-            data.sectors.forEach((s) => {
-              const tr = document.createElement("tr");
-              tr.innerHTML = `
-                <td>
-                  <div style="color:#fff;font-weight:500;">${s.sector}</div>
-                </td>
-                <td style="color:#fff;font-weight:600;">
-                  ${formatNumber(s.workers)}
-                </td>
-              `;
-              tbody.appendChild(tr);
-            });
+        if (rawParts.length < 6) continue;
 
-            return {
-              totalWorkers: data.total_daytime_workers,
-              yearBE: data.year_be,
-            };
-          });
-      }
+        const amphur = rawParts[0].trim();
+        const tambonTH = rawParts[1].trim();
+        const tambonEN = rawParts[2].trim();
 
-      // ---------- รันทั้งสอง fetch แล้วอัปเดต quick stats ----------
-      Promise.all([loadPopulation(), loadWorkforce()]).then(
-        ([popStats, workStats]) => {
-          const quickStats = document.getElementById("quickStats");
+        // lat = second last number
+        const lat = parseFloat(rawParts[rawParts.length - 2]);
+        const lng = parseFloat(rawParts[rawParts.length - 1]);
 
-          quickStats.innerHTML = `
-            <div class="stat-box">
-              <div class="stat-label">ประชากรรวม (ตำบลที่เรามีข้อมูล)</div>
-              <div class="stat-value">${formatNumber(
-                popStats.totalPop
-              )} คน</div>
-            </div>
+        // join ส่วนที่เป็นจำนวนประชากร
+        const popParts = rawParts.slice(3, rawParts.length - 2);
+        const popStr = popParts.join("").trim(); // เอาคอมมาออก
+        const population = parseInt(popStr.replace(/[^0-9]/g, ""), 10);
 
-            <div class="stat-box">
-              <div class="stat-label">พื้นที่ประชากรหนาแน่นสุด</div>
-              <div class="stat-value" style="font-size:14px;line-height:1.4;">
-                ${popStats.maxTambon.tambon_th} (${formatNumber(
-            popStats.maxTambon.population
-          )} คน)
-                <div style="font-size:11px;color:#94a3b8;font-weight:400;">
-                  อ.${popStats.maxTambon.amphoe}
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-box">
-              <div class="stat-label">แรงงานกลางวัน (ปี ${
-                workStats.yearBE
-              })</div>
-              <div class="stat-value">${formatNumber(
-                workStats.totalWorkers
-              )} คน</div>
-            </div>
-
-            <div class="stat-box">
-              <div class="stat-label">จุดอ้างอิงวิเคราะห์ (ลานกระทิงแดง)</div>
-              <div class="stat-value" style="font-size:14px;line-height:1.4;">
-                ${popStats.referencePoint.lat.toFixed(6)},
-                ${popStats.referencePoint.lng.toFixed(6)}
-                <div style="font-size:11px;color:#94a3b8;font-weight:400;">
-                  ${popStats.referencePoint.desc}
-                </div>
-              </div>
-            </div>
-          `;
+        if (isNaN(lat) || isNaN(lng) || isNaN(population)) {
+          continue;
         }
-      );
-    </script>
-  </body>
+
+        out.push({
+          amphur,
+          tambonTH,
+          tambonEN,
+          population,
+          lat,
+          lng
+        });
+      }
+
+      return out;
+    }
+
+    // -------------------------------------------------
+    // 4) helper: สี/ขนาดวงกลมตามจำนวนประชากร
+    // -------------------------------------------------
+    function getCircleStyle(pop, maxPop) {
+      // scale radius 6px → 28px แบบ nonlinear หน่อย
+      const rMin = 6;
+      const rMax = 28;
+      const scale = Math.sqrt(pop / maxPop); // บวมช้าลง
+      const radius = rMin + (rMax - rMin) * scale;
+
+      // gradient ส้มเข้มขึ้นเมื่อประชากรเยอะ
+      // popRatio ~0..1
+      const popRatio = pop / maxPop;
+      // baseColor: ไล่จากส้มอ่อน -> ส้มเข้ม
+      // เราจะไม่เปลี่ยนรหัสสีด้วยสูตรซับซ้อน เอาง่ายแบบคงที่:
+      const fillColor = popRatio > 0.7
+        ? "#ea580c"
+        : popRatio > 0.4
+        ? "#f97316"
+        : "#fdba74";
+
+      return {
+        radius,
+        color: "#ffffff",
+        weight: 1.5,
+        fillColor,
+        fillOpacity: 0.9
+      };
+    }
+
+    // -------------------------------------------------
+    // 5) render markers + อัปเดตการ์ดขวา
+    // -------------------------------------------------
+    function renderPopulationMap(data) {
+      // max / total
+      let totalPop = 0;
+      let maxPop = 0;
+      let maxTambonObj = null;
+
+      data.forEach(d => {
+        totalPop += d.population;
+        if (d.population > maxPop) {
+          maxPop = d.population;
+          maxTambonObj = d;
+        }
+      });
+
+      // วางหมุด
+      const bounds = [];
+      data.forEach(d => {
+        const style = getCircleStyle(d.population, maxPop);
+        const marker = L.circleMarker([d.lat, d.lng], style).bindPopup(`
+          <div class="popup-title">${d.tambonTH} (${d.tambonEN})</div>
+          <div class="popup-desc-line"><strong>อำเภอ:</strong> ${d.amphur}</div>
+          <div class="popup-desc-line"><strong>ประชากร:</strong> ${d.population.toLocaleString("th-TH")} คน</div>
+          <div class="popup-desc-line">พิกัด: ${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</div>
+        `);
+        marker.addTo(populationLayer);
+        bounds.push([d.lat, d.lng]);
+      });
+
+      // รวมกับ HUB ด้วยเพื่อให้กล้องครอบ
+      bounds.push([HUB_POINT.lat, HUB_POINT.lng]);
+      map.fitBounds(bounds, { padding: [40, 40] });
+
+      // ---------- PANEL ขวา ----------
+      // สรุปภาพรวม
+      const totalPopEl = document.getElementById("totalPop");
+      const maxTambonEl = document.getElementById("maxTambon");
+      const topZonesShortEl = document.getElementById("topZonesShort");
+
+      totalPopEl.textContent = totalPop.toLocaleString("th-TH") + " คน";
+
+      if (maxTambonObj) {
+        maxTambonEl.textContent =
+          maxTambonObj.tambonTH +
+          " (" +
+          maxTambonObj.amphur +
+          ") ~ " +
+          maxTambonObj.population.toLocaleString("th-TH") +
+          " คน";
+      } else {
+        maxTambonEl.textContent = "-";
+      }
+
+      // TOP 5 ตำบลคนเยอะ
+      const sorted = data.slice().sort((a,b) => b.population - a.population);
+      const top5 = sorted.slice(0,5);
+
+      const topListEl = document.getElementById("topList");
+      topListEl.innerHTML = "";
+      top5.forEach((d, idx) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${idx+1}. ${d.tambonTH}</strong> (${d.amphur})<br/>
+          ${d.population.toLocaleString("th-TH")} คน
+        `;
+        topListEl.appendChild(li);
+      });
+
+      // ทำ short summary 2 ตำบลแรก
+      const top2names = top5.slice(0,2).map(d => d.tambonTH);
+      topZonesShortEl.textContent = top2names.join(", ");
+
+      // badge ความพร้อมแรงงาน
+      const riskBadgeEl = document.getElementById("riskBadge");
+      // heuristic: ถ้าตำบลแรก > 30k คน ถือว่าแรงงานพร้อมสูง
+      if (top5.length && top5[0].population >= 30000) {
+        riskBadgeEl.textContent = "🟢 ศักยภาพแรงงานสูง";
+        riskBadgeEl.style.background = "#ecfccb";
+        riskBadgeEl.style.borderColor = "#84cc16";
+        riskBadgeEl.style.color = "#4d7c0f";
+      } else if (top5.length && top5[0].population >= 15000) {
+        riskBadgeEl.textContent = "🟡 ปานกลาง";
+        riskBadgeEl.style.background = "#fefce8";
+        riskBadgeEl.style.borderColor = "#fde047";
+        riskBadgeEl.style.color = "#854d0e";
+      } else {
+        riskBadgeEl.textContent = "🔴 กระจายตัวบาง";
+        riskBadgeEl.style.background = "#fee2e2";
+        riskBadgeEl.style.borderColor = "#ef4444";
+        riskBadgeEl.style.color = "#991b1b";
+      }
+    }
+
+    // -------------------------------------------------
+    // 6) โหลด CSV แล้วเริ่มทำงาน
+    // -------------------------------------------------
+    fetch("data/subdistricts.csv", { cache: "no-store" })
+      .then(res => res.text())
+      .then(csvText => {
+        const data = parseSubdistrictCSV(csvText);
+        renderPopulationMap(data);
+      })
+      .catch(err => {
+        console.error("โหลด subdistricts.csv ไม่ได้:", err);
+        alert("ไม่สามารถโหลดข้อมูลประชากรได้");
+      });
+
+  </script>
+</body>
 </html>
