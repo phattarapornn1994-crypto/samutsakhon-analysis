@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>แผนที่โรงงาน & Heatmap</title>
+  <title>แผนที่ภาพรวมพื้นที่</title>
 
   <!-- Leaflet CSS -->
   <link
@@ -25,27 +25,24 @@
 
   <style>
     :root {
-      --bg-page: #ffffff;
-      --bg-card: #ffffff;
-      --border-card: #e2e8f0;
-      --panel-bg: rgba(255,255,255,0.85);
-      --panel-border: #cbd5e1;
-      --panel-text: #1e293b;
-      --panel-dim: #64748b;
-      --accent: #0ea5e9;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --shadow-card: 0 24px 40px rgb(0 0 0 / 0.06);
+      --bg-page:#ffffff;
+      --bg-card:#ffffff;
+      --border-card:#e2e8f0;
+      --text-main:#0f172a;
+      --text-dim:#64748b;
+      --radius-lg:16px;
+      --radius-md:12px;
+      --shadow-card:0 24px 40px rgb(0 0 0 / 0.06);
 
-      --recycle-color: #ef4444;   /* แดง  = รีไซเคิล */
-      --other-color:   #3b82f6;   /* น้ำเงิน = โรงงานอื่น */
-      --hub-color:     #f97316;   /* ส้ม = ลานเรา */
+      --recycle-color:#ef4444;   /* แดง: รีไซเคิล (คู่แข่ง) */
+      --factory-color:#3b82f6;   /* น้ำเงิน: โรงงานอื่น */
+      --hub-color:#f97316;       /* ส้ม: Hub เรา */
     }
 
     body {
-      margin: 0;
-      background: var(--bg-page);
-      color: #1e293b;
+      margin:0;
+      background:var(--bg-page);
+      color:var(--text-main);
       font-family:
         system-ui,
         -apple-system,
@@ -54,198 +51,152 @@
         Roboto,
         "Helvetica Neue",
         sans-serif;
-      display: grid;
-      grid-template-rows: auto 1fr;
-      height: 100vh;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      height:100vh;
     }
 
-    /* ---------- TOP NAV (เหมือนทุกหน้าใหม่) ---------- */
+    /* ---------- TOP NAV แบบเดียวกับหน้าอื่น ---------- */
     header.site-header {
-      background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 12px 16px;
-      row-gap: 12px;
+      background:#ffffff;
+      border-bottom:1px solid #e2e8f0;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      justify-content:space-between;
+      padding:12px 16px;
+      row-gap:12px;
     }
 
     .brand-block {
-      display: flex;
-      flex-direction: column;
-      min-width: 200px;
+      display:flex;
+      flex-direction:column;
+      min-width:200px;
     }
 
     .brand-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size:15px;
+      font-weight:600;
+      color:#1e293b;
+      display:flex;
+      align-items:center;
+      gap:8px;
     }
 
     .brand-sub {
-      font-size: 12px;
-      color: #64748b;
-      line-height: 1.3;
+      font-size:12px;
+      color:#64748b;
+      line-height:1.3;
     }
 
     nav.main-nav {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      column-gap: 12px;
-      row-gap: 8px;
-      font-size: 13px;
-      font-weight: 500;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      column-gap:12px;
+      row-gap:8px;
+      font-size:13px;
+      font-weight:500;
     }
 
     nav.main-nav a {
-      text-decoration: none;
-      color: #1e293b;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 6px 10px;
-      line-height: 1.2;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      text-decoration:none;
+      color:#1e293b;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:8px;
+      padding:6px 10px;
+      line-height:1.2;
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
     nav.main-nav a span.emoji {
-      font-size: 16px;
-      line-height: 1;
+      font-size:16px;
+      line-height:1;
     }
 
     nav.main-nav a.active {
-      background: #0ea5e9;
-      border-color: #0ea5e9;
-      color: #fff;
-      box-shadow: 0 12px 24px rgb(14 165 233 / 0.35);
+      background:#0ea5e9;
+      border-color:#0ea5e9;
+      color:#fff;
+      box-shadow:0 12px 24px rgb(14 165 233 / 0.35);
     }
 
-    /* ---------- MAP FULL AREA ---------- */
-    main.map-page {
-      position: relative;
-      height: calc(100vh - 64px);
-      max-height: calc(100vh - 64px);
-      background: #fff;
-      border-top: 1px solid var(--border-card);
+    /* ---------- LAYOUT ---------- */
+    main.map-layout {
+      position:relative;
+      background:#fff;
+      flex:1;
     }
 
     #map {
-      position: absolute;
-      inset: 0;
+      position:absolute;
+      inset:0;
     }
 
-    /* ---------- FLOATING PANELS ON MAP ---------- */
+    /* กล่องข้อมูลบนแผนที่ */
+    .floating-card {
+      position:absolute;
+      z-index:500;
+      background:#ffffff;
+      border:1px solid var(--border-card);
+      border-radius:var(--radius-md);
+      box-shadow:var(--shadow-card);
+      padding:16px;
+      max-width:260px;
+      font-size:13px;
+      line-height:1.5;
+      color:var(--text-main);
+    }
+
+    .floating-card .card-title {
+      font-size:14px;
+      font-weight:600;
+      color:#0f172a;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      line-height:1.4;
+      margin-bottom:8px;
+    }
+
     .info-panel {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      z-index: 500;
-      background: var(--panel-bg);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      max-width: 260px;
-      box-shadow: var(--shadow-card);
-      font-size: 13px;
-      line-height: 1.5;
-      color: var(--panel-text);
-    }
-
-    .info-panel h2 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #0f172a;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      line-height: 1.4;
+      top:16px;
+      left:16px;
     }
 
     .legend-panel {
-      position: absolute;
-      bottom: 16px;
-      left: 16px;
-      z-index: 500;
-      background: var(--panel-bg);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      font-size: 12px;
-      color: var(--panel-text);
-      line-height: 1.4;
-      box-shadow: var(--shadow-card);
-      min-width: 200px;
-    }
-
-    .legend-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #0f172a;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      line-height: 1.4;
+      bottom:16px;
+      left:16px;
+      font-size:12px;
+      line-height:1.4;
+      color:#475569;
     }
 
     .legend-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      color: #1e293b;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:6px;
     }
 
     .legend-dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      border: 2px solid #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      box-shadow: 0 8px 16px rgb(0 0 0 / .2);
-      font-weight: 600;
-      color: #fff;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      border:2px solid #fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      box-shadow:0 8px 16px rgb(0 0 0 / .15);
+      font-weight:600;
+      color:#fff;
     }
 
-    .legend-gradient-box {
-      width: 100%;
-      height: 10px;
-      border-radius: 4px;
-      border: 1px solid #cbd5e1;
-      background: linear-gradient(
-        to right,
-        #1e3a8a 0%,   /* น้ำเงินเข้ม */
-        #10b981 25%,  /* เขียว */
-        #eab308 50%,  /* เหลือง */
-        #f97316 75%,  /* ส้ม */
-        #dc2626 100%  /* แดง */
-      );
-      box-shadow: 0 8px 16px rgb(0 0 0 / .15);
-    }
-
-    .legend-scale-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 4px;
-    }
-
-    /* ---------- POPUP LIGHT THEME ---------- */
+    /* ---------- POPUP (โทนสว่าง) ---------- */
     .leaflet-popup-content-wrapper {
       background:#ffffff;
       color:#0f172a;
@@ -270,7 +221,7 @@
       line-height:1.4;
     }
 
-    /* ---------- LAYER CONTROL (ทำให้กลมขึ้นหน่อย) ---------- */
+    /* ---------- LAYER CONTROL ---------- */
     .leaflet-control-layers {
       background:#ffffff !important;
       border:1px solid #cbd5e1 !important;
@@ -296,10 +247,14 @@
       line-height:1.4;
     }
 
-    @media (max-width:600px){
-      .info-panel, .legend-panel {
-        max-width: 80%;
-      }
+    footer.site-footer {
+      background:#ffffff;
+      border-top:1px solid #e2e8f0;
+      text-align:center;
+      font-size:11px;
+      color:#94a3b8;
+      line-height:1.4;
+      padding:10px 12px 14px;
     }
   </style>
 </head>
@@ -309,10 +264,10 @@
   <header class="site-header">
     <div class="brand-block">
       <div class="brand-title">
-        <span>🗺️ แผนที่โรงงาน & ความหนาแน่น</span>
+        <span>🗺️ แผนที่พื้นที่เป้าหมาย</span>
       </div>
       <div class="brand-sub">
-        หมุดโรงงาน / จุด Hub / Heatmap ความหนาแน่นโรงงานในสมุทรสาคร
+        ดู Hub / โรงงาน / คู่แข่ง / ความหนาแน่น (Heatmap)
       </div>
     </div>
 
@@ -328,80 +283,69 @@
     </nav>
   </header>
 
-  <!-- MAIN MAP AREA -->
-  <main class="map-page">
+  <!-- MAP AREA -->
+  <main class="map-layout">
     <div id="map"></div>
 
-    <!-- Info panel (ซ้ายบน) -->
-    <section class="info-panel">
-      <h2>
-        <span>ข้อมูลพื้นที่</span>
-      </h2>
-      <div style="font-size:13px;color:var(--panel-text);line-height:1.5;">
-        • จุดส้ม = "ลานกระทิงแดง" (Hub เป้าหมายของเรา)<br/>
+    <!-- info top-left -->
+    <section class="floating-card info-panel">
+      <div class="card-title">
+        <span>📌 ภาพรวมพื้นที่</span>
+      </div>
+      <div style="font-size:13px;color:#475569;line-height:1.5;">
+        • ★ จุดส้ม = ฮับเราวางลานกระทิงแดง (รับ/คัด/อัด)<br/>
         • จุดแดง = โรงงานรีไซเคิล / รับซื้อของเก่า (คู่แข่งหลัก)<br/>
-        • จุดน้ำเงิน = โรงงานอื่น (ลูกค้า supply กระดาษ/พลาสติก/โลหะ)<br/>
-        • Heatmap = จุดหนาแน่นของโรงงาน (โอกาสดึงวัตถุดิบ)<br/><br/>
-        เลือก layer ได้ที่มุมบนขวาของแผนที่
+        • จุดน้ำเงิน = โรงงานอื่น (ลูกค้า/ซัพพลาย)<br/>
+        • Heatmap สีฟ้า→เขียว→เหลือง→ส้ม→แดง = ความหนาแน่นโรงงาน<br/>
+        • เปลี่ยนพื้นหลังถนน/ดาวเทียม และเปิด/ปิดเลเยอร์ได้ที่มุมขวาบนของแผนที่
       </div>
     </section>
 
-    <!-- Legend panel (ซ้ายล่าง) -->
-    <section class="legend-panel">
-      <div class="legend-title">
-        <span>คำอธิบายสัญลักษณ์</span>
-      </div>
-
+    <!-- legend bottom-left -->
+    <section class="floating-card legend-panel">
       <div class="legend-row">
-        <div class="legend-dot" style="background:var(--hub-color);border-color:#fff;">★</div>
-        <div><strong>Hub เรา</strong> (ลานกระทิงแดง)</div>
+        <div class="legend-dot" style="background:#ef4444;border-color:#fff;">R</div>
+        <div>โรงงานรีไซเคิล / รับซื้อของเก่า</div>
       </div>
-
       <div class="legend-row">
-        <div class="legend-dot" style="background:var(--recycle-color);border-color:#fff;">R</div>
-        <div>รีไซเคิล / รับซื้อของเก่า = คู่แข่ง</div>
+        <div class="legend-dot" style="background:#3b82f6;border-color:#fff;">F</div>
+        <div>โรงงานอื่น (ลูกค้า / ซัพพลาย)</div>
       </div>
-
       <div class="legend-row">
-        <div class="legend-dot" style="background:var(--other-color);border-color:#fff;">F</div>
-        <div>โรงงานอื่น / ลูกค้าอุตสาหกรรม</div>
+        <div class="legend-dot" style="background:#f97316;border-color:#fff;">★</div>
+        <div>ฮับเรา (ลานกระทิงแดง)</div>
       </div>
-
-      <div class="legend-row" style="align-items:flex-start;flex-direction:column;gap:6px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="legend-dot" style="background:radial-gradient(circle,#dc2626 0%,rgba(220,38,38,0) 70%);border:none;box-shadow:0 8px 16px rgb(0 0 0 / .2);"></div>
-          <div>Heatmap ความหนาแน่นโรงงาน</div>
-        </div>
-        <div style="width:100%;">
-          <div class="legend-gradient-box"></div>
-          <div class="legend-scale-row">
-            <span>กระจายบาง</span>
-            <span>หนาแน่นสูง</span>
-          </div>
-        </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="
+          background: radial-gradient(circle,#dc2626 0%, rgba(0,0,0,0) 70%);
+          border:none;
+        "></div>
+        <div>Heatmap ความหนาแน่นโรงงาน</div>
       </div>
     </section>
   </main>
 
+  <footer class="site-footer">
+    © วิเคราะห์เชิงพื้นที่ จ.สมุทรสาคร — Prototype เพื่อการตัดสินใจลงทุน
+  </footer>
+
   <!-- SCRIPT -->
   <script>
-    // -------------------------------------------------
-    // 1) ตัวช่วยอ่าน CSV -> Array โรงงาน
-    //    ฟอร์แมตที่รองรับ:
-    //    category,name,detail,"address,with,comma",lat,lng
-    // -------------------------------------------------
+    // ---------------------------
+    // 1) CSV parser
+    //    format: category,name,detail,"address,maybe,comma",lat,lng
+    // ---------------------------
     function parseFactoriesCSV(csvText) {
       const lines = csvText.trim().split('\n');
       const factories = [];
 
-      // เช็ค header
       let startIndex = 0;
-      const firstLineLower = lines[0].toLowerCase();
-      const looksLikeHeader =
-        firstLineLower.includes('category') ||
-        firstLineLower.includes('name') ||
-        firstLineLower.includes('lat');
-      if (looksLikeHeader) {
+      const header = lines[0].toLowerCase();
+      if (
+        header.includes('category') ||
+        header.includes('name') ||
+        header.includes('lat')
+      ) {
         startIndex = 1;
       }
 
@@ -409,7 +353,7 @@
         let row = lines[i].trim();
         if (!row) continue;
 
-        // ดึง address จากคำพูด "..."
+        // ดึง address ใน "..."
         let address = '';
         const addressMatch = row.match(/"([^"]*)"/);
         if (addressMatch) {
@@ -423,9 +367,9 @@
         const category = parts[0] || '';
         const name = parts[1] || '';
         const detail = parts[2] || '';
-        let rebuiltAddress = parts[3];
-        if (rebuiltAddress === '##ADDRESS_PLACEHOLDER##') {
-          rebuiltAddress = address;
+        let addr = parts[3];
+        if (addr === '##ADDRESS_PLACEHOLDER##') {
+          addr = address;
         }
 
         const lat = parseFloat(parts[4]);
@@ -436,7 +380,7 @@
           category,
           name,
           detail,
-          address: rebuiltAddress,
+          address: addr,
           lat,
           lng
         });
@@ -445,25 +389,25 @@
       return factories;
     }
 
-    // -------------------------------------------------
-    // 2) จุด Hub (ลานเรา)
-    // -------------------------------------------------
-    const redBullSite = {
+    // ---------------------------
+    // 2) จุด Hub (ลานกระทิงแดง)
+    // ---------------------------
+    const hub = {
       name: "ลานกระทิงแดง (Hub เรา)",
       address: "ถนนสายใยรัก สมุทรสาคร",
       lat: 13.565126,
       lng: 100.279895
     };
 
-    // -------------------------------------------------
-    // 3) Utilities/Style
-    // -------------------------------------------------
+    // ---------------------------
+    // 3) helpers
+    // ---------------------------
     function isRecyclingFactory(f) {
-      // ถ้า category มีคำว่า "รีไซเคิล" ถือเป็นคู่แข่งหลัก
+      // คู่แข่งหลัก: มีคำว่า "รีไซเคิล"
       return f.category && f.category.includes("รีไซเคิล");
     }
 
-    function factoryPopupHTML(f) {
+    function popupHTML(f) {
       return `
         <div class="popup-title">${f.name || "-"}</div>
         <div class="popup-desc">
@@ -475,29 +419,16 @@
       `;
     }
 
-    // สร้าง gradient สำหรับ heatmap
-    // น้ำเงินเข้ม → เขียว → เหลือง → ส้ม → แดง
-    const heatGradient = {
-      0.0: "#1e3a8a", // น้ำเงินเข้ม
-      0.25:"#10b981", // เขียว
-      0.5:"#eab308",  // เหลือง
-      0.75:"#f97316", // ส้ม
-      1.0:"#dc2626"   // แดง
-    };
-
-    // -------------------------------------------------
-    // 4) main map vars
-    // -------------------------------------------------
+    // ---------------------------
+    // 4) build map
+    // ---------------------------
     let map;
-    let layerRedBull;
+    let layerHub;
     let layerFactories;
     let layerHeat;
 
-    // -------------------------------------------------
-    // 5) initMap
-    // -------------------------------------------------
     function initMap(factories) {
-      // base map street
+      // พื้นหลังถนน
       const street = L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
@@ -506,103 +437,104 @@
         }
       );
 
-      // base map satellite (Esri imagery)
+      // พื้นหลังดาวเทียม
       const satellite = L.tileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         {
           maxZoom: 19,
-          attribution: "Tiles &copy; Esri"
+          attribution: "Tiles © Esri"
         }
       );
 
-      // create map
       map = L.map("map", {
-        center: [redBullSite.lat, redBullSite.lng],
+        center: [hub.lat, hub.lng],
         zoom: 11,
         layers: [street]
       });
 
-      // layer: hub marker
-      layerRedBull = L.layerGroup();
+      layerHub = L.layerGroup().addTo(map);
+      layerFactories = L.layerGroup().addTo(map);
+      layerHeat = L.layerGroup().addTo(map);
+
+      // 4.1 Hub marker (ส้ม)
       const hubColor = getComputedStyle(document.documentElement)
-        .getPropertyValue('--hub-color')
-        .trim();
-      const hubMarker = L.circleMarker([redBullSite.lat, redBullSite.lng], {
+        .getPropertyValue('--hub-color').trim();
+
+      const hubMarker = L.circleMarker([hub.lat, hub.lng], {
         radius: 10,
         color: "#fff",
         weight: 2,
         fillColor: hubColor,
         fillOpacity: 0.95
       }).bindPopup(`
-        <div class="popup-title">★ ${redBullSite.name}</div>
+        <div class="popup-title">★ ${hub.name}</div>
         <div class="popup-desc">
-          <div><strong>ที่อยู่:</strong> ${redBullSite.address}</div>
-          <div><strong>พิกัด:</strong> ${redBullSite.lat}, ${redBullSite.lng}</div>
+          <div><strong>ที่อยู่:</strong> ${hub.address}</div>
+          <div><strong>พิกัด:</strong> ${hub.lat}, ${hub.lng}</div>
         </div>
       `);
-      hubMarker.addTo(layerRedBull);
+      hubMarker.addTo(layerHub);
 
-      // layer: factories markers
-      layerFactories = L.layerGroup();
-      const recycleHex = getComputedStyle(document.documentElement)
-        .getPropertyValue('--recycle-color')
-        .trim();
-      const otherHex = getComputedStyle(document.documentElement)
-        .getPropertyValue('--other-color')
-        .trim();
-
+      // 4.2 markers โรงงานทั้งหมด
       factories.forEach(f => {
-        const fillColor = isRecyclingFactory(f) ? recycleHex : otherHex;
+        const fillColor = isRecyclingFactory(f)
+          ? getComputedStyle(document.documentElement).getPropertyValue('--recycle-color').trim()
+          : getComputedStyle(document.documentElement).getPropertyValue('--factory-color').trim();
 
-        const m = L.circleMarker([f.lat, f.lng], {
+        const marker = L.circleMarker([f.lat, f.lng], {
           radius: 6,
           color: "#fff",
           weight: 1.5,
-          fillColor: fillColor,
+          fillColor,
           fillOpacity: 0.9
-        }).bindPopup(factoryPopupHTML(f));
+        }).bindPopup(popupHTML(f));
 
-        m.addTo(layerFactories);
+        marker.addTo(layerFactories);
       });
 
-      // layer: heatmap
-      const heatPoints = factories.map(f => [f.lat, f.lng, 0.6]);
-      layerHeat = L.heatLayer(heatPoints, {
-        radius: 25,
-        blur: 20,
+      // 4.3 HEATMAP ความหนาแน่นโรงงาน
+      //    >>> ปรับ intensity = 1.0 ทุกจุด เพื่อให้ขึ้นสีแดงง่ายขึ้น <<<
+      const heatPoints = factories.map(f => [f.lat, f.lng, 1.0]);
+
+      const heatLayer = L.heatLayer(heatPoints, {
+        radius: 28,
+        blur: 22,
         maxZoom: 17,
-        gradient: heatGradient
+        // gradient น้ำเงินเข้ม → เขียว → เหลือง → ส้ม → แดง
+        gradient: {
+          0.0: '#1e3a8a', // น้ำเงินเข้ม
+          0.25: '#10b981', // เขียว
+          0.5: '#fde047', // เหลือง
+          0.75: '#fb923c', // ส้ม
+          1.0: '#dc2626' // แดงเข้ม
+        }
       });
 
-      // add default overlays
-      layerRedBull.addTo(map);
-      layerFactories.addTo(map);
-      // heatmap ยังไม่เปิดให้เอง ผู้ใช้เลือกเองได้
+      heatLayer.addTo(layerHeat);
 
-      // layer controls
+      // 4.4 control เปลี่ยนเลเยอร์
       const baseMaps = {
         "โหมดถนน (OSM)": street,
         "โหมดดาวเทียม (Esri)": satellite
       };
-
       const overlayMaps = {
-        "ลานกระทิงแดง (Hub)": layerRedBull,
+        "Hub ของเรา": layerHub,
         "หมุดโรงงานทั้งหมด": layerFactories,
         "Heatmap โรงงาน": layerHeat
       };
 
-      L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+      L.control.layers(baseMaps, overlayMaps, {collapsed:false}).addTo(map);
 
-      // fit bounds
+      // 4.5 ซูมให้พอดีกับข้อมูลทั้งหมด (รวม Hub)
       const allLatLng = factories.map(f => [f.lat, f.lng]);
-      allLatLng.push([redBullSite.lat, redBullSite.lng]);
+      allLatLng.push([hub.lat, hub.lng]);
       const bounds = L.latLngBounds(allLatLng);
       map.fitBounds(bounds.pad(0.2));
     }
 
-    // -------------------------------------------------
-    // 6) load data & start
-    // -------------------------------------------------
+    // ---------------------------
+    // 5) โหลดข้อมูล CSV แล้วเริ่ม
+    // ---------------------------
     fetch("data/factories.csv", { cache: "no-store" })
       .then(res => res.text())
       .then(csvText => {
@@ -613,7 +545,6 @@
         console.error("โหลด factories.csv ไม่ได้:", err);
         alert("มีปัญหาในการโหลดข้อมูลโรงงาน (factories.csv)");
       });
-
   </script>
 </body>
 </html>
