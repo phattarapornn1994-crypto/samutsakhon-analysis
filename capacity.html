@@ -2,723 +2,686 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>กำลังการอัด & ศักยภาพ HUB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>กำลังการผลิต & เครื่องจักร (ประมาณการ)</title>
 
   <style>
+    /* ---------- โทนสีใหม่: พื้นหลังขาว ตัวหนังสือเข้ม อ่านง่าย ---------- */
     :root {
-      --bg-main:#0f172a;
-      --bg-card:#1e293b;
-      --bg-soft:rgba(30,41,59,.6);
-      --line:#334155;
-      --text-main:#f8fafc;
-      --text-dim:#94a3b8;
-      --accent:#38bdf8;
-      --green:#4ade80;
-      --yellow:#fde047;
-      --red:#f87171;
-      --blue:#60a5fa;
+      --bg-page: #ffffff;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+
+      --text-main: #0f172a;
+      --text-dim: #475569;
+      --text-soft: #64748b;
+
+      --border-card: #cbd5e1;
+      --border-soft: #e2e8f0;
+      --border-input: #94a3b8;
+
+      --accent: #0ea5e9;
+      --good: #16a34a;
+      --warn: #eab308;
+      --risk: #dc2626;
+
+      --table-head-bg: #f1f5f9;
     }
 
     body {
       font-family: system-ui, sans-serif;
-      background: var(--bg-main);
+      background: var(--bg-page);
       color: var(--text-main);
-      margin:0;
-      padding:0;
-      min-height:100vh;
-      display:grid;
-      grid-template-rows:auto 1fr auto;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.5;
     }
 
-    header{
-      background:#1e293b;
-      border-bottom:1px solid var(--line);
-      padding:12px 16px;
-      font-size:14px;
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+    /* ---------- HEADER / NAV ---------- */
+    header {
+      background: #ffffff;
+      color: var(--text-main);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-card);
+      font-size: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    header .brand{
-      font-weight:600;
-      color:#fff;
-      font-size:14px;
+    header .brand {
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 15px;
     }
-    header nav a{
-      color:var(--text-dim);
-      text-decoration:none;
-      font-size:13px;
-      margin-right:12px;
+    header nav a {
+      color: var(--text-dim);
+      margin-right: 12px;
+      text-decoration: none;
+      font-size: 14px;
     }
-    header nav a:hover{
-      color:#fff;
+    header nav a:last-child {
+      margin-right: 0;
     }
-    header nav a.active{
-      color:var(--accent);
-      font-weight:600;
+    header nav a.active {
+      color: var(--accent);
+      font-weight: 600;
     }
-
-    main{
-      padding:16px;
-      display:grid;
-      gap:16px;
-      grid-template-columns:1fr;
-      max-width:1250px;
-      width:100%;
-      margin:0 auto;
+    header nav a:hover {
+      color: var(--accent);
     }
 
-    .card{
-      background:var(--bg-card);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px 20px;
-      box-shadow:0 24px 64px rgb(0 0 0 / .8);
+    /* ---------- MAIN LAYOUT ---------- */
+    main {
+      padding: 20px 16px 64px;
+      display: grid;
+      gap: 20px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
     }
 
-    .card h2{
-      margin:0 0 4px 0;
-      font-size:15px;
-      font-weight:600;
-      color:#fff;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
+    section.block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 20px 20px 16px;
     }
 
-    .sub{
-      font-size:12px;
-      color:var(--text-dim);
-      line-height:1.4;
-      margin-bottom:12px;
+    section.block h2 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      color: var(--text-main);
+      font-weight: 600;
     }
 
-    .grid-2{
-      display:grid;
-      gap:16px;
+    section.block .sub {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
     }
-    @media(min-width:900px){
-      .grid-2{
-        grid-template-columns:1fr 1fr;
+
+    /* กล่องข้อมูล / input */
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(min(200px,100%),1fr));
+      gap: 16px;
+    }
+
+    .input-col {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 12px 12px 10px;
+    }
+
+    .input-col label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .unit {
+      color: var(--text-soft);
+      font-weight: 400;
+    }
+
+    .input-col input {
+      width: 100%;
+      background: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .input-col input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 0;
+      border-color: var(--accent);
+    }
+
+    /* กล่องสรุปตัวเลข */
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .calc-row {
+      font-size: 14px;
+      color: var(--text-main);
+      line-height: 1.5;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 12px 16px;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .calc-row .label {
+      color: var(--text-soft);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .result-num {
+      font-size: 17px;
+      color: var(--text-main);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .result-note {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
+    /* ตารางเทียบเครื่องอัด */
+    table.compare {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-main);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table.compare thead {
+      background: var(--table-head-bg);
+      color: var(--text-main);
+    }
+    table.compare th,
+    table.compare td {
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    table.compare tr:last-child td {
+      border-bottom: 0;
+    }
+    table.compare th {
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+    table.compare td.headcol {
+      font-weight: 600;
+      color: var(--text-main);
+      width: 150px;
+      white-space: nowrap;
+    }
+
+    .highlight-good {
+      color: var(--good);
+      font-weight: 600;
+    }
+    .highlight-warn {
+      color: var(--warn);
+      font-weight: 600;
+    }
+    .highlight-risk {
+      color: var(--risk);
+      font-weight: 600;
+    }
+
+    /* layout 2 คอลัมน์เฉพาะจอใหญ่ */
+    @media (min-width: 900px){
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
       }
-      main{
-        grid-template-columns:1fr 1fr;
-      }
-      .wide{
-        grid-column:1 / span 2;
-      }
     }
 
-    .flex-row{
-      display:flex;
-      flex-wrap:wrap;
-      align-items:flex-end;
-      column-gap:12px;
-      row-gap:12px;
-    }
-
-    .input-col{
-      min-width:140px;
-      flex:1;
-    }
-
-    label{
-      font-size:12px;
-      color:#cbd5e1;
-      display:block;
-      margin-bottom:4px;
-    }
-    .unit{
-      font-size:11px;
-      color:var(--text-dim);
-      font-weight:400;
-    }
-
-    input{
-      width:100%;
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:8px;
-      color:#fff;
-      font-size:14px;
-      padding:8px 10px;
-    }
-
-    button#calcBtn{
-      background:var(--accent);
-      color:#0f172a;
-      font-weight:600;
-      border:0;
-      border-radius:8px;
-      font-size:14px;
-      padding:10px 14px;
-      cursor:pointer;
-      line-height:1.2;
-      min-width:120px;
-    }
-    button#calcBtn:hover{
-      filter:brightness(1.1);
-    }
-
-    /* mini stat cards */
-    .stats-wrap{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-      gap:12px;
-      margin-top:12px;
-    }
-    .stat-box{
-      background:var(--bg-soft);
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:12px;
-    }
-    .stat-label{
-      font-size:11px;
-      line-height:1.4;
-      color:var(--text-dim);
-    }
-    .stat-value{
-      font-size:18px;
-      font-weight:600;
-      color:#fff;
-      line-height:1.3;
-      margin-top:2px;
-      word-break:break-word;
-    }
-    .tagline{
-      font-size:11px;
-      line-height:1.4;
-      margin-top:2px;
-      color:var(--text-dim);
-    }
-
-    table.compare{
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
-      color:#cbd5e1;
-      margin-top:12px;
-    }
-    table.compare th{
-      background:#0f172a;
-      color:#fff;
-      text-align:left;
-      font-weight:600;
-      font-size:12px;
-      padding:8px 10px;
-      border-bottom:1px solid var(--line);
-      white-space:nowrap;
-    }
-    table.compare td{
-      padding:8px 10px;
-      border-bottom:1px solid var(--line);
-      vertical-align:top;
-    }
-    table.compare tr:last-child td{
-      border-bottom:0;
-    }
-
-    ul.explain-list{
-      padding-left:16px;
-      margin:8px 0 0 0;
-      font-size:12px;
-      color:#cbd5e1;
-      line-height:1.5;
-    }
-    ul.explain-list li{
-      margin-bottom:6px;
-    }
-    ul.explain-list b{
-      color:#fff;
-      font-weight:600;
-    }
-
-    .badge{
-      display:inline-block;
-      font-size:11px;
-      font-weight:600;
-      line-height:1;
-      padding:4px 6px;
-      border-radius:6px;
-      border:1px solid transparent;
-      vertical-align:middle;
-    }
-    .badge.green{
-      background:#052e16;
-      border-color:#14532d;
-      color:var(--green);
-    }
-    .badge.yellow{
-      background:#422006;
-      border-color:#713f12;
-      color:var(--yellow);
-    }
-    .badge.red{
-      background:#450a0a;
-      border-color:#7f1d1d;
-      color:var(--red);
-    }
-    .badge.blue{
-      background:#082f49;
-      border-color:#1e40af;
-      color:var(--blue);
-    }
-
-    footer{
-      color:#475569;
-      background:#0f172a;
+    footer {
+      color: var(--text-soft);
+      background:#ffffff;
       font-size:12px;
       text-align:center;
-      padding:12px 0 16px;
-      border-top:1px solid #334155;
+      padding:16px 0 24px;
+      border-top:1px solid var(--border-card);
+      margin-top: 32px;
+    }
+
+    /* bullet note box */
+    .note-box {
+      background:#f8fafc;
+      border:1px solid var(--border-soft);
+      border-radius:8px;
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--text-main);
+      line-height:1.5;
+    }
+    .note-box strong {
+      color: var(--text-main);
+    }
+    .note-box ul {
+      padding-left: 20px;
+      margin:6px 0 0;
+    }
+    .note-box li {
+      margin-bottom:4px;
     }
 
   </style>
 </head>
 <body>
-<header>
-  <div class="brand">สมุทรสาคร Spatial Intelligence</div>
-  <nav>
-    <a href="index.html">หน้าแรก</a>
-    <a href="map.html">แผนที่</a>
-    <a href="competition.html">คู่แข่ง</a>
-    <a href="customers.html">ลูกค้า</a>
-    <a href="population.html">ประชากร</a>
-    <a href="forecast.html">สินค้า</a>
-    <a href="risk.html">ความเสี่ยง</a>
-    <a href="capacity.html" class="active">กำลังการอัด</a>
-  </nav>
-</header>
+  <header>
+    <div class="brand">สมุทรสาคร Spatial Intelligence</div>
+    <nav>
+      <a href="index.html">หน้าแรก</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html">คู่แข่ง/ลูกค้า</a>
+      <a href="population.html">ประชากร</a>
+      <a href="capacity.html" class="active">กำลังการผลิต</a>
+      <a href="risk.html">ความเสี่ยง</a>
+    </nav>
+  </header>
 
-<main>
+  <main>
+    <!-- SECTION 1: INPUT ปริมาณเข้าโรงงาน -->
+    <section class="block">
+      <h2>1) ปริมาณวัสดุเข้าระบบต่อปี (ตัน/ปี)</h2>
+      <p class="sub">
+        ใส่ประมาณการ “วัสดุรีไซเคิลดิบที่เก็บมาได้ทั้งปีในจังหวัด/โซนเป้าหมาย”  
+        ตัวเลขนี้คือของเข้าหน้างาน ก่อนจะอัดก้อนหรือคัดแยกละเอียด
+      </p>
 
-  <!-- 1. INPUT ปริมาณรายสินค้า -->
-  <section class="card wide">
-    <h2>1) ปริมาณวัสดุที่คาดว่าจะเข้าลาน (ต่อปี)</h2>
-    <div class="sub">
-      ใส่ปริมาณแยกตามประเภท (ตัน/ปี). ขวดแก้ว “ดี” ใส่เป็นจำนวนใบ/ปี (ไม่ต้องอัด เพราะจะส่งกลับโรงงานสุราแบบนำกลับใช้ซ้ำ)
-    </div>
-
-    <div class="grid-2">
-
-      <div>
-        <div class="flex-row">
-          <div class="input-col">
-            <label>ขวด PET ใส / PET สี <span class="unit">(ตัน/ปี)</span></label>
-            <input id="petTon" type="number" min="0" step="0.1" value="1500"/>
-          </div>
-          <div class="input-col">
-            <label>ขวด HDPE (เช่น ขวดนม/ขาวขุ่น) <span class="unit">(ตัน/ปี)</span></label>
-            <input id="hdpeTon" type="number" min="0" step="0.1" value="600"/>
-          </div>
-        </div>
-
-        <div class="flex-row">
-          <div class="input-col">
-            <label>กระดาษลูกฟูก / กล่อง <span class="unit">(ตัน/ปี)</span></label>
-            <input id="cartonTon" type="number" min="0" step="0.1" value="2000"/>
-          </div>
-          <div class="input-col">
-            <label>กระดาษขาวดำ / กระดาษผสม <span class="unit">(ตัน/ปี)</span></label>
-            <input id="paperTon" type="number" min="0" step="0.1" value="500"/>
-          </div>
-        </div>
-
-        <div class="flex-row">
-          <div class="input-col">
-            <label>กระป๋องอะลูมิเนียม <span class="unit">(ตัน/ปี)</span></label>
-            <input id="aluTon" type="number" min="0" step="0.1" value="200"/>
-          </div>
-          <div class="input-col">
-            <label>วันเดินเครื่องต่อปี <span class="unit">(วัน/ปี)</span></label>
-            <input id="operatingDays" type="number" min="1" step="1" value="300"/>
-          </div>
-        </div>
-
-        <div class="flex-row">
-          <div class="input-col">
-            <label>ชั่วโมง/กะ <span class="unit">(ชม.)</span></label>
-            <input id="shiftHours" type="number" min="1" step="1" value="8"/>
-          </div>
-          <div class="input-col">
-            <label>กะ/วัน <span class="unit">(กะ)</span></label>
-            <input id="shiftsPerDay" type="number" min="1" step="1" value="1"/>
-          </div>
-        </div>
+      <div class="note-box" style="margin-bottom:16px;">
+        <strong>หมายเหตุการจัดการวัสดุ:</strong>
+        <ul>
+          <li><strong>PET / HDPE / กระดาษ / อะลูมิเนียม</strong> = ต้องเข้าเครื่องอัดก้อนก่อนขาย (เราขายเป็นก้อนอัด)</li>
+          <li><strong>ขวดแก้วดี (ขวดสุราที่กลับมาใช้ซ้ำ)</strong> = ไม่ต้องอัด เป็นสินค้า premium แบบ “คัดสภาพ-คัดรุ่น-นับเป็นใบ” ส่งกลับโรงงานสุราโดยตรง</li>
+        </ul>
       </div>
 
-      <div>
-        <div class="flex-row">
-          <div class="input-col">
-            <label>ขวดแก้ว “ดี” ที่จะส่งคืนโรงงานสุรา <span class="unit">(ใบ/ปี)</span></label>
-            <input id="glassBottleCount" type="number" min="0" step="1" value="2000000"/>
-          </div>
-
-          <button id="calcBtn">คำนวณ</button>
+      <div class="input-grid">
+        <div class="input-col">
+          <label>ขวดแก้วรีฟิล (สุรากลับใช้ซ้ำ) <span class="unit">(ตัน/ปี)</span></label>
+          <input id="glassTonPerYear" type="number" min="0" step="0.1" value="500">
         </div>
 
-        <div class="sub" style="margin-top:12px;">
-          หมายเหตุ:
-          <br/>• PET / HDPE / กระดาษ / อะลูมิเนียม = ต้องอัดก้อน
-          <br/>• ขวดแก้วดี = ไม่อัด → เป็นสินค้า premium (ส่งกลับใช้ซ้ำ)
+        <div class="input-col">
+          <label>PET ใส (ขวดน้ำดื่ม) <span class="unit">(ตัน/ปี)</span></label>
+          <input id="petTonPerYear" type="number" min="0" step="0.1" value="800">
+        </div>
+
+        <div class="input-col">
+          <label>HDPE / PP (พวกขวดนม, ฝาน้ำมัน) <span class="unit">(ตัน/ปี)</span></label>
+          <input id="hdpeTonPerYear" type="number" min="0" step="0.1" value="400">
+        </div>
+
+        <div class="input-col">
+          <label>กล่องลูกฟูก / ลังสินค้า <span class="unit">(ตัน/ปี)</span></label>
+          <input id="paperTonPerYear" type="number" min="0" step="0.1" value="1200">
+        </div>
+
+        <div class="input-col">
+          <label>กระป๋องอะลูมิเนียม <span class="unit">(ตัน/ปี)</span></label>
+          <input id="aluTonPerYear" type="number" min="0" step="0.1" value="200">
+        </div>
+
+        <div class="input-col">
+          <label>เศษโลหะอื่น / เศษเหล็ก <span class="unit">(ตัน/ปี)</span></label>
+          <input id="metalTonPerYear" type="number" min="0" step="0.1" value="600">
+        </div>
+
+        <div class="input-col">
+          <label>วันเดินเครื่องต่อปี <span class="unit">(วัน/ปี)</span></label>
+          <input id="daysPerYear" type="number" min="1" step="1" value="300">
+        </div>
+
+        <div class="input-col">
+          <label>ชั่วโมงต่อวัน <span class="unit">(ชม./วัน)</span></label>
+          <input id="hoursPerDay" type="number" min="1" step="1" value="8">
         </div>
       </div>
 
-    </div>
-  </section>
-
-
-  <!-- 2. LOAD SUMMARY -->
-  <section class="card">
-    <h2>2) ภาระงานที่ต้องอัดก้อน</h2>
-    <div class="sub">ระบบรวมวัตถุดิบทุกประเภทที่ “ต้องอัด” แล้วแปลงเป็นโหลดต่อวัน/ต่อชั่วโมง</div>
-
-    <div class="stats-wrap">
-      <div class="stat-box">
-        <div class="stat-label">รวมวัตถุดิบที่ต้องอัด</div>
-        <div class="stat-value" id="totalTonPerYear">-</div>
-        <div class="tagline">ตัน / ปี</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">เฉลี่ยต่อวัน</div>
-        <div class="stat-value" id="tonPerDay">-</div>
-        <div class="tagline">ตัน / วัน</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">ภาระต่อชั่วโมง</div>
-        <div class="stat-value" id="tonPerHour">-</div>
-        <div class="tagline">ตัน / ชม.</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">โหลดเครื่องอัด</div>
-        <div class="stat-value" id="kgPerHour">-</div>
-        <div class="tagline">กก. / ชม. ที่ต้องอัด</div>
-      </div>
-    </div>
-
-    <ul class="explain-list">
-      <li><b>วิธีคิด:</b> (ตัน/ปี ÷ วันทำงาน) = ตัน/วัน → ÷ ชั่วโมงเดินเครื่องจริงต่อวัน = ตัน/ชม. → ×1000 = กก./ชม.</li>
-      <li>เลขนี้คือความเร็ว “กี่กิโลกรัมต่อชั่วโมง” ที่เครื่องอัดต้องกินเข้าให้ทัน ไม่งั้นสต็อกจะค่อยๆ กองเต็มลาน</li>
-    </ul>
-  </section>
-
-
-  <!-- 3. เครื่องอัด: แนวตั้ง vs แนวนอน -->
-  <section class="card">
-    <h2>3) เครื่องอัดที่เหมาะ</h2>
-    <div class="sub">เปรียบเทียบสเปคประมาณการ แล้วดูว่าควรลงทุนแบบไหน</div>
-
-    <table class="compare">
-      <thead>
-        <tr>
-          <th>พารามิเตอร์หลัก</th>
-          <th>แนวตั้ง (Vertical baler)</th>
-          <th>แนวนอน (Horizontal baler)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>กำลังอัดต่อเครื่อง</td>
-          <td>~0.5 ตัน/ชม.<br/><small>≈ 500 กก./ชม.</small></td>
-          <td>~2 ตัน/ชม.<br/><small>≈ 2,000 กก./ชม.</small></td>
-        </tr>
-        <tr>
-          <td>น้ำหนัก 1 ก้อน</td>
-          <td>~150 กก./ก้อน</td>
-          <td>~400 กก./ก้อน</td>
-        </tr>
-        <tr>
-          <td>เวลาทำ 1 ก้อน</td>
-          <td>ประมาณ 15-20 นาที</td>
-          <td>ประมาณ 5-8 นาที</td>
-        </tr>
-        <tr>
-          <td>กำลังไฟต่อเครื่อง</td>
-          <td>~10 kW</td>
-          <td>~25 kW</td>
-        </tr>
-        <tr>
-          <td>แรงงาน/กะ</td>
-          <td>2 คน (ป้อน+มัด)</td>
-          <td>2 คน (ป้อน+โฟล์คลิฟต์)</td>
-        </tr>
-        <tr>
-          <td>เหมาะกับ</td>
-          <td>ปริมาณไม่สูงมาก / ทำทีละชนิด</td>
-          <td>ปริมาณสูง / อยากได้ก้อนมาตรฐานโรงงาน</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="stats-wrap" style="margin-top:16px;">
-      <div class="stat-box">
-        <div class="stat-label">ต้องใช้เครื่องแนวตั้ง ≈</div>
-        <div class="stat-value" id="needVert">-</div>
-        <div class="tagline">เครื่อง</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">ต้องใช้เครื่องแนวนอน ≈</div>
-        <div class="stat-value" id="needHori">-</div>
-        <div class="tagline">เครื่อง</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">คำแนะนำ</div>
-        <div class="stat-value" id="pickType">-</div>
-        <div class="tagline">เลือก main machine</div>
-      </div>
-    </div>
-
-    <div class="stats-wrap">
-      <div class="stat-box">
-        <div class="stat-label">%การใช้งานแนวตั้ง (โหลด/กำลัง)</div>
-        <div class="stat-value" id="utilVert">-</div>
-        <div class="tagline">ควรต่ำกว่า ~80% จะเหลือ buffer</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">%การใช้งานแนวนอน (โหลด/กำลัง)</div>
-        <div class="stat-value" id="utilHori">-</div>
-        <div class="tagline">ต่ำ = ยังโตได้โดยไม่ต้องซื้อเพิ่ม</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">กำลังไฟรวม (โดยประมาณ)</div>
-        <div class="stat-value" id="powerNeed">-</div>
-        <div class="tagline">kW (สำหรับชุดที่แนะนำ)</div>
-      </div>
-    </div>
-
-    <ul class="explain-list">
-      <li><b>จำนวนเครื่อง</b> = เพดาน(กก./ชม. ÷ ความสามารถกก./ชม.ของเครื่อง 1 ตัว)</li>
-      <li><b>%การใช้งาน</b> = (โหลดจริง / ความสามารถรวม) × 100</li>
-      <li>แนวนอนให้ก้อนใหญ่ มาตรฐานสม่ำเสมอ → รถบรรทุกเรียงง่าย → ต้นทุนขนส่ง/ตัน ต่ำกว่า</li>
-    </ul>
-  </section>
-
-
-  <!-- 4. โลจิสติกส์ / รถบรรทุก -->
-  <section class="card">
-    <h2>4) โหลดขึ้นรถบรรทุก</h2>
-    <div class="sub">สมมติรถบรรทุกกลางบรรทุกได้ ~15 ตัน/เที่ยว (15,000 กก.)</div>
-
-    <div class="stats-wrap">
-      <div class="stat-box">
-        <div class="stat-label">แนวตั้ง</div>
-        <div class="stat-value" id="truckVert">-</div>
-        <div class="tagline">ก้อน/เที่ยว (ก้อน ~150 กก.)</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">แนวนอน</div>
-        <div class="stat-value" id="truckHori">-</div>
-        <div class="tagline">ก้อน/เที่ยว (ก้อน ~400 กก.)</div>
-      </div>
-
-      <div class="stat-box">
-        <div class="stat-label">ความหมาย</div>
-        <div class="stat-value">
-          <span class="badge blue">ก้อนใหญ่ = ค่าขน/กก. ต่ำ</span>
+      <div class="flex-row" style="margin-top:20px;">
+        <div class="calc-row">
+          <div class="label">รวมวัสดุทั้งหมด</div>
+          <div class="result-num" id="totalTonPerYear">-</div>
+          <div class="result-note">ตัน/ปี (รวมทุกชนิด)</div>
         </div>
-        <div class="tagline">โรงงานปลายทางชอบก้อนสม่ำเสมอ เพราะลงคลังง่าย</div>
+
+        <div class="calc-row">
+          <div class="label">เฉลี่ยเข้าระบบต่อชั่วโมง</div>
+          <div class="result-num" id="avgKgPerHour">-</div>
+          <div class="result-note">กก./ชั่วโมง (โหลดเฉลี่ยที่ต้องจัดการ)</div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <ul class="explain-list">
-      <li>แนวนอน → ก้อนหนัก/เหลี่ยม → ใช้พื้นที่รถดีขึ้น ⇒ ส่งตรงโรงงานปลายน้ำได้เลย</li>
-      <li>นี่คือภาพ “ศูนย์รวบรวม” ไม่ใช่ร้านของเก่าเล็กๆ</li>
-    </ul>
-  </section>
+    <!-- SECTION 2: ตารางเปรียบเทียบแนวตั้ง vs แนวนอน -->
+    <section class="block">
+      <h2>2) เทียบเทคโนโลยีการอัดก้อน: แนวตั้ง vs แนวนอน</h2>
+      <p class="sub">
+        เครื่องอัดแนวตั้ง = ราคาถูกกว่า เหมาะลานเล็ก ก้อนเล็ก (~150–200 กก.) ใช้แรงงานคนเยอะ  
+        เครื่องอัดแนวนอน = โรงงานอุตสาหกรรม ก้อนใหญ่ (~700–900 กก.) ป้อนต่อเนื่อง ใช้คนน้อย ขนส่งคุ้ม
+      </p>
 
+      <div class="two-col">
+        <div style="overflow-x:auto;">
+          <table class="compare">
+            <thead>
+              <tr>
+                <th></th>
+                <th>แนวตั้ง (Vertical baler)</th>
+                <th>แนวนอน (Horizontal baler)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="headcol">น้ำหนักก้อนทั่วไป</td>
+                <td>~150–200 กก./ก้อน</td>
+                <td>~700–900 กก./ก้อน</td>
+              </tr>
+              <tr>
+                <td class="headcol">อัตราการอัด</td>
+                <td>~200–400 กก./ชม.<br>(พึ่งแรงงาน)</td>
+                <td>~1,000+ กก./ชม.<br>(ป้อนต่อเนื่อง)</td>
+              </tr>
+              <tr>
+                <td class="headcol">แรงงาน</td>
+                <td>3–4 คน/กะ<br>(ยก-มัดเอง)</td>
+                <td>2 คน/กะ<br>(ป้อน+คุมมัด)</td>
+              </tr>
+              <tr>
+                <td class="headcol">กำลังไฟ</td>
+                <td>~10 kW</td>
+                <td>~25 kW</td>
+              </tr>
+              <tr>
+                <td class="headcol">เหมาะกับ</td>
+                <td>ลานรับซื้อรายย่อย</td>
+                <td class="highlight-good">ศูนย์กลางรวบรวมระดับจังหวัด</td>
+              </tr>
+              <tr>
+                <td class="headcol">ขนส่งออกนอกพื้นที่</td>
+                <td>
+                  ก้อนเล็ก เรียงรถยาก → ใช้พื้นที่รถไม่คุ้ม  
+                  <div class="highlight-risk">ต้นทุนต่อกก. สูง</div>
+                </td>
+                <td>
+                  ก้อนใหญ่ เรียงซ้อนแน่น ส่งรถพ่วง 30 ตันได้เต็ม  
+                  <div class="highlight-good">ต้นทุนต่อกก. ต่ำ</div>
+                </td>
+              </tr>
+              <tr>
+                <td class="headcol">บทบาทในห่วงโซ่</td>
+                <td>ผู้ตาม / รับจ้างอัด</td>
+                <td>
+                  <span class="highlight-good">Hub เก็บรวมทั้งจังหวัด</span><br/>
+                  ต่อรองราคาปลายน้ำได้
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-  <!-- 5. ระดับสเกลธุรกิจ / HUB -->
-  <section class="card wide">
-    <h2>5) ระดับสเกลธุรกิจ & โอกาสเป็น HUB</h2>
-    <div class="sub">ดูว่าตอนนี้เราอยู่ระดับไหน และโตไปเป็นจุดศูนย์กลางจังหวัด / ภูมิภาคได้ไหม</div>
+        <div class="calc-row" style="min-height:100%;">
+          <div class="label" style="font-size:14px; color:var(--text-main); font-weight:600; margin-bottom:6px;">
+            สรุปสั้น ๆ
+          </div>
+          <div style="font-size:13px; color:var(--text-main); line-height:1.6;">
+            ถ้าปริมาณวัสดุรีไซเคิลรวมกันเป็นหลัก “หลายพันตัน/ปี”  
+            การข้ามไปใช้ <strong class="highlight-good">แนวนอน</strong> เลยจะได้:
+            <ul style="margin-top:8px; padding-left:20px; color:var(--text-main);">
+              <li>ใช้คนต่อปริมาณน้อยลง</li>
+              <li>ก้อนใหญ่ → ขนรถพ่วง 30 ตัน/เที่ยว ได้คุ้มทันที</li>
+              <li>ภาพลักษณ์ / การต่อรอง: เราเป็นศูนย์กลาง ไม่ใช่ร้านเล็ก</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="stats-wrap">
-      <div class="stat-box">
-        <div class="stat-label">สเกลธุรกิจ</div>
-        <div class="stat-value" id="bizScale">-</div>
-        <div class="tagline" id="bizTagline">-</div>
+    <!-- SECTION 3: วิเคราะห์เคสของเรา (สมมติเลือกแนวนอน) -->
+    <section class="block">
+      <h2>3) ถ้าเราใช้ “เครื่องอัดแนวนอน” จริง จะพอไหม?</h2>
+      <p class="sub">
+        ด้านล่างนี้คือการคำนวณอัตโนมัติจากข้อมูลที่กรอกด้านบน  
+        - โหลดวัสดุเฉลี่ย/ชั่วโมง  
+        - ความสามารถเครื่องแนวนอน ~1,000 กก./ชม./เครื่อง  
+        - จำนวนเครื่องที่ควรมี  
+        - คน, ไฟฟ้า, และศักยภาพการขนส่งด้วยรถพ่วง 30 ตัน
+      </p>
+
+      <div class="flex-row">
+        <div class="calc-row">
+          <div class="label">สมรรถนะเครื่องแนวนอน (สมมติ)</div>
+          <div class="result-num" id="horiKgPerHour">-</div>
+          <div class="result-note">กก./ชม./เครื่อง (ประมาณ 1,000 กก./ชม.)</div>
+        </div>
+
+        <div class="calc-row">
+          <div class="label">% การใช้งานเครื่องโดยเฉลี่ย</div>
+          <div class="result-num" id="utilizationPct">-</div>
+          <div class="result-note">เทียบโหลดจริง vs ความสามารถเครื่อง</div>
+        </div>
+
+        <div class="calc-row">
+          <div class="label">จำนวนเครื่องอัดที่ต้องมี (ปัดขึ้น)</div>
+          <div class="result-num" id="neededMachines">-</div>
+          <div class="result-note">เครื่องแนวนอน</div>
+        </div>
       </div>
 
-      <div class="stat-box">
-        <div class="stat-label">โอกาสเป็น HUB</div>
-        <div class="stat-value" id="hubChance">-</div>
-        <div class="tagline">อำนาจต่อรองกับโรงงานปลายน้ำ</div>
+      <div class="flex-row" style="margin-top:16px;">
+        <div class="calc-row">
+          <div class="label">กำลังไฟรวม (ประมาณ)</div>
+          <div class="result-num" id="powerKw">-</div>
+          <div class="result-note">kW (≈25 kW ต่อเครื่องแนวนอน)</div>
+        </div>
+
+        <div class="calc-row">
+          <div class="label">แรงงานปฏิบัติการ</div>
+          <div class="result-num" id="peoplePerShift">-</div>
+          <div class="result-note">คน/กะ (≈2 คน ต่อเครื่องแนวนอน)</div>
+        </div>
+
+        <div class="calc-row">
+          <div class="label">การอัดก้อน → ขนรถพ่วง 30 ตัน</div>
+          <div class="result-num" id="truckBalesInfo">-</div>
+          <div class="result-note">
+            คิดจากก้อนแนวนอน ~800 กก./ก้อน  
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="stat-box">
-        <div class="stat-label">ขั้นต่อไป</div>
-        <div class="stat-value" id="nextStep">-</div>
-        <div class="tagline">การบ้านระดับกลยุทธ์</div>
-      </div>
-    </div>
+    <!-- SECTION 4: การอ่านผลแบบเชิงธุรกิจ -->
+    <section class="block">
+      <h2>4) ตีความธุรกิจ / ศักยภาพขึ้นเป็น Hub จังหวัด</h2>
+      <p class="sub" id="businessInsight">
+        -
+      </p>
+    </section>
 
-    <ul class="explain-list" id="hubExplain">
-      <li>กรอกเลขแล้วกดคำนวณ เพื่อดูแผนโตแบบ HUB จังหวัด / HUB ภูมิภาค</li>
-      <li>ขวดแก้วดี = ความได้เปรียบเชิงภาพลักษณ์สิ่งแวดล้อม (reuse) ที่รายเล็กทั่วไปไม่มี</li>
-    </ul>
-  </section>
+  </main>
 
-</main>
+  <footer>
+    © วิเคราะห์เชิงพื้นที่สมุทรสาคร · ศักยภาพกำลังการผลิต & เครื่องจักรอัดก้อน (Prototype)
+  </footer>
 
-<footer>
-  © ศักยภาพลานรีไซเคิลสมุทรสาคร · Prototype
-</footer>
+  <script>
+    // -----------------------------
+    // สมมติฐานเชิงเทคนิค (ปรับได้ทีหลัง)
+    // -----------------------------
+    // ความสามารถเครื่องอัดแนวนอน 1 เครื่อง:
+    const HORIZONTAL_KG_PER_HOUR_PER_MACHINE = 1000; // ~1 ตัน/ชม./เครื่อง
 
-<script>
-function fmt(val, d=1){
-  if(isNaN(val)) return "-";
-  return Number(val).toFixed(d);
-}
+    // น้ำหนักก้อน:
+    // - แนวตั้ง: ~180 กก./ก้อน (ร้านรีไซเคิลทั่วไป)
+    // - แนวนอน: ~800 กก./ก้อน (โรงงานอุตสาหกรรม)
+    const VERTICAL_BALE_KG = 180;
+    const HORIZONTAL_BALE_KG = 800;
 
-function calc(){
-  // ===== 1. read inputs =====
-  const petTon   = parseFloat(document.getElementById("petTon").value||"0");
-  const hdpeTon  = parseFloat(document.getElementById("hdpeTon").value||"0");
-  const cartonTon= parseFloat(document.getElementById("cartonTon").value||"0");
-  const paperTon = parseFloat(document.getElementById("paperTon").value||"0");
-  const aluTon   = parseFloat(document.getElementById("aluTon").value||"0");
-  const glassBot = parseFloat(document.getElementById("glassBottleCount").value||"0"); // ขวด/ปี (ไม่อัด)
+    // ไฟฟ้าต่อเครื่องแนวนอน (โดยประมาณ)
+    const HORIZONTAL_POWER_KW = 25;
 
-  const operatingDays = parseFloat(document.getElementById("operatingDays").value||"300");
-  const shiftHours    = parseFloat(document.getElementById("shiftHours").value||"8");
-  const shiftsPerDay  = parseFloat(document.getElementById("shiftsPerDay").value||"1");
+    // คน/กะ ต่อเครื่องแนวนอน
+    const PEOPLE_PER_SHIFT_PER_MACHINE = 2;
 
-  const hoursPerDay   = (shiftHours * shiftsPerDay>0 ? shiftHours*shiftsPerDay : 1);
-  const daysPerYear   = (operatingDays>0 ? operatingDays : 1);
+    // รถพ่วงขนส่งออก (30 ตัน/เที่ยว = 30,000 กก.)
+    const TRUCK_PAYLOAD_KG = 30000;
 
-  // ===== 2. total ton that needs baling (not including glass bottles) =====
-  const totalTonPerYear = petTon + hdpeTon + cartonTon + paperTon + aluTon;
+    // -----------------------------
+    // helper แสดงตัวเลข
+    // -----------------------------
+    function fmt(num, digits=0) {
+      if (isNaN(num)) return "-";
+      return Number(num).toLocaleString("th-TH", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      });
+    }
 
-  // convert to ton/day → ton/hour → kg/hour
-  const tonPerDay = totalTonPerYear / daysPerYear;
-  const tonPerHour = tonPerDay / hoursPerDay;
-  const kgPerHour  = tonPerHour * 1000;
+    // -----------------------------
+    // main calc
+    // -----------------------------
+    function recalc() {
+      // ดึงค่าที่ผู้ใช้กรอก
+      const glassTonPerYear = parseFloat(document.getElementById("glassTonPerYear").value || "0");
+      const petTonPerYear   = parseFloat(document.getElementById("petTonPerYear").value   || "0");
+      const hdpeTonPerYear  = parseFloat(document.getElementById("hdpeTonPerYear").value  || "0");
+      const paperTonPerYear = parseFloat(document.getElementById("paperTonPerYear").value || "0");
+      const aluTonPerYear   = parseFloat(document.getElementById("aluTonPerYear").value   || "0");
+      const metalTonPerYear = parseFloat(document.getElementById("metalTonPerYear").value || "0");
 
-  // ===== 3. machine assumptions =====
-  const vertCapacityKgHr = 500;   // ~0.5 t/hr
-  const horiCapacityKgHr = 2000;  // ~2 t/hr
-  const vertBaleKg = 150;
-  const horiBaleKg = 400;
-  const vertPowerkW = 10;
-  const horiPowerkW = 25;
-  const vertPeoplePerShift = 2;
-  const horiPeoplePerShift = 2;
+      const daysPerYear     = parseFloat(document.getElementById("daysPerYear").value     || "300");
+      const hoursPerDay     = parseFloat(document.getElementById("hoursPerDay").value     || "8");
 
-  // how many machines needed (ceil)
-  const needVertMachines = (kgPerHour>0) ? Math.max(1, Math.ceil(kgPerHour / vertCapacityKgHr)) : 0;
-  const needHoriMachines = (kgPerHour>0) ? Math.max(1, Math.ceil(kgPerHour / horiCapacityKgHr)) : 0;
+      // รวมตัน/ปี (ทั้งหมด)
+      const totalTonPerYear =
+        glassTonPerYear +
+        petTonPerYear   +
+        hdpeTonPerYear  +
+        paperTonPerYear +
+        aluTonPerYear   +
+        metalTonPerYear;
 
-  // utilization
-  const vertTotalCap = needVertMachines * vertCapacityKgHr;
-  const horiTotalCap = needHoriMachines * horiCapacityKgHr;
+      // ชั่วโมงทำงาน/ปี
+      const hoursPerYear = daysPerYear * hoursPerDay;
 
-  const utilVertPct = vertTotalCap>0 ? (kgPerHour / vertTotalCap)*100 : 0;
-  const utilHoriPct = horiTotalCap>0 ? (kgPerHour / horiTotalCap)*100 : 0;
+      // โหลดเฉลี่ยเป็นกก./ชม.
+      // (ตัน/ปี * 1000) / (ชม./ปี)
+      const avgKgPerHour =
+        hoursPerYear > 0
+        ? (totalTonPerYear * 1000) / hoursPerYear
+        : 0;
 
-  // choose recommended machine type:
-  // rule: ถ้าปริมาณรวม >= 3000 ตัน/ปี → แนวนอน
-  // ถ้าต่ำกว่านั้น → แนวตั้งพอ
-  let pick = "แนวตั้ง (Vertical)";
-  let powerNeed = needVertMachines * vertPowerkW;
-  let opPeople = needVertMachines * vertPeoplePerShift;
-  if(totalTonPerYear >= 3000){
-    pick = "แนวนอน (Horizontal)";
-    powerNeed = needHoriMachines * horiPowerkW;
-    opPeople = needHoriMachines * horiPeoplePerShift;
-  }
+      // สมรรถนะเครื่องแนวนอน 1 เครื่อง
+      const horiKgPerHour = HORIZONTAL_KG_PER_HOUR_PER_MACHINE;
 
-  // truck loading
-  const truckPayloadKg = 15000; // ~15 ตัน/เที่ยว
-  const truckVertBales = vertBaleKg>0 ? Math.floor(truckPayloadKg/vertBaleKg) : 0;
-  const truckHoriBales = horiBaleKg>0 ? Math.floor(truckPayloadKg/horiBaleKg) : 0;
+      // utilization (%โหลดที่ใช้จริงเมื่อเทียบกับกำลังเครื่อง)
+      const utilizationPct =
+        horiKgPerHour > 0
+        ? (avgKgPerHour / horiKgPerHour) * 100
+        : 0;
 
-  // scale classification (based on totalTonPerYear)
-  // <3000 ตัน/ปี = local
-  // 3000-15000   = provincial hub
-  // >15000       = regional hub
-  let scaleText = "";
-  let scaleDetail = "";
-  let hubChanceText = "";
-  let nextStepText = "";
-  let hubExplainDetail = "";
+      // จำนวนเครื่องแนวนอนที่ต้องการ (ปัดขึ้น)
+      const neededMachinesRaw =
+        horiKgPerHour > 0
+        ? (avgKgPerHour / horiKgPerHour)
+        : 0;
+      const neededMachines = Math.ceil(neededMachinesRaw);
 
-  if(totalTonPerYear < 3000){
-    scaleText = "จุดรับซื้อท้องถิ่น";
-    scaleDetail = "Local scale";
-    hubChanceText = "ยังไม่ใช่ HUB";
-    nextStepText = "เพิ่มวอลุ่ม / เก็บประเภทให้สะอาด";
+      // กำลังไฟรวม
+      const powerKw = neededMachines * HORIZONTAL_POWER_KW;
 
-    hubExplainDetail =
-      "ปริมาณรวมยังไม่ใหญ่พอคุยโรงงานปลายน้ำแบบสัญญาตรง " +
-      "โฟกัสคุณภาพของแต่ละชนิด (PET แยกสี, กระดาษไม่ปนพลาสติก) เพื่อขายได้ราคาpremium. " +
-      "ขวดแก้วดีคือจุดต่าง เพราะรายเล็กอื่นยังแยก/คัดแบบนี้ยาก";
-  } else if(totalTonPerYear < 15000){
-    scaleText = "ลานรวมระดับจังหวัด";
-    scaleDetail = "Provincial hub";
-    hubChanceText = "เริ่มมีอำนาจต่อรอง";
-    nextStepText = "พิจารณาแนวนอน 1 เครื่อง";
+      // จำนวนคนต่อกะ
+      const peoplePerShift = neededMachines * PEOPLE_PER_SHIFT_PER_MACHINE;
 
-    hubExplainDetail =
-      "คุณเริ่มเป็นจุดศูนย์กลางรับของจากอำเภอต่าง ๆ แล้วอัดก้อนมาตรฐานใหญ่ " +
-      "รถบรรทุกสามารถวิ่งเต็มเที่ยวไปโรงงานปลายน้ำได้บ่อยขึ้น " +
-      "โรงงานจะเริ่มมองคุณเป็นคู่ค้าหลักของจังหวัดมากกว่า 'ร้านของเก่า'";
-  } else {
-    scaleText = "ศูนย์รวบรวมภูมิภาค";
-    scaleDetail = "Regional hub";
-    hubChanceText = "HUB จริง";
-    nextStepText = "เสริมโลจิสติกส์และความปลอดภัยคลัง";
+      // ประมาณจำนวนก้อนต่อรถพ่วง 30 ตัน
+      // รถ 30,000 กก. / น้ำหนักก้อน
+      const truckVertBales = VERTICAL_BALE_KG > 0
+        ? Math.floor(TRUCK_PAYLOAD_KG / VERTICAL_BALE_KG)
+        : 0;
 
-    hubExplainDetail =
-      "วอลุ่มระดับภูมิภาค: คุณสามารถล็อกตารางรับของจากจังหวัดรอบข้าง " +
-      "อัดก้อนแนวนอนก้อนใหญ่ แล้วส่งออกเป็นเที่ยวรถมาตรฐานทุกวัน " +
-      "นี่คือระดับที่เจรจาราคายาวกับโรงงานปลายน้ำ (กระดาษ, พลาสติก, สุรา) ได้โดยตรง. " +
-      "ต้องใส่ใจเรื่องพื้นที่กองสต็อกและความเสี่ยงไฟเป็นพิเศษ";
-  }
+      const truckHoriBales = HORIZONTAL_BALE_KG > 0
+        ? Math.floor(TRUCK_PAYLOAD_KG / HORIZONTAL_BALE_KG)
+        : 0;
 
-  // ===== write results to UI =====
-  document.getElementById("totalTonPerYear").textContent = fmt(totalTonPerYear,1)+" ตัน";
-  document.getElementById("tonPerDay").textContent       = fmt(tonPerDay,2)+" ตัน";
-  document.getElementById("tonPerHour").textContent      = fmt(tonPerHour,3)+" ตัน";
-  document.getElementById("kgPerHour").textContent       = fmt(kgPerHour,0)+" กก.";
+      const truckInfoTxt =
+        `แนวตั้ง ~${fmt(truckVertBales)} ก้อน/เที่ยว | แนวนอน ~${fmt(truckHoriBales)} ก้อน/เที่ยว`;
 
-  document.getElementById("needVert").textContent = (needVertMachines>0?needVertMachines+" เครื่อง":"-");
-  document.getElementById("needHori").textContent = (needHoriMachines>0?needHoriMachines+" เครื่อง":"-");
-  document.getElementById("pickType").textContent = pick;
+      // -------- ปรับ UI --------
+      document.getElementById("totalTonPerYear").textContent = fmt(totalTonPerYear,1);
+      document.getElementById("avgKgPerHour").textContent    = fmt(avgKgPerHour,0);
 
-  document.getElementById("utilVert").textContent = (needVertMachines>0?fmt(utilVertPct,1)+" %":"-");
-  document.getElementById("utilHori").textContent = (needHoriMachines>0?fmt(utilHoriPct,1)+" %":"-");
-  document.getElementById("powerNeed").textContent= fmt(powerNeed,1)+" kW";
+      document.getElementById("horiKgPerHour").textContent   = fmt(horiKgPerHour,0);
+      document.getElementById("utilizationPct").textContent  = fmt(utilizationPct,1) + " %";
+      document.getElementById("neededMachines").textContent  = neededMachines + " เครื่อง";
 
-  document.getElementById("truckVert").textContent= truckVertBales+" ก้อน";
-  document.getElementById("truckHori").textContent= truckHoriBales+" ก้อน";
+      document.getElementById("powerKw").textContent         = fmt(powerKw,1) + " kW";
+      document.getElementById("peoplePerShift").textContent  = fmt(peoplePerShift,0) + " คน/กะ";
+      document.getElementById("truckBalesInfo").textContent  = truckInfoTxt;
 
-  document.getElementById("bizScale").textContent = scaleText;
-  document.getElementById("bizTagline").textContent = scaleDetail;
-  document.getElementById("hubChance").textContent = hubChanceText;
-  document.getElementById("nextStep").textContent = nextStepText;
+      // -------- Insight ธุรกิจ --------
+      let scaleText = "";
+      if (neededMachines <= 1) {
+        scaleText = "โหลดงานยังอยู่ในระดับที่ 1 เครื่องแนวนอนรับได้ → คุณเริ่มสร้างสถานะเป็นจุดรวบรวมหลักระดับจังหวัดได้แล้ว";
+      } else if (neededMachines === 2) {
+        scaleText = "ต้องการ ≈2 เครื่องแนวนอน → คุณกำลังจะเป็น Hub กลางจังหวัด/ข้ามจังหวัด มีอำนาจต่อรองราคาและกำหนดเงื่อนไขการรับของ";
+      } else {
+        scaleText = "ต้องใช้ ≥3 เครื่องแนวนอน → นี่คือระดับศูนย์กลางระดับภูมิภาค (Regional Hub) คู่แข่งรายย่อยตามคุณยาก";
+      }
 
-  document.getElementById("hubExplain").innerHTML =
-    "<li>"+hubExplainDetail+"</li>" +
-    "<li>ขวดแก้วดี ("+glassBot.toLocaleString()+" ใบ/ปี โดยประมาณ): เป็นภาพลักษณ์ด้านสิ่งแวดล้อม/รีฟิล/รียูส ซึ่งรายเล็กทั่วไปไม่มี</li>" +
-    "<li>แนวนอน = ก้อนใหญ่ (~400กก.) เรียงขึ้นรถง่าย → ค่าขนส่ง/ตัน ต่ำ → ดูเป็น HUB จริง</li>";
-}
+      const logisticsPoint =
+        "ก้อนแนวนอน (~800 กก./ก้อน) เรียงขึ้นรถพ่วง 30 ตัน ได้ประมาณ "
+        + fmt(truckHoriBales)
+        + " ก้อน/เที่ยว → ต้นทุนขนส่งต่อกก. ต่ำกว่าเจ้าเล็กที่ยังใช้ก้อนแนวตั้ง";
 
-// run default on load
-calc();
-document.getElementById("calcBtn").addEventListener("click", calc);
-</script>
+      const peoplePoint =
+        "ใช้แรงงานปฏิบัติการประมาณ "
+        + fmt(peoplePerShift,0)
+        + " คน/กะ สำหรับสายการอัดหลักทั้งหมด ซึ่งถือว่าต่ำเมื่อเทียบกับปริมาณตัน/ปี";
+
+      const powerPoint =
+        "กำลังไฟรวมราว "
+        + fmt(powerKw,1)
+        + " kW หมายความว่าพื้นที่ต้องมีไฟฟ้าอุตสาหกรรม แต่ยังอยู่ระดับโรงงาน SME-กลาง ไม่ใช่เมกะโปรเจกต์";
+
+      const dominancePoint =
+        "สรุป: ถ้าคุณเดินแนวนอน + โลจิสติกส์รถพ่วง 30 ตัน คุณไม่ได้เป็น 'ร้านรับซื้อของเก่า' อีกต่อไป แต่เป็น 'ศูนย์กลางรวบรวมและคัดแยกของจังหวัดสมุทรสาคร' ที่โรงงานปลายน้ำ (โรงงานสุรา, เม็ดพลาสติก, กระดาษ, โลหะ) ต้องคุยด้วยก่อน → โอกาสขึ้นเป็น Hub ใหญ่จริง";
+
+      document.getElementById("businessInsight").innerHTML =
+        `<div style="font-size:14px; color:var(--text-main); line-height:1.6;">
+          <div style="margin-bottom:8px;"><strong>ขนาดการดำเนินการ:</strong> ${scaleText}</div>
+          <div style="margin-bottom:8px;"><strong>ขนส่ง/โลจิสติกส์:</strong> ${logisticsPoint}</div>
+          <div style="margin-bottom:8px;"><strong>แรงงาน &amp; พลังงาน:</strong> ${peoplePoint}. ${powerPoint}.</div>
+          <div style="margin-bottom:8px;"><strong>ศักยภาพเป็น Hub:</strong> ${dominancePoint}</div>
+        </div>`;
+    }
+
+    // คำนวณใหม่ทุกครั้งที่แก้ input
+    const inputs = document.querySelectorAll("input");
+    inputs.forEach(inp => {
+      inp.addEventListener("input", recalc);
+    });
+
+    // คำนวณครั้งแรกตอนโหลดหน้า
+    recalc();
+  </script>
 </body>
 </html>
