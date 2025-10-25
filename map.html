@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>แผนที่โรงงาน & ลานกระทิงแดง - สมุทรสาคร</title>
 
-  <!-- Leaflet CSS (ตัวแผนที่และ control พื้นฐาน) -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -13,18 +13,21 @@
     crossorigin=""
   />
 
-  <!-- Leaflet JS (ไลบรารีแผนที่หลัก) -->
+  <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
 
-  <!-- ปลั๊กอิน Heatmap -->
+  <!-- Heatmap plugin -->
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
-  <!-- พื้นหลัง / UI / layout -->
+  <!-- PapaParse (อ่าน CSV โรงงานเยอะๆ โดยไม่ต้องมี Node.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
   <style>
+    /* โทน UI หลัก */
     body {
       font-family: system-ui, sans-serif;
       background: #0f172a;
@@ -49,7 +52,7 @@
     }
 
     header .title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: #fff;
       line-height: 1.4;
@@ -65,11 +68,11 @@
       color: #fff;
     }
 
+    /* พื้นที่ map */
     #map-wrapper {
       position: relative;
       background: #000;
     }
-
     #map {
       width: 100%;
       height: 100%;
@@ -78,7 +81,7 @@
       inset: 0;
     }
 
-    /* กล่องข้อมูลซ้ายบน */
+    /* กล่องข้อมูลมุมซ้ายบน */
     .info-panel {
       position: absolute;
       top: 16px;
@@ -95,7 +98,6 @@
       line-height: 1.5;
       color: #cbd5e1;
     }
-
     .info-panel h2 {
       margin: 0 0 8px;
       font-size: 14px;
@@ -104,10 +106,9 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      line-height: 1.4;
     }
 
-    /* กล่อง legend ซ้ายล่าง */
+    /* legend มุมซ้ายล่าง */
     .legend-panel {
       position: absolute;
       bottom: 16px;
@@ -153,7 +154,7 @@
       border-top:1px solid #334155;
     }
 
-    /* popup theme มืด */
+    /* popup style */
     .leaflet-popup-content-wrapper {
       background:#1e293b;
       color:#f8fafc;
@@ -178,7 +179,7 @@
       line-height:1.4;
     }
 
-    /* ปรับหน้ากาก layer control ให้เข้ม */
+    /* layer control ปรับโทนเข้ม */
     .leaflet-control-layers {
       background:#1e293b !important;
       border:1px solid #334155 !important;
@@ -204,305 +205,283 @@
 </head>
 
 <body>
-  <!-- แถบบน -->
   <header>
     <div class="title">
-      <div>แผนที่วิเคราะห์พื้นที่สมุทรสาคร</div>
-      <div style="font-weight:400;color:#94a3b8;font-size:12px;line-height:1.4;">
-        ลานกระทิงแดงใหม่ + กลุ่มอุตสาหกรรมรอบๆ + ความหนาแน่นประชากร
+      แผนที่โรงงาน & ความหนาแน่นในสมุทรสาคร
+      <div style="color:#94a3b8;font-weight:400;font-size:12px;">
+        ลานกระทิงแดงใหม่ + โรงงาน + Heatmap
       </div>
     </div>
     <nav>
-      <a href="./map.html">แผนที่</a>
-      <a href="./demographic.html">ข้อมูลประชากร</a>
-      <a href="./competition.html">การแข่งขัน</a>
+      <a href="index.html">หน้าหลัก</a>
+      <a style="color:#fff" href="map.html">แผนที่</a>
+      <a href="population.html">ประชากร</a>
+      <a href="competition.html">การแข่งขัน</a>
     </nav>
   </header>
 
-  <!-- พื้นที่แผนที่ -->
   <main id="map-wrapper">
+    <!-- actual leaflet map -->
     <div id="map"></div>
 
-    <!-- กล่อง info ซ้ายบน -->
+    <!-- info top-left -->
     <section class="info-panel">
-      <h2>พื้นที่ศึกษา</h2>
+      <h2>พื้นที่วิเคราะห์ จ.สมุทรสาคร</h2>
       <div>
-        <strong>ลานกระทิงแดง (จุดตั้งใหม่)</strong><br/>
-        ถนนสายใยรัก<br/>
-        พิกัด: 13.565126, 100.279895
+        - จุดหมุด: ตำแหน่งลานกระทิงแดงใหม่ ถนนสายใยรัก<br/>
+        - จุดวงกลม: โรงงาน/กิจการในระบบฐานข้อมูล<br/>
+        - Heatmap: ความหนาแน่นของโรงงาน
       </div>
-      <div style="margin-top:8px;font-size:12px;color:#94a3b8;">
-        Layer:
-        <ul style="margin:4px 0 0 16px;padding:0;">
-          <li>หมุดโรงงาน</li>
-          <li>Heatmap โรงงาน</li>
-          <li>Heatmap ประชากร</li>
-          <li>พื้นหลังถนน / ดาวเทียม</li>
-        </ul>
+      <div style="margin-top:8px;color:#94a3b8;font-size:12px;line-height:1.4">
+        การจัดกลุ่ม: K-means (แนวคิด) <br/>
+        การจัดชั้นข้อมูล: Geometrical interval
       </div>
     </section>
 
-    <!-- กล่อง legend ซ้ายล่าง -->
-    <aside class="legend-panel">
+    <!-- legend bottom-left -->
+    <section class="legend-panel">
       <div class="legend-row">
-        <div class="legend-dot" style="background:#ef4444;border-color:#fff;">K</div>
-        <div>ลานกระทิงแดง (จุดตั้งใหม่)</div>
+        <div class="legend-dot" style="background:#ef4444;">RB</div>
+        <div>ลานกระทิงแดงใหม่</div>
       </div>
 
       <div class="legend-row">
-        <div class="legend-dot" style="background:#3b82f6;border-color:#fff;">F</div>
-        <div>โรงงาน / อุตสาหกรรม</div>
+        <div class="legend-dot" style="background:#10b981;">R</div>
+        <div>โรงงานรีไซเคิล</div>
       </div>
 
       <div class="legend-row">
-        <div class="legend-dot" style="background:radial-gradient(circle at 50% 50%, rgba(59,130,246,0.9) 0%, rgba(59,130,246,0) 70%); border-color:#3b82f6;"></div>
-        <div>Heatmap โรงงาน (ความหนาแน่น)</div>
+        <div class="legend-dot" style="background:#38bdf8;">P</div>
+        <div>โรงงานกระดาษ/บรรจุภัณฑ์</div>
       </div>
 
-      <div class="legend-row" style="margin-bottom:0;">
-        <div class="legend-dot" style="background:radial-gradient(circle at 50% 50%, rgba(16,185,129,0.9) 0%, rgba(16,185,129,0) 70%); border-color:#10b981;"></div>
-        <div>Heatmap ประชากร</div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:#e879f9;">PL</div>
+        <div>พลาสติก/ฉีดขึ้นรูป</div>
       </div>
-    </aside>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:#facc15;color:#000;border-color:#000;">
+          M
+        </div>
+        <div>โลหะ / อลูมิเนียม</div>
+      </div>
+
+      <div class="legend-row">
+        <div style="
+          width:18px;
+          height:18px;
+          border-radius:4px;
+          background: radial-gradient(circle at 50% 50%, rgba(255,0,0,0.8) 0%, rgba(255,165,0,0.0) 70%);
+          border:1px solid #fff;
+          box-shadow:0 8px 16px rgb(0 0 0 / .5);
+        "></div>
+        <div>Heatmap ความหนาแน่นโรงงาน</div>
+      </div>
+    </section>
   </main>
 
-  <!-- แถบล่าง -->
   <footer>
-    Spatial Clustering (K-means concept) | Geometrical Interval Classification | © ทีมวิเคราะห์พื้นที่สมุทรสาคร
+    Samut Sakhon Industrial & Demographic Analysis Map • Static Prototype (Leaflet)
   </footer>
 
-  <!-- สคริปต์สร้างแผนที่ -->
+  <!-- สคริปต์หลัก -->
   <script>
-    /***********************************************
-     * 1) ตั้งค่าเบสแมพ 2 แบบ: ถนน (OSM) / ดาวเทียม
-     ***********************************************/
-    const roadLayer = L.tileLayer(
+    // ---------------------------
+    // 1) Base map layers
+    // ---------------------------
+
+    // ชั้นถนน (แผนที่ปกติ)
+    const streetLayer = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
-        maxZoom: 20,
-        attribution: '&copy; OpenStreetMap contributors'
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
       }
     );
 
-    // ดาวเทียมฟรีแบบสาธารณะ (Esri WorldImagery)
+    // ชั้นดาวเทียม (จาก Esri)
     const satelliteLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       {
-        maxZoom: 20,
-        attribution: "Tiles &copy; Esri"
+        maxZoom: 19,
+        attribution: 'Tiles © Esri'
       }
     );
 
-    /***********************************************
-     * 2) สร้าง map และกำหนดมุมมองเริ่มต้น
-     ***********************************************/
-    const siteLat = 13.565126;
-    const siteLng = 100.279895;
-
+    // สร้างแผนที่กลาง จิ้มที่ลานกระทิงแดงใหม่
     const map = L.map("map", {
-      center: [siteLat, siteLng],
+      center: [13.565126, 100.279895],
       zoom: 12,
-      layers: [roadLayer] // เริ่มต้นด้วยถนน
+      layers: [streetLayer] // เริ่มด้วยชั้นถนน
     });
 
-    /***********************************************
-     * 3) สร้าง Icon สำหรับลานกระทิงแดง (สีแดง)
-     ***********************************************/
-    const iconRed = L.divIcon({
-      className: "",
-      html: `
-        <div style="
-          background:#ef4444;
-          color:#fff;
-          border:2px solid #fff;
-          font-size:11px;
-          font-weight:600;
-          border-radius:999px;
-          width:28px;
-          height:28px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          box-shadow:0 10px 20px rgb(0 0 0 / .6);
-        ">K</div>
-      `,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
-      popupAnchor: [0, -14]
-    });
+    // baseLayers สำหรับ control
+    const baseLayers = {
+      "แผนที่ถนน": streetLayer,
+      "ดาวเทียม": satelliteLayer
+    };
 
-    /***********************************************
-     * 4) สร้าง Icon สำหรับโรงงานทั่วไป (สีฟ้า)
-     ***********************************************/
-    const iconFactory = L.divIcon({
-      className: "",
-      html: `
-        <div style="
-          background:#3b82f6;
-          color:#fff;
-          border:2px solid #fff;
-          font-size:11px;
-          font-weight:600;
-          border-radius:999px;
-          width:24px;
-          height:24px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          box-shadow:0 10px 20px rgb(0 0 0 / .6);
-        ">F</div>
-      `,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-      popupAnchor: [0, -12]
-    });
+    // ---------------------------
+    // 2) Layer groups (หมวดข้อมูล)
+    // ---------------------------
 
-    /***********************************************
-     * 5) กลุ่มชั้นข้อมูล (LayerGroup) สำหรับ marker
-     ***********************************************/
-    const redbullLayer = L.layerGroup();
+    // หมุดลานกระทิงแดง
+    const redBullLayer = L.layerGroup();
+
+    // หมุดโรงงานทั้งหมดจาก CSV
     const factoriesLayer = L.layerGroup();
 
-    // ลานกระทิงแดง (จุดตั้งใหม่)
-    L.marker([siteLat, siteLng], { icon: iconRed })
-      .addTo(redbullLayer)
-      .bindPopup(`
-        <div class="popup-title">ลานกระทิงแดง (จุดตั้งใหม่)</div>
-        <div class="popup-desc">
-          ถนนสายใยรัก<br/>
-          พิกัด: ${siteLat}, ${siteLng}
-        </div>
-      `);
+    // heatmap (เราจะสร้างทีหลังหลังโหลด CSV)
+    let factoriesHeatLayer = null;
 
-    // ตัวอย่างโรงงานบางส่วน (เราใส่ไม่กี่จุดก่อนเพื่อทดสอบ)
-    const factoryData = [
-      {
-        name: "บริษัท ขายดี ซีฟู้ดส์ จำกัด",
-        desc: "ห้องเย็น / ชำแหละสัตว์น้ำ",
-        lat: 13.5234108,
-        lng: 100.2799553
-      },
-      {
-        name: "บริษัท พี.เอส.พี.สเปเชียลตี้ส์ จำกัด (มหาชน)",
-        desc: "ผลิตและบรรจุน้ำมันหล่อลื่น / บรรจุภัณฑ์พลาสติก",
-        lat: 13.5294242,
-        lng: 100.2439203
-      },
-      {
-        name: "บริษัท แอตแลนติก มิลส์ (ประเทศไทย) จำกัด",
-        desc: "ทอ/ย้อมผ้าอุตสาหกรรม",
-        lat: 13.5463736,
-        lng: 100.2200236
-      },
-      {
-        name: "บริษัท เจดีฟู้ด จำกัด (มหาชน)",
-        desc: "ผลิตเครื่องปรุงรส / อาหารแห้ง",
-        lat: 13.5165282,
-        lng: 100.1436569
-      },
-      {
-        name: "บริษัท พี.เอ.ที.อินเตอร์เทรด จำกัด",
-        desc: "ชิ้นส่วนรางสายไฟ / ตู้สวิตช์บอร์ด",
-        lat: 13.5652123,
-        lng: 100.3738011
-      }
-    ];
+    // control สำหรับเปิดปิดชั้นข้อมูลทั้งหมด
+    const layerControl = L.control.layers(baseLayers, {}, { collapsed: false }).addTo(map);
 
-    factoryData.forEach(f => {
-      L.marker([f.lat, f.lng], { icon: iconFactory })
-        .addTo(factoriesLayer)
-        .bindPopup(`
-          <div class="popup-title">${f.name}</div>
-          <div class="popup-desc">${f.desc}<br/>
-          พิกัด: ${f.lat}, ${f.lng}</div>
-        `);
+    // ---------------------------
+    // 3) ฟังก์ชันตกแต่ง marker
+    // ---------------------------
+
+    // ไอคอนลานกระทิงแดง (สีแดง)
+    const redBullIcon = L.divIcon({
+      className: "",
+      html: `
+        <div style="
+          width:20px;
+          height:20px;
+          border-radius:999px;
+          background:#ef4444;
+          border:2px solid #fff;
+          box-shadow:0 0 12px rgba(0,0,0,.6);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:10px;
+          font-weight:600;
+          color:#fff;
+        ">RB</div>
+      `,
+      iconSize: [20,20],
+      iconAnchor: [10,10]
     });
 
-    // ใส่ทั้งสอง layer ลง map เริ่มต้น
-    redbullLayer.addTo(map);
-    factoriesLayer.addTo(map);
-
-    /***********************************************
-     * 6) Heatmap: ความหนาแน่นโรงงาน
-     * leaflet-heat ต้องการรูปแบบ [lat, lng, intensity?]
-     ***********************************************/
-    const factoryHeatPoints = factoryData.map(f => [f.lat, f.lng, 0.7]);
-    const factoryHeatLayer = L.heatLayer(factoryHeatPoints, {
-      radius: 35,
-      blur: 20,
-      maxZoom: 17
-    });
-
-    /***********************************************
-     * 7) Heatmap: ความหนาแน่นประชากร
-     * เอาจากข้อมูลตำบลที่คุณให้ เช่น มหาชัย / ท่าฉลอม / ท่าทราย ฯลฯ
-     * intensity = สเกลจากจำนวนประชากร (หยาบๆ ตอนนี้เอา /50000)
-     ***********************************************/
-    const populationData = [
-      // อำเภอเมืองสมุทรสาคร
-      { name: "มหาชัย", pop: 38607, lat: 13.5497804, lng: 100.274131 },
-      { name: "ท่าฉลอม", pop: 7489, lat: 13.4919384, lng: 100.1871351 },
-      { name: "ท่าทราย", pop: 32634, lat: 13.5720976, lng: 100.2722945 },
-      { name: "บางหญ้าแพรก", pop: 15802, lat: 13.5878173, lng: 100.3242768 },
-      { name: "พันท้ายนรสิงห์", pop: 43687, lat: 13.5777724, lng: 100.3656284 },
-      { name: "บางกระเจ้า", pop: 11398, lat: 13.5403306, lng: 100.2116297 },
-      // อำเภอกระทุ่มแบน
-      { name: "อ้อมน้อย", pop: 53888, lat: 13.7013895, lng: 100.3143385 },
-      { name: "สวนหลวง", pop: 39180, lat: 13.6739044, lng: 100.3184851 },
-      // อำเภอบ้านแพ้ว
-      { name: "หลักสาม", pop: 16653, lat: 13.5988746, lng: 100.0863269 },
-      { name: "บ้านแพ้ว", pop: 10273, lat: 13.6644909, lng: 100.131095 }
-    ];
-
-    const populationHeatPoints = populationData.map(p => {
-      const intensity = p.pop / 50000; // สเกลง่ายๆ ให้จุดใหญ่มีน้ำหนักมากขึ้น
-      return [p.lat, p.lng, intensity];
-    });
-
-    const populationHeatLayer = L.heatLayer(populationHeatPoints, {
-      radius: 40,
-      blur: 25,
-      maxZoom: 17,
-      // note: leaflet.heat เองจะเกลี่ยสี (แดง-เหลือง-เขียว) เชิง intensity
-      // ถ้าต้องการ gradient custom เดี๋ยวเราค่อยเพิ่มทีหลัง
-    });
-
-    /***********************************************
-     * 8) ตัวเลือกชั้นข้อมูล (Layers Control)
-     *    - Base layers: ถนน / ดาวเทียม
-     *    - Overlay: หมุด, heatmap ฯลฯ
-     ***********************************************/
-    const baseMaps = {
-      "แผนที่ถนน (OSM)": roadLayer,
-      "ภาพถ่ายดาวเทียม (Esri)": satelliteLayer
-    };
-
-    const overlayMaps = {
-      "จุด: ลานกระทิงแดง": redbullLayer,
-      "จุด: โรงงาน": factoriesLayer,
-      "Heatmap โรงงาน": factoryHeatLayer,
-      "Heatmap ประชากร": populationHeatLayer
-    };
-
-    L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
-
-    /***********************************************
-     * 9) ปรับขนาด map ให้กินเต็มพื้นที่ main
-     ***********************************************/
-    function resizeMap() {
-      const wrapper = document.getElementById("map-wrapper");
-      const mapDiv = document.getElementById("map");
-      // คำนวณความสูงให้เต็ม viewport ยกเว้น header/footer
-      const headerH = document.querySelector("header").offsetHeight;
-      const footerH = document.querySelector("footer").offsetHeight;
-      const newH = window.innerHeight - headerH - footerH;
-      wrapper.style.height = newH + "px";
-      mapDiv.style.height = newH + "px";
-      map.invalidateSize();
+    // ฟังก์ชันเลือกสีหมุดโรงงาน ตามประเภท
+    function getColorByCategory(cat = "") {
+      if (cat.includes("รีไซเคิล")) return "#10b981";      // เขียว
+      if (cat.includes("กระดาษ")) return "#38bdf8";        // ฟ้า
+      if (cat.includes("พลาสติก")) return "#e879f9";       // ม่วง
+      if (cat.includes("อลูมิเนียม") || cat.includes("โลหะ")) return "#facc15"; // เหลือง
+      return "#f87171";                                     // แดง default
     }
 
-    window.addEventListener("load", resizeMap);
-    window.addEventListener("resize", resizeMap);
+    // สร้าง divIcon วงกลมเล็กตามสี
+    function makeFactoryIcon(color) {
+      return L.divIcon({
+        className: "",
+        html: `
+          <div style="
+            width:16px;
+            height:16px;
+            border-radius:999px;
+            background:${color};
+            border:2px solid #fff;
+            box-shadow:0 0 10px rgba(0,0,0,.6);
+          "></div>
+        `,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+    }
+
+    // ---------------------------
+    // 4) เพิ่มหมุดลานกระทิงแดงใหม่
+    // ---------------------------
+
+    const redBullLat = 13.565126;
+    const redBullLng = 100.279895;
+
+    const redBullPopup = `
+      <div class="popup-title">ลานกระทิงแดงใหม่</div>
+      <div class="popup-desc">
+        ถนนสายใยรัก<br/>
+        พิกัด: ${redBullLat.toFixed(6)}, ${redBullLng.toFixed(6)}<br/>
+        จังหวัดสมุทรสาคร
+      </div>
+    `;
+
+    const redBullMarker = L.marker([redBullLat, redBullLng], {
+      icon: redBullIcon
+    }).bindPopup(redBullPopup);
+
+    redBullLayer.addLayer(redBullMarker);
+    redBullLayer.addTo(map);
+
+    // ใส่ redBullLayer เข้า control
+    layerControl.addOverlay(redBullLayer, "ลานกระทิงแดงใหม่");
+
+    // ---------------------------
+    // 5) โหลดข้อมูลโรงงานจาก CSV (จำนวนเยอะได้)
+    // ---------------------------
+
+    // เราจะเก็บจุดไว้เพื่อสร้าง heatmap ทีหลัง
+    const factoryHeatPoints = [];
+
+    Papa.parse("data/factories.csv", {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        const rows = results.data;
+
+        rows.forEach(row => {
+          const lat = parseFloat(row.lat);
+          const lng = parseFloat(row.lng);
+          if (isNaN(lat) || isNaN(lng)) return;
+
+          const color = getColorByCategory(row.category || "");
+
+          const popupHtml = `
+            <div class="popup-title">${row.name || ""}</div>
+            <div class="popup-desc">
+              <div><b>ประเภท:</b> ${row.category || "-"}</div>
+              <div><b>รายละเอียด:</b> ${row.detail || "-"}</div>
+              <div><b>ที่อยู่:</b> ${row.address || "-"}</div>
+              <div><b>พิกัด:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
+            </div>
+          `;
+
+          const marker = L.marker([lat, lng], {
+            icon: makeFactoryIcon(color)
+          }).bindPopup(popupHtml);
+
+          factoriesLayer.addLayer(marker);
+
+          // ความเข้มข้นให้ค่า 1 ก่อน (ถ้ามี field ขนาดโรงงานในอนาคต ค่อยถ่วงน้ำหนัก)
+          factoryHeatPoints.push([lat, lng, 1]);
+        });
+
+        // แสดงหมุดโรงงานบนแผนที่
+        factoriesLayer.addTo(map);
+
+        // เพิ่ม factoriesLayer เข้า control
+        layerControl.addOverlay(factoriesLayer, "หมุดโรงงานทั้งหมด");
+
+        console.log("โหลดโรงงานแล้ว:", rows.length, "จุด");
+
+        // ---------------------------
+        // 6) สร้าง Heatmap layer ของโรงงาน
+        // ---------------------------
+
+        factoriesHeatLayer = L.heatLayer(factoryHeatPoints, {
+          radius: 20,
+          blur: 15,
+          maxZoom: 15
+        });
+
+        // เพิ่ม heatmap เข้า control ด้วย (ยังไม่โชว์จนกว่าจะติ๊ก)
+        layerControl.addOverlay(factoriesHeatLayer, "ความหนาแน่นโรงงาน (Heatmap)");
+      }
+    });
   </script>
 </body>
 </html>
