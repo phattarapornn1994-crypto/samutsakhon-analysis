@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>แผนที่โรงงาน & ลานกระทิงแดง - สมุทรสาคร</title>
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet CSS (ตัวแผนที่และ control พื้นฐาน) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -13,17 +13,17 @@
     crossorigin=""
   />
 
-  <!-- Leaflet JS -->
+  <!-- Leaflet JS (ไลบรารีแผนที่หลัก) -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
 
-  <!-- Leaflet.heat (ปลั๊กอิน Heatmap) -->
+  <!-- ปลั๊กอิน Heatmap -->
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
-  <!-- Styling หน้าตา/เลย์เอาต์ -->
+  <!-- พื้นหลัง / UI / layout -->
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -48,21 +48,11 @@
       gap: 12px;
     }
 
-    header .title-block {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.4;
-    }
-
-    header .title-block .title {
-      color: #fff;
-      font-size: 14px;
+    header .title {
+      font-size: 13px;
       font-weight: 600;
-    }
-
-    header .title-block .subtitle {
-      font-size: 12px;
-      color: #94a3b8;
+      color: #fff;
+      line-height: 1.4;
     }
 
     header nav a {
@@ -88,6 +78,7 @@
       inset: 0;
     }
 
+    /* กล่องข้อมูลซ้ายบน */
     .info-panel {
       position: absolute;
       top: 16px;
@@ -113,8 +104,10 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      line-height: 1.4;
     }
 
+    /* กล่อง legend ซ้ายล่าง */
     .legend-panel {
       position: absolute;
       bottom: 16px;
@@ -160,7 +153,7 @@
       border-top:1px solid #334155;
     }
 
-    /* popup dark theme */
+    /* popup theme มืด */
     .leaflet-popup-content-wrapper {
       background:#1e293b;
       color:#f8fafc;
@@ -185,7 +178,7 @@
       line-height:1.4;
     }
 
-    /* layer control theme */
+    /* ปรับหน้ากาก layer control ให้เข้ม */
     .leaflet-control-layers {
       background:#1e293b !important;
       border:1px solid #334155 !important;
@@ -207,123 +200,83 @@
       gap:6px;
       margin-bottom:4px;
     }
-
-    /* custom marker badge */
-    .badge-marker {
-      background:#ef4444;
-      color:#fff;
-      border-radius:999px;
-      border:2px solid #fff;
-      padding:4px 8px;
-      font-size:11px;
-      font-weight:600;
-      box-shadow:0 12px 24px rgb(0 0 0 / .6);
-      white-space:nowrap;
-    }
-
-    .badge-factory-recycle {
-      background:#22c55e;
-    }
-    .badge-factory-cold {
-      background:#0ea5e9;
-    }
-    .badge-factory-food {
-      background:#facc15;
-      color:#000;
-      border-color:#000;
-    }
-    .badge-factory-other {
-      background:#a855f7;
-    }
   </style>
 </head>
 
 <body>
-  <!-- ส่วนหัวเว็บ -->
+  <!-- แถบบน -->
   <header>
-    <div class="title-block">
-      <div class="title">วิเคราะห์พื้นที่ สมุทรสาคร</div>
-      <div class="subtitle">ลานกระทิงแดงใหม่ & กลุ่มโรงงานรอบพื้นที่ (Heatmap อุตสาหกรรม)</div>
+    <div class="title">
+      <div>แผนที่วิเคราะห์พื้นที่สมุทรสาคร</div>
+      <div style="font-weight:400;color:#94a3b8;font-size:12px;line-height:1.4;">
+        ลานกระทิงแดงใหม่ + กลุ่มอุตสาหกรรมรอบๆ + ความหนาแน่นประชากร
+      </div>
     </div>
     <nav>
-      <a href="map.html">แผนที่</a>
-      <a href="demographic.html">ประชากร</a>
-      <a href="competition.html">การแข่งขัน</a>
+      <a href="./map.html">แผนที่</a>
+      <a href="./demographic.html">ข้อมูลประชากร</a>
+      <a href="./competition.html">การแข่งขัน</a>
     </nav>
   </header>
 
-  <!-- ตัวแผนที่ -->
+  <!-- พื้นที่แผนที่ -->
   <main id="map-wrapper">
     <div id="map"></div>
 
-    <!-- กล่อง info มุมซ้ายบน -->
+    <!-- กล่อง info ซ้ายบน -->
     <section class="info-panel">
-      <h2>
-        <span>📍</span>
-        <span>ลานกระทิงแดง (จุดตั้งใหม่)</span>
-      </h2>
-      <div style="font-size:12px;line-height:1.5;color:#94a3b8;">
+      <h2>พื้นที่ศึกษา</h2>
+      <div>
+        <strong>ลานกระทิงแดง (จุดตั้งใหม่)</strong><br/>
         ถนนสายใยรัก<br/>
-        พิกัด: 13.565126, 100.279895<br/>
-        จังหวัดสมุทรสาคร<br/><br/>
-        การวิเคราะห์:
+        พิกัด: 13.565126, 100.279895
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#94a3b8;">
+        Layer:
         <ul style="margin:4px 0 0 16px;padding:0;">
-          <li>ศูนย์กลางกลุ่มโรงงานอาหารทะเล / ห้องเย็น</li>
-          <li>ล้อมรอบด้วยโรงงานรีไซเคิล / เคมี / โลจิสติกส์</li>
-          <li>มีแรงงานแฝงกลางวันเข้ามา ~30K คน (ปี 2567)</li>
+          <li>หมุดโรงงาน</li>
+          <li>Heatmap โรงงาน</li>
+          <li>Heatmap ประชากร</li>
+          <li>พื้นหลังถนน / ดาวเทียม</li>
         </ul>
       </div>
     </section>
 
-    <!-- กล่อง legend มุมซ้ายล่าง -->
-    <section class="legend-panel">
+    <!-- กล่อง legend ซ้ายล่าง -->
+    <aside class="legend-panel">
       <div class="legend-row">
-        <div class="legend-dot" style="background:#ef4444;border-color:#fff;">RD</div>
-        <div>ลานกระทิงแดง</div>
+        <div class="legend-dot" style="background:#ef4444;border-color:#fff;">K</div>
+        <div>ลานกระทิงแดง (จุดตั้งใหม่)</div>
       </div>
+
       <div class="legend-row">
-        <div class="legend-dot badge-factory-recycle" style="border-color:#fff;">♻</div>
-        <div>รีไซเคิล / จัดการของเสีย</div>
+        <div class="legend-dot" style="background:#3b82f6;border-color:#fff;">F</div>
+        <div>โรงงาน / อุตสาหกรรม</div>
       </div>
+
       <div class="legend-row">
-        <div class="legend-dot badge-factory-cold" style="border-color:#fff;">❄</div>
-        <div>ห้องเย็น / สัตว์น้ำ</div>
+        <div class="legend-dot" style="background:radial-gradient(circle at 50% 50%, rgba(59,130,246,0.9) 0%, rgba(59,130,246,0) 70%); border-color:#3b82f6;"></div>
+        <div>Heatmap โรงงาน (ความหนาแน่น)</div>
       </div>
-      <div class="legend-row">
-        <div class="legend-dot badge-factory-food" style="border-color:#000;">🍤</div>
-        <div>อาหาร / เครื่องดื่ม</div>
+
+      <div class="legend-row" style="margin-bottom:0;">
+        <div class="legend-dot" style="background:radial-gradient(circle at 50% 50%, rgba(16,185,129,0.9) 0%, rgba(16,185,129,0) 70%); border-color:#10b981;"></div>
+        <div>Heatmap ประชากร</div>
       </div>
-      <div class="legend-row">
-        <div class="legend-dot badge-factory-other" style="border-color:#fff;">⚙</div>
-        <div>อื่นๆ / ชิ้นส่วน / เคมี</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot" style="background:linear-gradient(to right,#3b82f6,#ef4444);border-color:#fff;">🔥</div>
-        <div>Heatmap ความหนาแน่นอุตสาหกรรม</div>
-      </div>
-    </section>
+    </aside>
   </main>
 
-  <!-- ฟุตเตอร์ -->
+  <!-- แถบล่าง -->
   <footer>
-    Spatial Clustering: K-means • Classification: Geometrical Interval • ข้อมูลปี 2567
+    Spatial Clustering (K-means concept) | Geometrical Interval Classification | © ทีมวิเคราะห์พื้นที่สมุทรสาคร
   </footer>
 
-  <!-- สคริปต์แผนที่ -->
+  <!-- สคริปต์สร้างแผนที่ -->
   <script>
-    // 1) ตั้งค่าพิกัดเริ่มต้น (ย่านสมุทรสาคร)
-    const siteLat = 13.565126;
-    const siteLng = 100.279895;
-    const initialZoom = 12;
-
-    const map = L.map("map", {
-      center: [siteLat, siteLng],
-      zoom: initialZoom,
-      preferCanvas: true,
-    });
-
-    // 2) Base layers
-    const streetLayer = L.tileLayer(
+    /***********************************************
+     * 1) ตั้งค่าเบสแมพ 2 แบบ: ถนน (OSM) / ดาวเทียม
+     ***********************************************/
+    const roadLayer = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
         maxZoom: 20,
@@ -331,131 +284,225 @@
       }
     );
 
-    // ดาวเทียม (ใช้ Esri WorldImagery)
+    // ดาวเทียมฟรีแบบสาธารณะ (Esri WorldImagery)
     const satelliteLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       {
         maxZoom: 20,
-        attribution:
-          "Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics"
+        attribution: "Tiles &copy; Esri"
       }
     );
 
-    // ถนนโปร่งใส (สำหรับ Hybrid)
-    const labelsLayer = L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    /***********************************************
+     * 2) สร้าง map และกำหนดมุมมองเริ่มต้น
+     ***********************************************/
+    const siteLat = 13.565126;
+    const siteLng = 100.279895;
+
+    const map = L.map("map", {
+      center: [siteLat, siteLng],
+      zoom: 12,
+      layers: [roadLayer] // เริ่มต้นด้วยถนน
+    });
+
+    /***********************************************
+     * 3) สร้าง Icon สำหรับลานกระทิงแดง (สีแดง)
+     ***********************************************/
+    const iconRed = L.divIcon({
+      className: "",
+      html: `
+        <div style="
+          background:#ef4444;
+          color:#fff;
+          border:2px solid #fff;
+          font-size:11px;
+          font-weight:600;
+          border-radius:999px;
+          width:28px;
+          height:28px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          box-shadow:0 10px 20px rgb(0 0 0 / .6);
+        ">K</div>
+      `,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+      popupAnchor: [0, -14]
+    });
+
+    /***********************************************
+     * 4) สร้าง Icon สำหรับโรงงานทั่วไป (สีฟ้า)
+     ***********************************************/
+    const iconFactory = L.divIcon({
+      className: "",
+      html: `
+        <div style="
+          background:#3b82f6;
+          color:#fff;
+          border:2px solid #fff;
+          font-size:11px;
+          font-weight:600;
+          border-radius:999px;
+          width:24px;
+          height:24px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          box-shadow:0 10px 20px rgb(0 0 0 / .6);
+        ">F</div>
+      `,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      popupAnchor: [0, -12]
+    });
+
+    /***********************************************
+     * 5) กลุ่มชั้นข้อมูล (LayerGroup) สำหรับ marker
+     ***********************************************/
+    const redbullLayer = L.layerGroup();
+    const factoriesLayer = L.layerGroup();
+
+    // ลานกระทิงแดง (จุดตั้งใหม่)
+    L.marker([siteLat, siteLng], { icon: iconRed })
+      .addTo(redbullLayer)
+      .bindPopup(`
+        <div class="popup-title">ลานกระทิงแดง (จุดตั้งใหม่)</div>
+        <div class="popup-desc">
+          ถนนสายใยรัก<br/>
+          พิกัด: ${siteLat}, ${siteLng}
+        </div>
+      `);
+
+    // ตัวอย่างโรงงานบางส่วน (เราใส่ไม่กี่จุดก่อนเพื่อทดสอบ)
+    const factoryData = [
       {
-        maxZoom: 20,
-        opacity: 0.35,
-        attribution: '&copy; OpenStreetMap contributors'
+        name: "บริษัท ขายดี ซีฟู้ดส์ จำกัด",
+        desc: "ห้องเย็น / ชำแหละสัตว์น้ำ",
+        lat: 13.5234108,
+        lng: 100.2799553
+      },
+      {
+        name: "บริษัท พี.เอส.พี.สเปเชียลตี้ส์ จำกัด (มหาชน)",
+        desc: "ผลิตและบรรจุน้ำมันหล่อลื่น / บรรจุภัณฑ์พลาสติก",
+        lat: 13.5294242,
+        lng: 100.2439203
+      },
+      {
+        name: "บริษัท แอตแลนติก มิลส์ (ประเทศไทย) จำกัด",
+        desc: "ทอ/ย้อมผ้าอุตสาหกรรม",
+        lat: 13.5463736,
+        lng: 100.2200236
+      },
+      {
+        name: "บริษัท เจดีฟู้ด จำกัด (มหาชน)",
+        desc: "ผลิตเครื่องปรุงรส / อาหารแห้ง",
+        lat: 13.5165282,
+        lng: 100.1436569
+      },
+      {
+        name: "บริษัท พี.เอ.ที.อินเตอร์เทรด จำกัด",
+        desc: "ชิ้นส่วนรางสายไฟ / ตู้สวิตช์บอร์ด",
+        lat: 13.5652123,
+        lng: 100.3738011
       }
-    );
+    ];
 
-    // ผสม ดาวเทียม + ถนนจางๆ
-    const hybridGroup = L.layerGroup([satelliteLayer, labelsLayer]);
+    factoryData.forEach(f => {
+      L.marker([f.lat, f.lng], { icon: iconFactory })
+        .addTo(factoriesLayer)
+        .bindPopup(`
+          <div class="popup-title">${f.name}</div>
+          <div class="popup-desc">${f.desc}<br/>
+          พิกัด: ${f.lat}, ${f.lng}</div>
+        `);
+    });
 
-    // ใส่ชั้นเริ่มต้น
-    streetLayer.addTo(map);
+    // ใส่ทั้งสอง layer ลง map เริ่มต้น
+    redbullLayer.addTo(map);
+    factoriesLayer.addTo(map);
 
+    /***********************************************
+     * 6) Heatmap: ความหนาแน่นโรงงาน
+     * leaflet-heat ต้องการรูปแบบ [lat, lng, intensity?]
+     ***********************************************/
+    const factoryHeatPoints = factoryData.map(f => [f.lat, f.lng, 0.7]);
+    const factoryHeatLayer = L.heatLayer(factoryHeatPoints, {
+      radius: 35,
+      blur: 20,
+      maxZoom: 17
+    });
 
-    // 3) Custom Marker Icon แบบ badge สวยๆ (HTML div)
-    function makeBadgeIcon(htmlContent, bgClass) {
-      return L.divIcon({
-        className: "",
-        html: `<div class="badge-marker ${bgClass}">${htmlContent}</div>`,
-        iconSize: [10, 10],
-        iconAnchor: [10, 10],
-      });
+    /***********************************************
+     * 7) Heatmap: ความหนาแน่นประชากร
+     * เอาจากข้อมูลตำบลที่คุณให้ เช่น มหาชัย / ท่าฉลอม / ท่าทราย ฯลฯ
+     * intensity = สเกลจากจำนวนประชากร (หยาบๆ ตอนนี้เอา /50000)
+     ***********************************************/
+    const populationData = [
+      // อำเภอเมืองสมุทรสาคร
+      { name: "มหาชัย", pop: 38607, lat: 13.5497804, lng: 100.274131 },
+      { name: "ท่าฉลอม", pop: 7489, lat: 13.4919384, lng: 100.1871351 },
+      { name: "ท่าทราย", pop: 32634, lat: 13.5720976, lng: 100.2722945 },
+      { name: "บางหญ้าแพรก", pop: 15802, lat: 13.5878173, lng: 100.3242768 },
+      { name: "พันท้ายนรสิงห์", pop: 43687, lat: 13.5777724, lng: 100.3656284 },
+      { name: "บางกระเจ้า", pop: 11398, lat: 13.5403306, lng: 100.2116297 },
+      // อำเภอกระทุ่มแบน
+      { name: "อ้อมน้อย", pop: 53888, lat: 13.7013895, lng: 100.3143385 },
+      { name: "สวนหลวง", pop: 39180, lat: 13.6739044, lng: 100.3184851 },
+      // อำเภอบ้านแพ้ว
+      { name: "หลักสาม", pop: 16653, lat: 13.5988746, lng: 100.0863269 },
+      { name: "บ้านแพ้ว", pop: 10273, lat: 13.6644909, lng: 100.131095 }
+    ];
+
+    const populationHeatPoints = populationData.map(p => {
+      const intensity = p.pop / 50000; // สเกลง่ายๆ ให้จุดใหญ่มีน้ำหนักมากขึ้น
+      return [p.lat, p.lng, intensity];
+    });
+
+    const populationHeatLayer = L.heatLayer(populationHeatPoints, {
+      radius: 40,
+      blur: 25,
+      maxZoom: 17,
+      // note: leaflet.heat เองจะเกลี่ยสี (แดง-เหลือง-เขียว) เชิง intensity
+      // ถ้าต้องการ gradient custom เดี๋ยวเราค่อยเพิ่มทีหลัง
+    });
+
+    /***********************************************
+     * 8) ตัวเลือกชั้นข้อมูล (Layers Control)
+     *    - Base layers: ถนน / ดาวเทียม
+     *    - Overlay: หมุด, heatmap ฯลฯ
+     ***********************************************/
+    const baseMaps = {
+      "แผนที่ถนน (OSM)": roadLayer,
+      "ภาพถ่ายดาวเทียม (Esri)": satelliteLayer
+    };
+
+    const overlayMaps = {
+      "จุด: ลานกระทิงแดง": redbullLayer,
+      "จุด: โรงงาน": factoriesLayer,
+      "Heatmap โรงงาน": factoryHeatLayer,
+      "Heatmap ประชากร": populationHeatLayer
+    };
+
+    L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+
+    /***********************************************
+     * 9) ปรับขนาด map ให้กินเต็มพื้นที่ main
+     ***********************************************/
+    function resizeMap() {
+      const wrapper = document.getElementById("map-wrapper");
+      const mapDiv = document.getElementById("map");
+      // คำนวณความสูงให้เต็ม viewport ยกเว้น header/footer
+      const headerH = document.querySelector("header").offsetHeight;
+      const footerH = document.querySelector("footer").offsetHeight;
+      const newH = window.innerHeight - headerH - footerH;
+      wrapper.style.height = newH + "px";
+      mapDiv.style.height = newH + "px";
+      map.invalidateSize();
     }
 
-    // 4) ข้อมูล "โรงงาน" ตัวอย่าง (ย่อมาจาก list ใหญ่ของคุณ)
-    //    คุณสามารถเพิ่มจุดต่อเองได้เรื่อย ๆ
-    const factories = [
-      {
-        type: "recycle",
-        name: "บริษัท ฮุยเนง หงเชง อินดัสทรี จำกัด",
-        desc: "คัดแยกวัสดุที่ไม่ใช้แล้วฯ (รีไซเคิล)",
-        lat: 13.525662,
-        lng: 100.226612,
-      },
-      {
-        type: "recycle",
-        name: "บริษัท วิธ บีเอ็นไอ จำกัด",
-        desc: "คัดแยกขยะชุมชน → ปุ๋ย/เม็ดพลาสติก",
-        lat: 13.5125726,
-        lng: 100.2957658,
-      },
-      {
-        type: "cold",
-        name: "บริษัท ขายดี ซีฟู้ดส์ จำกัด",
-        desc: "ห้องเย็น/ชำแหละสัตว์น้ำ",
-        lat: 13.5234108,
-        lng: 100.2799553,
-      },
-      {
-        type: "cold",
-        name: "บริษัท ศิริคุณ ซีฟู้ดส์ จำกัด",
-        desc: "ห้องเย็น",
-        lat: 13.52381,
-        lng: 100.2966341,
-      },
-      {
-        type: "cold",
-        name: "บริษัท ว่านฟิชเชอรี่ส์ จำกัด",
-        desc: "อาหารทะเลแช่แข็ง",
-        lat: 13.5354972,
-        lng: 100.2577222,
-      },
-      {
-        type: "food",
-        name: "บริษัท ซีพีเอฟ ฟู้ด แอนด์ เบฟเวอร์เรจ จำกัด",
-        desc: "อาหารจากผัก/พืช, บรรจุภัณฑ์ปิดสนิท",
-        lat: 13.512959,
-        lng: 100.158482,
-      },
-      {
-        type: "food",
-        name: "บริษัท เวลล์-โกรว์ จำกัด",
-        desc: "เครื่องปรุงรส / วัตถุดิบอาหาร",
-        lat: 13.5733863,
-        lng: 100.3596824,
-      },
-      {
-        type: "food",
-        name: "บริษัท พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด",
-        desc: "แปรรูปสัตว์น้ำ แช่แข็ง",
-        lat: 13.5633684,
-        lng: 100.2471886,
-      },
-      {
-        type: "other",
-        name: "บริษัท ไดเทค (ประเทศไทย) จำกัด",
-        desc: "ชิ้นส่วนพลาสติกเครื่องใช้ไฟฟ้า/ยานยนต์",
-        lat: 13.55588333,
-        lng: 100.3742667,
-      },
-      {
-        type: "other",
-        name: "บริษัท พี.เอ.ที.อินเตอร์เทรด จำกัด",
-        desc: "ชิ้นส่วนโลหะ รางสายไฟ ตู้สวิทช์บอร์ด",
-        lat: 13.5652123,
-        lng: 100.3738011,
-      },
-      {
-        type: "other",
-        name: "บริษัท ตาดีเทคโนโลยี (998) จำกัด",
-        desc: "โคมไฟ LED / อุปกรณ์ไฟฟ้า",
-        lat: 13.5675743,
-        lng: 100.3610691,
-      },
-      {
-        type: "other",
-        name: "บริษัท อัลตามาร์ เซอร์วิส เทค จำกัด",
-        desc: "ตัด/เชื่อมชิ้นส่วนเหล็ก (ชิ้นส่วนเรือ)",
-        lat: 13.5639088,
-        lng: 100.3567337,
-      },
-      {
-        type: "other",
-        name: "บริษัท ไทย คอมพิวเตอร์ แมนูแฟคเตอร์ริ่ง จำกัด",
-        desc:
+    window.addEventListener("load", resizeMap);
+    window.addEventListener("resize", resizeMap);
+  </script>
+</body>
+</html>
