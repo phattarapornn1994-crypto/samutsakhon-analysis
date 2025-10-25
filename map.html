@@ -3,39 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>แผนที่เชิงพื้นที่ (โรงงาน / ความหนาแน่นกิจกรรม) - สมุทรสาคร</title>
-
-  <!-- Leaflet core -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
-
-  <!-- Heatmap plugin -->
-  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+  <title>ภาพรวมโครงการฮับรีไซเคิล - สมุทรสาคร</title>
 
   <style>
     :root {
       --bg-page:#f8fafc;
       --bg-card:#ffffff;
       --border-card:#e2e8f0;
+      --border-soft:#f1f5f9;
       --text-main:#0f172a;
       --text-dim:#64748b;
+      --text-mid:#475569;
+
+      --accent-blue:#0ea5e9;
+      --accent-blue-bg:#ecfeff;
+
+      --risk-red-bg:#fee2e2;
+      --risk-red-pill-bg:#fecaca;
+      --risk-red-pill-text:#991b1b;
+
+      --risk-yellow-bg:#fff7d6;
+      --risk-yellow-pill-bg:#fde68a;
+      --risk-yellow-pill-text:#92400e;
+
+      --risk-green-bg:#ecfdf5;
+      --risk-green-pill-bg:#d1fae5;
+      --risk-green-pill-text:#065f46;
+
       --radius-xl:20px;
       --radius-lg:16px;
       --radius-md:12px;
-      --shadow-card:0 32px 60px rgb(15 23 42 / 0.07);
+      --radius-pill:999px;
 
-      --col-recycle:#ef4444;
-      --col-factory:#3b82f6;
-      --col-hub:#fb923c;
+      --shadow-card:0 32px 60px rgb(15 23 42 / 0.07);
+      --shadow-soft:0 20px 40px rgb(0 0 0 / 0.03);
+    }
+
+    *{
+      box-sizing:border-box;
     }
 
     body {
@@ -55,17 +60,17 @@
       min-height:100vh;
     }
 
-    /* ---------- HEADER NAV (เหมือน index) ---------- */
+    /* ================= HEADER (เหมือนทุกหน้า) ================= */
     header.site-header {
       background:#ffffff;
-      border-bottom:1px solid #e2e8f0;
+      border-bottom:1px solid var(--border-card);
       display:flex;
       flex-wrap:wrap;
       align-items:flex-start;
       justify-content:space-between;
       padding:16px 20px;
       row-gap:12px;
-      box-shadow:0 20px 40px rgb(0 0 0 / 0.03);
+      box-shadow:var(--shadow-soft);
       position:relative;
       z-index:1000;
     }
@@ -79,7 +84,7 @@
     .brand-title {
       font-size:15px;
       font-weight:600;
-      color:#0f172a;
+      color:var(--text-main);
       display:flex;
       align-items:center;
       flex-wrap:wrap;
@@ -87,9 +92,9 @@
       line-height:1.4;
     }
     .brand-badge {
-      background:#ecfeff;
-      color:#0ea5e9;
-      border:1px solid #0ea5e9;
+      background:var(--accent-blue-bg);
+      color:var(--accent-blue);
+      border:1px solid var(--accent-blue);
       border-radius:8px;
       font-size:11px;
       font-weight:500;
@@ -98,7 +103,7 @@
     }
     .brand-sub {
       font-size:12px;
-      color:#64748b;
+      color:var(--text-dim);
       line-height:1.4;
     }
 
@@ -115,7 +120,7 @@
       text-decoration:none;
       color:#1e293b;
       background:#ffffff;
-      border:1px solid #e2e8f0;
+      border:1px solid var(--border-card);
       border-radius:10px;
       padding:8px 10px;
       line-height:1.2;
@@ -129,188 +134,298 @@
       line-height:1;
     }
     nav.main-nav a.active {
-      background:#0ea5e9;
-      border-color:#0ea5e9;
+      background:var(--accent-blue);
+      border-color:var(--accent-blue);
       color:#fff;
       box-shadow:0 16px 32px rgb(14 165 233 / 0.35);
       font-weight:600;
     }
 
-    /* ---------- MAP LAYOUT ---------- */
-    main.map-shell {
-      position:relative;
-      min-height:0;
+    /* ================= PAGE CONTENT ================= */
+    main.page-body{
+      padding:24px 16px 40px;
     }
 
-    #map {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      min-height:480px;
+    .layout-grid{
+      max-width:1400px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 360px;
+      grid-gap:24px;
     }
 
-    /* panel: info top-left */
-    .info-panel {
-      position:absolute;
-      top:16px;
-      left:16px;
-      z-index:500;
+    /* ---- left big card ---- */
+    .main-card{
       background:var(--bg-card);
       border:1px solid var(--border-card);
       border-radius:var(--radius-lg);
       box-shadow:var(--shadow-card);
-      padding:16px 20px;
-      max-width:280px;
-      font-size:12.5px;
-      line-height:1.5;
+      padding:24px 24px 28px;
+    }
+
+    .main-headline-row{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      gap:8px 12px;
+      margin-bottom:16px;
+    }
+
+    .main-headline{
+      font-size:16px;
+      line-height:1.4;
+      font-weight:600;
       color:var(--text-main);
     }
-    .info-panel h2 {
-      margin:0 0 8px;
+
+    .main-chip{
+      background:#fff7ed;
+      border:1px solid #fdba74;
+      color:#9a3412;
+      line-height:1.2;
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:8px;
+      font-weight:500;
+      white-space:nowrap;
+      align-self:flex-start;
+    }
+
+    .main-desc{
+      font-size:13px;
+      line-height:1.5;
+      color:var(--text-mid);
+      margin-bottom:20px;
+    }
+
+    .main-section-title{
       font-size:13px;
       font-weight:600;
       color:var(--text-main);
       line-height:1.4;
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:6px;
-    }
-    .info-panel .dim {
-      color:var(--text-dim);
+      margin-bottom:8px;
     }
 
-    /* panel: legend bottom-left */
-    .legend-panel {
-      position:absolute;
-      left:16px;
-      bottom:16px;
-      z-index:500;
+    .main-bullets{
+      margin:0;
+      padding-left:20px;
+      color:var(--text-mid);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .main-bullets li{
+      margin-bottom:8px;
+    }
+
+    /* ---- right column wrapper ---- */
+    .side-wrapper{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    /* ---- risk status panel ---- */
+    .risk-panel{
       background:var(--bg-card);
       border:1px solid var(--border-card);
       border-radius:var(--radius-lg);
       box-shadow:var(--shadow-card);
-      padding:16px;
-      font-size:12px;
-      line-height:1.4;
+      padding:20px 20px 24px;
+      font-size:12.5px;
+      line-height:1.5;
       color:var(--text-main);
-      min-width:220px;
-    }
-    .legend-title {
-      font-size:12px;
-      font-weight:600;
-      color:var(--text-main);
-      margin-bottom:8px;
-      line-height:1.4;
-    }
-    .legend-row {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-      color:var(--text-main);
-    }
-    .legend-dot {
-      width:20px;
-      height:20px;
-      border-radius:999px;
-      border:2px solid #fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:11px;
-      line-height:1;
-      box-shadow:0 8px 16px rgb(0 0 0 / .15);
-      font-weight:600;
-      color:#fff;
-    }
-    .legend-dot.recycle   { background:var(--col-recycle); }
-    .legend-dot.factory   { background:var(--col-factory); }
-    .legend-dot.hub       { background:var(--col-hub); color:#fff; font-weight:700; }
-    .legend-heatbar-wrap {
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .legend-heatbar {
-      flex:1;
-      height:10px;
-      border-radius:6px;
-      border:1px solid #e2e8f0;
-      box-shadow:0 8px 16px rgb(0 0 0 / .08);
-      background:linear-gradient(
-        90deg,
-        #fefce8 0%,
-        #fde68a 20%,
-        #fdba74 40%,
-        #fb923c 60%,
-        #f97316 75%,
-        #dc2626 100%
-      );
-    }
-    .legend-heattext {
-      font-size:11px;
-      color:var(--text-dim);
-      line-height:1.2;
-      display:flex;
-      flex-direction:column;
-      text-align:right;
     }
 
-    /* dark-style tweak for leaflet controls soมันไม่ดำ */
-    .leaflet-control-layers {
-      background:#ffffff !important;
-      border:1px solid #e2e8f0 !important;
-      border-radius:12px !important;
-      color:#0f172a !important;
-      box-shadow:0 20px 40px rgb(0 0 0 / .08) !important;
-      font-size:12px;
+    .risk-head{
+      font-size:13px;
       line-height:1.4;
-    }
-    .leaflet-control-layers-expanded {
-      background:#ffffff !important;
-      color:#0f172a !important;
-    }
-    .leaflet-control-layers-list label {
-      color:#475569;
-      cursor:pointer;
+      font-weight:600;
+      color:var(--text-main);
       display:flex;
+      flex-wrap:wrap;
       align-items:center;
       gap:6px;
-      margin-bottom:4px;
-      font-size:12px;
-      line-height:1.3;
+      margin-bottom:16px;
     }
-
-    /* popup style */
-    .leaflet-popup-content-wrapper {
-      background:#ffffff;
-      color:#0f172a;
-      border-radius:12px;
-      border:1px solid #e2e8f0;
-      box-shadow:0 24px 48px rgb(0 0 0 / .18);
-    }
-    .leaflet-popup-tip {
-      background:#ffffff;
-      border:1px solid #e2e8f0;
-    }
-    .popup-title {
+    .risk-head-icon{
       font-size:14px;
-      font-weight:600;
-      color:#0f172a;
-      margin-bottom:4px;
-      line-height:1.4;
+      line-height:1;
     }
-    .popup-desc {
+    .risk-head-note{
       font-size:12px;
-      color:#475569;
+      color:var(--text-dim);
+      font-weight:400;
+    }
+
+    .risk-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+
+    .risk-box{
+      border-radius:var(--radius-md);
+      border:1px solid var(--border-card);
+      background:#fff;
+      box-shadow:0 20px 40px rgb(0 0 0 / .03);
+      padding:16px;
       line-height:1.4;
     }
 
-    footer.site-footer {
+    .risk-box-title-row{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:flex-start;
+      row-gap:8px;
+      column-gap:8px;
+      margin-bottom:8px;
+    }
+    .risk-box-title{
+      font-size:13px;
+      font-weight:600;
+      color:var(--text-main);
+      line-height:1.4;
+    }
+
+    /* pill states */
+    .pill-yellow{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--risk-yellow-pill-bg);
+      color:var(--risk-yellow-pill-text);
+      border:1px solid #facc15;
+      border-radius:var(--radius-pill);
+      font-size:11px;
+      font-weight:500;
+      line-height:1.2;
+      padding:4px 8px;
+    }
+    .dot-yellow{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#facc15;
+      box-shadow:0 0 4px rgb(250 204 21 / .7);
+    }
+
+    .pill-red{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--risk-red-pill-bg);
+      color:var(--risk-red-pill-text);
+      border:1px solid #ef4444;
+      border-radius:var(--radius-pill);
+      font-size:11px;
+      font-weight:500;
+      line-height:1.2;
+      padding:4px 8px;
+    }
+    .dot-red{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#ef4444;
+      box-shadow:0 0 4px rgb(239 68 68 / .7);
+    }
+
+    .pill-green{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--risk-green-pill-bg);
+      color:var(--risk-green-pill-text);
+      border:1px solid #10b981;
+      border-radius:var(--radius-pill);
+      font-size:11px;
+      font-weight:500;
+      line-height:1.2;
+      padding:4px 8px;
+    }
+    .dot-green{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#10b981;
+      box-shadow:0 0 4px rgb(16 185 129 / .7);
+    }
+
+    .risk-box-body{
+      font-size:12.5px;
+      line-height:1.5;
+      color:var(--text-mid);
+    }
+
+    /* foot / 4 blocks below */
+    .four-pillars-wrap{
+      max-width:1400px;
+      margin:32px auto 0;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
+      gap:16px;
+    }
+
+    .pillar-card{
+      background:var(--bg-card);
+      border:1px solid var(--border-card);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-card);
+      padding:16px 16px 20px;
+      min-height:160px;
+      font-size:12.5px;
+      color:var(--text-mid);
+      display:flex;
+      flex-direction:column;
+      line-height:1.5;
+    }
+
+    .pillar-head{
+      font-size:13px;
+      color:var(--text-main);
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      justify-content:space-between;
+      row-gap:8px;
+      column-gap:8px;
+      margin-bottom:8px;
+      font-weight:600;
+      line-height:1.4;
+    }
+    .pillar-left{
+      display:flex;
+      align-items:flex-start;
+      flex-wrap:wrap;
+      gap:6px 8px;
+      line-height:1.4;
+    }
+    .pillar-emoji{
+      font-size:16px;
+      line-height:1;
+    }
+    .pillar-chip{
+      font-size:10.5px;
+      line-height:1.2;
+      font-weight:500;
+      border-radius:var(--radius-pill);
+      padding:3px 7px;
+      border:1px solid var(--border-card);
+      color:var(--text-dim);
+      background:#f8fafc;
+    }
+
+    .pillar-body{
+      font-size:12.5px;
+      color:var(--text-mid);
+      line-height:1.5;
+    }
+
+    footer.site-footer{
       background:#ffffff;
-      border-top:1px solid #e2e8f0;
+      border-top:1px solid var(--border-card);
       text-align:center;
       font-size:11px;
       color:#94a3b8;
@@ -319,11 +434,23 @@
       box-shadow:0 -20px 40px rgb(0 0 0 / 0.03);
       z-index:5;
     }
+
+    /* responsive: stack columns */
+    @media(max-width:1024px){
+      .layout-grid{
+        grid-template-columns:1fr;
+      }
+      .side-wrapper{
+        max-width:480px;
+        width:100%;
+        margin:0 auto;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- HEADER / NAV -->
   <header class="site-header">
     <div class="brand-block">
       <div class="brand-title">
@@ -331,13 +458,13 @@
         <span class="brand-badge">Prototype</span>
       </div>
       <div class="brand-sub">
-        แสดงจุดโรงงาน / ความหนาแน่นกิจกรรมรีไซเคิล / จุดตั้งฮับ
+        ศูนย์กลางรวบรวมวัสดุรีไซเคิลระดับจังหวัด → ป้อนอุตสาหกรรมปลายน้ำ
       </div>
     </div>
 
     <nav class="main-nav">
-      <a href="index.html"><span class="emoji">🏠</span><span>ภาพรวม</span></a>
-      <a href="map.html" class="active"><span class="emoji">🗺️</span><span>แผนที่</span></a>
+      <a href="index.html" class="active"><span class="emoji">🏠</span><span>ภาพรวม</span></a>
+      <a href="map.html"><span class="emoji">🗺️</span><span>แผนที่</span></a>
       <a href="competition.html"><span class="emoji">⚔️</span><span>คู่แข่ง&ลูกค้า</span></a>
       <a href="logistics.html"><span class="emoji">🚚</span><span>การขนส่ง</span></a>
       <a href="population.html"><span class="emoji">👥</span><span>ประชากร</span></a>
@@ -347,286 +474,188 @@
     </nav>
   </header>
 
-  <!-- MAP AREA -->
-  <main class="map-shell">
-    <div id="map"></div>
+  <!-- BODY -->
+  <main class="page-body">
 
-    <!-- TOP-LEFT INFO PANEL -->
-    <section class="info-panel">
-      <h2>
-        <span>ภาพรวมพื้นที่</span>
-      </h2>
-      <div class="dim">
-        • จุดดาวสีส้ม = จุดตั้งฮับ (ลานกระทิงแดง)<br/>
-        • จุดแดง = โรงงานรีไซเคิล / รับซื้อของเก่า (คู่แข่งหลัก)<br/>
-        • จุดน้ำเงิน = โรงงานอื่นในระบบอุตสาหกรรม<br/>
-        • Heatmap สีส้ม→แดง = โซนกิจกรรมรีไซเคิลหนาแน่น<br/>
-        • เลือกสลับชั้นได้จากมุมขวาบนของแผนที่
-      </div>
-    </section>
+    <div class="layout-grid">
 
-    <!-- BOTTOM-LEFT LEGEND -->
-    <section class="legend-panel">
-      <div class="legend-title">สัญลักษณ์</div>
-
-      <div class="legend-row">
-        <div class="legend-dot recycle">R</div>
-        <div>โรงงานรีไซเคิล / รับซื้อของเก่า</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot factory" style="color:#fff;">F</div>
-        <div>โรงงานอื่น ๆ / ผู้ใช้วัตถุดิบปลายน้ำ</div>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot hub">★</div>
-        <div>จุดฮับ (ลานกระทิงแดง)</div>
-      </div>
-
-      <div class="legend-row" style="align-items:flex-start;">
-        <div style="font-size:11px;line-height:1.2;color:#475569;min-width:36px;">Heatmap</div>
-        <div class="legend-heatbar-wrap">
-          <div class="legend-heatbar"></div>
-          <div class="legend-heattext">
-            <span>หนาแน่น</span>
-            <span>สูง 🔥</span>
+      <!-- LEFT BIG CARD: core concept -->
+      <section class="main-card">
+        <div class="main-headline-row">
+          <div class="main-headline">
+            ศูนย์กลางรวบรวมวัสดุรีไซเคิล (“ลานกระทิงแดง”)
+          </div>
+          <div class="main-chip">
+            โมเดลรายได้โรงรีไซเคิลอุตสาหกรรม
           </div>
         </div>
+
+        <div class="main-desc">
+          เป้าหมาย: ตั้งฮับกลางในสมุทรสาคร รับวัสดุรีไซเคิลจากแรงงาน / โรงงานรอบจังหวัด
+          → คัดแยก → อัดก้อนมาตรฐาน → ส่งให้โรงงานปลายน้ำทางโดยตรง
+        </div>
+
+        <div class="main-section-title">จุดขายหลัก:</div>
+        <ul class="main-bullets">
+          <li>
+            ขวดแก้วดี = ส่งกลับโรงงานสุราแบบ “ใช้ซ้ำได้เลย” ขายเป็นใบ (ไม่ต้องบด)
+          </li>
+          <li>
+            PET / HDPE / กระดาษลูกฟูก / กระป๋องอลูมิเนียม
+            = อัดก้อนแนวนอน ขนาดมาตรฐานอุตสาหกรรม
+          </li>
+          <li>
+            รวมขึ้นรถใหญ่เที่ยวละ ~ 30 ตัน ➜ ลดต้นทุนขนส่งต่อกิโล
+          </li>
+        </ul>
+      </section>
+
+      <!-- RIGHT SIDE: risk panel -->
+      <aside class="side-wrapper">
+
+        <section class="risk-panel">
+          <div class="risk-head">
+            <div class="risk-head-icon">🚦</div>
+            <div>
+              <div>สถานะความเสี่ยงปัจจุบัน</div>
+              <div class="risk-head-note">(4 ด้านหลัก)</div>
+            </div>
+          </div>
+
+          <div class="risk-grid">
+            <!-- กล่อง 1: ชุมชนรอบไซต์ -->
+            <div class="risk-box" style="background:var(--risk-yellow-bg);">
+              <div class="risk-box-title-row">
+                <div class="risk-box-title">ชุมชนรอบไซต์</div>
+                <div class="pill-yellow">
+                  <span class="dot-yellow"></span>
+                  <span>ปานกลาง</span>
+                </div>
+              </div>
+              <div class="risk-box-body">
+                ต้องคุมเสียง / กลิ่น / น้ำเสีย ถ้าสกปรก = ชุมชนร้องเรียนเร็ว
+              </div>
+            </div>
+
+            <!-- กล่อง 2: คู่แข่งในรัศมี -->
+            <div class="risk-box" style="background:var(--risk-red-bg);">
+              <div class="risk-box-title-row">
+                <div class="risk-box-title">คู่แข่งในรัศมี</div>
+                <div class="pill-red">
+                  <span class="dot-red"></span>
+                  <span>หนาแน่น</span>
+                </div>
+              </div>
+              <div class="risk-box-body">
+                ลานรับซื้อรายย่อยเยอะมาก ต้องชนะด้วย “รับถึงที่ + จ่ายเงินเร็ว + โปร่งใส”
+              </div>
+            </div>
+
+            <!-- กล่อง 3: น้ำท่วม / ระบายน้ำ -->
+            <div class="risk-box" style="background:var(--risk-yellow-bg);">
+              <div class="risk-box-title-row">
+                <div class="risk-box-title">น้ำท่วม / ระบายน้ำ</div>
+                <div class="pill-yellow">
+                  <span class="dot-yellow"></span>
+                  <span>เฝ้าระวัง</span>
+                </div>
+              </div>
+              <div class="risk-box-body">
+                พื้นที่บางส่วนเป็นที่ลุ่ม ต้องยกพื้น /
+                ทำรางระบายน้ำ ไม่ให้ขยะลอยกระจาย
+              </div>
+            </div>
+
+            <!-- กล่อง 4: ศักยภาพขยายสเกล -->
+            <div class="risk-box" style="background:var(--risk-green-bg);">
+              <div class="risk-box-title-row">
+                <div class="risk-box-title">ศักยภาพขยายสเกล</div>
+                <div class="pill-green">
+                  <span class="dot-green"></span>
+                  <span>ทำได้</span>
+                </div>
+              </div>
+              <div class="risk-box-body">
+                1 เครื่องอัดแนวนอน + ทีม 2 คน/กะ
+                ยังเหลือกำลัง ➜ โตต่อได้ (ยังไม่ตันเรื่องไฟ/แรงงาน)
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+    </div>
+
+    <!-- 4 pillars below -->
+    <section class="four-pillars-wrap">
+
+      <div class="pillar-card">
+        <div class="pillar-head">
+          <div class="pillar-left">
+            <div class="pillar-emoji">♻️</div>
+            <div>Supply (ของเข้า)</div>
+          </div>
+          <div class="pillar-chip">ดูเพิ่ม: ประมาณการสินค้า</div>
+        </div>
+        <div class="pillar-body">
+          จังหวัดนี้มีขวดแก้ว / PET / กระดาษ / โลหะรีไซเคิล
+          ปริมาณสูงตลอดทั้งปีจากแรงงาน-โรงงาน
+          → ถ้าเราตั้งฮับกลาง = เป็นจุดรวบรวมแทนรายย่อย
+        </div>
       </div>
+
+      <div class="pillar-card">
+        <div class="pillar-head">
+          <div class="pillar-left">
+            <div class="pillar-emoji">🥤</div>
+            <div>Demand (ผู้ซื้อปลายทาง)</div>
+          </div>
+          <div class="pillar-chip">ดูเพิ่ม: คู่แข่ง&ลูกค้า</div>
+        </div>
+        <div class="pillar-body">
+          โรงงานสุราต้องการ “ขวดแก้วดีใช้ซ้ำ”
+          โรงงานกระดาษ / พลาสติก / โลหะ ต้องการวัตถุดิบอัดก้อนมาตรฐาน
+          ถ้าป้อนตรง ส่งเร็ว = เขายอมเซ็นสัญญายาว
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-head">
+          <div class="pillar-left">
+            <div class="pillar-emoji">🚚</div>
+            <div>Logistics (ขนส่ง)</div>
+          </div>
+          <div class="pillar-chip">ดูเพิ่ม: การขนส่ง</div>
+        </div>
+        <div class="pillar-body">
+          จุดเราห่างถนนหลักไม่ไกล รถสิบล้อวิ่งเข้าได้
+          ถ้าอัดก้อนแนวนอนเท่ามาตรฐานโรงงาน
+          ขนทีละ ~30 ตัน/เที่ยว ➜ ต้นทุนต่อกิโลต่ำ
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-head">
+          <div class="pillar-left">
+            <div class="pillar-emoji">🚨</div>
+            <div>Risk (ความเสี่ยงรอบไซต์)</div>
+          </div>
+          <div class="pillar-chip">ดูเพิ่ม: ความเสี่ยง</div>
+        </div>
+        <div class="pillar-body">
+          เสียง/กลิ่น/ภาพลักษณ์ต้องคุม
+          พื้นที่น้ำลุ่มต้องยกระดับพื้น
+          แต่ภาพรวมยัง “เดินเกมได้” ถ้าบริหารคุณภาพและความโปร่งใส
+        </div>
+      </div>
+
     </section>
   </main>
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    © วิเคราะห์เชิงพื้นที่ จ.สมุทรสาคร — ความหนาแน่นคู่แข่ง / จุดศูนย์กลางรับซื้อ (Prototype)
+    © ศูนย์กลางรีไซเคิลจังหวัด (Prototype) · ข้อมูลเชิงพื้นที่เพื่อการตัดสินใจลงทุน
   </footer>
 
-  <!-- SCRIPT -->
-  <script>
-    // -------------------------------------------------
-    // 1) CSV parser: factories.csv
-    //
-    // รูปแบบคอลัมน์ที่เราคาดหวัง:
-    // category,name,detail,"address, ...",lat,lng
-    // -------------------------------------------------
-    function parseFactoriesCSV(csvText) {
-      const lines = csvText.trim().split("\n");
-      const factories = [];
-
-      let startIndex = 0;
-      const firstLineLower = lines[0].toLowerCase();
-      const looksLikeHeader =
-        firstLineLower.includes("category") ||
-        firstLineLower.includes("name") ||
-        firstLineLower.includes("lat");
-
-      if (looksLikeHeader) {
-        startIndex = 1;
-      }
-
-      for (let i = startIndex; i < lines.length; i++) {
-        let row = lines[i].trim();
-        if (!row) continue;
-
-        // ดึง address ที่อยู่ใน "...."
-        let address = "";
-        const addressMatch = row.match(/"([^"]*)"/);
-        if (addressMatch) {
-          address = addressMatch[1].trim();
-          row = row.replace(addressMatch[0], "##ADDRESS_PLACEHOLDER##");
-        }
-
-        const parts = row.split(",").map(p => p.trim());
-        if (parts.length < 6) continue;
-
-        const category = parts[0] || "";
-        const name = parts[1] || "";
-        const detail = parts[2] || "";
-
-        let reconstructedAddress = parts[3];
-        if (reconstructedAddress === "##ADDRESS_PLACEHOLDER##") {
-          reconstructedAddress = address;
-        }
-
-        const lat = parseFloat(parts[4]);
-        const lng = parseFloat(parts[5]);
-        if (isNaN(lat) || isNaN(lng)) continue;
-
-        factories.push({
-          category,
-          name,
-          detail,
-          address: reconstructedAddress,
-          lat,
-          lng
-        });
-      }
-
-      return factories;
-    }
-
-    // -------------------------------------------------
-    // 2) จุด hub (ลานกระทิงแดง / จุดศูนย์กลางเรา)
-    // -------------------------------------------------
-    const hubSite = {
-      name: "ลานกระทิงแดง (ฮับรวบรวม)",
-      address: "ถนนสายใยรัก สมุทรสาคร",
-      lat: 13.565126,
-      lng: 100.279895
-    };
-
-    // -------------------------------------------------
-    // 3) utils
-    // -------------------------------------------------
-    function isRecyclingFactory(f) {
-      // ถ้า category มีคำว่า "รีไซเคิล" = ถือเป็นคู่แข่งหลัก
-      return f.category && f.category.includes("รีไซเคิล");
-    }
-
-    function factoryPopupHTML(fac) {
-      return `
-        <div class="popup-title">${fac.name || "-"}</div>
-        <div class="popup-desc">
-          <div><strong>ประเภท:</strong> ${fac.category || "-"}</div>
-          <div><strong>รายละเอียด:</strong> ${fac.detail || "-"}</div>
-          <div><strong>ที่อยู่:</strong> ${fac.address || "-"}</div>
-          <div><strong>พิกัด:</strong> ${fac.lat.toFixed(5)}, ${fac.lng.toFixed(5)}</div>
-        </div>
-      `;
-    }
-
-    function hubPopupHTML(site) {
-      return `
-        <div class="popup-title">★ ${site.name}</div>
-        <div class="popup-desc">
-          <div><strong>บทบาท:</strong> จุดรวบรวม / คัดแยก / อัดก้อน ส่งเข้าโรงงานปลายน้ำ</div>
-          <div><strong>ที่อยู่:</strong> ${site.address}</div>
-          <div><strong>พิกัด:</strong> ${site.lat}, ${site.lng}</div>
-        </div>
-      `;
-    }
-
-    // -------------------------------------------------
-    // 4) สร้างแผนที่
-    // -------------------------------------------------
-    let map;
-    let layerHub;
-    let layerFactories;
-    let layerHeat;
-
-    function initMap(factories) {
-      // base layers
-      const street = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors"
-        }
-      );
-
-      const satellite = L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        {
-          maxZoom: 19,
-          attribution: "Tiles &copy; Esri"
-        }
-      );
-
-      map = L.map("map", {
-        center: [hubSite.lat, hubSite.lng],
-        zoom: 11,
-        layers: [street]
-      });
-
-      // 4.1 ฮับเรา (ดาวสีส้ม)
-      layerHub = L.layerGroup();
-      const hubMarker = L.circleMarker([hubSite.lat, hubSite.lng], {
-        radius: 10,
-        color: "#ffffff",
-        weight: 2,
-        fillColor: "#fb923c",
-        fillOpacity: 0.95
-      }).bindPopup(hubPopupHTML(hubSite));
-      hubMarker.addTo(layerHub);
-
-      // 4.2 โรงงาน / จุดกิจกรรม
-      layerFactories = L.layerGroup();
-
-      factories.forEach(f => {
-        const color = isRecyclingFactory(f)
-          ? "#ef4444" // แดงคู่แข่ง
-          : "#3b82f6"; // น้ำเงินโรงงานอื่น
-
-        const marker = L.circleMarker([f.lat, f.lng], {
-          radius: 6,
-          color: "#ffffff",
-          weight: 1.5,
-          fillColor: color,
-          fillOpacity: 0.9
-        }).bindPopup(factoryPopupHTML(f));
-
-        marker.addTo(layerFactories);
-      });
-
-      // 4.3 HEATMAP (โทนส้ม-แดงเข้ม)
-      //    gradient ใหม่: เหลืองอ่อน -> ส้มอ่อน -> ส้ม -> ส้มเข้ม -> แดงจัด
-      //    minOpacity เพิ่ม เพื่อให้พื้นที่ระดับกลาง ๆ ยังมองเห็น
-      const heatPoints = factories.map(f => [f.lat, f.lng, 0.6]);
-      layerHeat = L.heatLayer(heatPoints, {
-        radius: 28,
-        blur: 22,
-        maxZoom: 17,
-        minOpacity: 0.35,
-        maxOpacity: 0.9,
-        gradient: {
-          0.0: "#fefce8", // เหลืองอ่อนๆ
-          0.2: "#fde68a", // เหลืองเข้ม
-          0.4: "#fdba74", // ส้มอ่อน
-          0.6: "#fb923c", // ส้ม
-          0.75:"#f97316", // ส้มเข้ม
-          0.9: "#dc2626", // แดงสด
-          1.0: "#7f1d1d"  // แดงเข้ม/เลือดหมู
-        }
-      });
-
-      // ยังไม่เปิด heat เริ่มต้น? เราเลือก: เปิดก็ได้เลยนะ
-      layerHeat.addTo(map);
-      layerHub.addTo(map);
-      layerFactories.addTo(map);
-
-      // 4.4 layer control
-      const baseMaps = {
-        "โหมดถนน (OSM)": street,
-        "โหมดดาวเทียม (Esri)": satellite
-      };
-
-      const overlayMaps = {
-        "ฮับเรา (★)": layerHub,
-        "หมุดโรงงานทั้งหมด": layerFactories,
-        "Heatmap ความหนาแน่น": layerHeat
-      };
-
-      L.control.layers(baseMaps, overlayMaps, { collapsed:false }).addTo(map);
-
-      // 4.5 zoom to fit
-      const allLatLng = factories.map(f => [f.lat, f.lng]);
-      allLatLng.push([hubSite.lat, hubSite.lng]);
-      const bounds = L.latLngBounds(allLatLng);
-      map.fitBounds(bounds.pad(0.2));
-    }
-
-    // -------------------------------------------------
-    // 5) โหลด CSV แล้วเริ่ม
-    // -------------------------------------------------
-    fetch("data/factories.csv", { cache:"no-store" })
-      .then(res => res.text())
-      .then(text => {
-        const factories = parseFactoriesCSV(text);
-        initMap(factories);
-      })
-      .catch(err => {
-        console.error("โหลด factories.csv ไม่ได้:", err);
-        alert("มีปัญหาโหลดข้อมูลโรงงาน");
-      });
-  </script>
 </body>
 </html>
