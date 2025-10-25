@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ประมาณการกำลังผลิต & เครื่องจักร</title>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1e293b;
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      font-size: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    header .brand {
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    header nav a {
+      color: #94a3b8;
+      margin-right: 12px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    header nav a:hover {
+      color: #fff;
+    }
+    header nav a.active {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    main {
+      padding: 24px clamp(16px,2vw,32px) 48px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    section.card {
+      background: rgba(15,23,42,0.8);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 24px 64px rgb(0 0 0 / .7);
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 4px;
+      letter-spacing: -0.03em;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      margin: 16px 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .hint {
+      font-weight: 400;
+      color: #64748b;
+      font-size: 11px;
+      margin-left: 8px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #f8fafc;
+      font-size: 14px;
+      box-shadow: 0 16px 40px rgb(0 0 0 / .6);
+    }
+    input[type="number"]:focus {
+      outline: 2px solid #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    button.calc-btn {
+      width: 100%;
+      background: linear-gradient(90deg,#0ea5e9,#38bdf8 60%);
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #0c111d;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      box-shadow: 0 24px 64px rgb(56 189 248 / .5);
+    }
+    button.calc-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #cbd5e1;
+    }
+    .result-label {
+      color: #94a3b8;
+    }
+    .result-value {
+      color: #fff;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .tag-inline {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+      border: 1px solid transparent;
+      box-shadow: 0 12px 32px rgb(0 0 0 / .6);
+    }
+    .tag-green {
+      background: rgba(16,185,129,.15);
+      color: #34d399;
+      border-color: rgba(16,185,129,.4);
+    }
+    .tag-yellow {
+      background: rgba(251,191,36,.15);
+      color: #facc15;
+      border-color: rgba(251,191,36,.4);
+    }
+    .tag-red {
+      background: rgba(239,68,68,.15);
+      color: #ef4444;
+      border-color: rgba(239,68,68,.4);
+    }
+
+    .analysis-box {
+      background: rgba(30,41,59,.6);
+      border: 1px solid #475569;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #cbd5e1;
+      white-space: pre-line;
+      box-shadow: 0 20px 60px rgb(0 0 0 / .7);
+    }
+    .analysis-title {
+      color: #fff;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    footer {
+      color:#475569;
+      background:#0f172a;
+      font-size:12px;
+      text-align:center;
+      padding:12px 0 16px;
+      border-top:1px solid #334155;
+    }
+
+    .section-note {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .pill-hilo {
+      display:inline-flex;
+      background:#1e293b;
+      color:#cbd5e1;
+      border:1px solid #475569;
+      border-radius:999px;
+      font-size:11px;
+      padding:2px 8px;
+      font-weight:500;
+      gap:4px;
+      align-items:center;
+    }
+    .pill-hilo span {
+      font-size:10px;
+      opacity:.8;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">สมุทรสาคร Spatial Intelligence</div>
+  <nav>
+    <a href="index.html">หน้าแรก</a>
+    <a href="map.html">แผนที่</a>
+    <a href="competition.html">คู่แข่ง</a>
+    <a href="customers.html">ลูกค้า</a>
+    <a href="population.html">ประชากร</a>
+    <a href="forecast.html">ประมาณการสินค้า</a>
+    <a href="risk.html">ความเสี่ยง</a>
+    <a href="capacity.html" class="active">กำลังผลิต</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===================== INPUT SIDE ===================== -->
+  <section class="card">
+    <h1>
+      ประมาณการกำลังผลิต / เครื่องจักร
+      <span class="pill-hilo">
+        <span>v0.1</span> live calc
+      </span>
+    </h1>
+    <div class="subtitle">
+      ใส่ปริมาณวัสดุรีไซเคิลที่คาดว่าจะรับได้ต่อวัน แล้วระบบจะคำนวณให้เลยว่า
+      ต้องใช้เครื่องอัดกี่เครื่อง / แบบไหน / ใช้คนเท่าไหร่ / ไฟฟ้าประมาณกี่ kW
+    </div>
+
+    <h2>1. ปริมาณที่เก็บได้ต่อวัน</h2>
+    <div class="grid-2">
+      <div>
+        <label>ขวดแก้ว (ใบ/วัน)
+          <span class="hint">ขวดสุรา / reuse ส่งกลับโรงงาน</span>
+        </label>
+        <input type="number" id="glassBottlesPerDay" value="5000" min="0" />
+      </div>
+      <div>
+        <label>PET (กก./วัน)
+          <span class="hint">ขวดใส น้ำดื่ม ฯลฯ</span>
+        </label>
+        <input type="number" id="petKgPerDay" value="1200" min="0" />
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div>
+        <label>HDPE (กก./วัน)
+          <span class="hint">แกลลอนขาวขุ่น นม แชมพู</span>
+        </label>
+        <input type="number" id="hdpeKgPerDay" value="300" min="0" />
+      </div>
+      <div>
+        <label>กระดาษลูกฟูก (กก./วัน)
+          <span class="hint">ลังสินค้า e-commerce</span>
+        </label>
+        <input type="number" id="paperKgPerDay" value="2000" min="0" />
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div>
+        <label>อลูมิเนียม (กก./วัน)
+          <span class="hint">กระป๋องน้ำอัดลม ฯลฯ</span>
+        </label>
+        <input type="number" id="aluKgPerDay" value="150" min="0" />
+      </div>
+      <div>
+        <!-- intentionally blank for layout symmetry -->
+      </div>
+    </div>
+
+    <h2>2. ชั่วโมงการทำงาน</h2>
+    <div class="grid-2">
+      <div>
+        <label>ชั่วโมงต่อกะ (ชม./กะ)
+          <span class="hint">เช่น 8</span>
+        </label>
+        <input type="number" id="hoursPerShift" value="8" min="1" />
+      </div>
+      <div>
+        <label>จำนวนกะต่อวัน
+          <span class="hint">1 = ทำกลางวันอย่างเดียว</span>
+        </label>
+        <input type="number" id="shiftsPerDay" value="1" min="1" />
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculateCapacity()">
+      คำนวณกำลังผลิต
+    </button>
+
+    <div class="section-note">
+      สมมติฐาน:
+      <br/>• เครื่องอัดแนวตั้ง ~150 กก./ชม./เครื่อง, ใช้ไฟ ~5 kW, คน 1 คน/เครื่อง
+      <br/>• เครื่องอัดแนวนอน ~1000 กก./ชม./เครื่อง, ใช้ไฟ ~25 kW, คนอย่างน้อย 2 คน (feed+logistics)
+      <br/>• ขวดแก้ว (ใบ) = ไลน์คัด/คัดไซส์ ไม่ได้อัด
+    </div>
+  </section>
+
+  <!-- ===================== RESULT SIDE ===================== -->
+  <section class="card">
+    <h2>ผลคำนวณ</h2>
+
+    <div class="result-row">
+      <div class="result-label">รวมวัสดุต้องอัด (กก./วัน)</div>
+      <div class="result-value" id="totalKgPerDay">-</div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">อัตราที่ต้องการ (กก./ชม.)</div>
+      <div class="result-value" id="ratePerHour">-</div>
+    </div>
+
+    <div class="result-row">
+      <div class="result-label">ประเภทเครื่องที่เหมาะ</div>
+      <div class="result-value" id="machineType">-</div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">จำนวนเครื่องที่ต้องมี (≈)</div>
+      <div class="result-value" id="machinesNeeded">-</div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">กำลังไฟรวมโดยประมาณ (kW)</div>
+      <div class="result-value" id="totalPower">-</div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">จำนวนคนปฏิบัติการ (ต่อกะ)</div>
+      <div class="result-value" id="peopleNeeded">-</div>
+    </div>
+
+    <div class="result-row">
+      <div class="result-label">ขวดแก้วคัดส่งกลับ (ใบ/วัน)</div>
+      <div class="result-value" id="glassBottlesEcho">-</div>
+    </div>
+
+    <h2 style="margin-top:24px;">ขนาดการดำเนินการ (สเกลธุรกิจ)</h2>
+    <div class="result-row">
+      <div class="result-label">ระดับ:</div>
+      <div class="result-value" id="scaleTag">-</div>
+    </div>
+
+    <div class="analysis-box" style="margin-top:16px;">
+      <div class="analysis-title">
+        🔎 วิเคราะห์ศักยภาพ
+      </div>
+      <div id="businessAnalysis">
+        -
+      </div>
+    </div>
+
+    <div class="analysis-box" style="margin-top:16px;">
+      <div class="analysis-title">
+        🛠 ข้อแนะนำเชิงปฏิบัติการ
+      </div>
+      <div id="operationTips">
+        -
+      </div>
+    </div>
+
+    <div class="analysis-box" style="margin-top:16px;">
+      <div class="analysis-title">
+        🏭 โอกาสเป็น Hub จังหวัด / เจ้าใหญ่
+      </div>
+      <div id="hubPotential">
+        -
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  © วิเคราะห์เชิงพื้นที่สมุทรสาคร · Prototype Capacity Planner (เครื่องอัดรีไซเคิล / reverse logistics ขวดสุรา)
+</footer>
+
+<script>
+function ceil(x) {
+  return Math.ceil(x);
+}
+
+function calculateCapacity() {
+  // 1) อ่านอินพุต
+  const glassPerDay   = parseFloat(document.getElementById('glassBottlesPerDay').value) || 0;
+  const petPerDay     = parseFloat(document.getElementById('petKgPerDay').value)       || 0;
+  const hdpePerDay    = parseFloat(document.getElementById('hdpeKgPerDay').value)      || 0;
+  const paperPerDay   = parseFloat(document.getElementById('paperKgPerDay').value)     || 0;
+  const aluPerDay     = parseFloat(document.getElementById('aluKgPerDay').value)       || 0;
+  const hrsPerShift   = parseFloat(document.getElementById('hoursPerShift').value)     || 1;
+  const shiftsPerDay  = parseFloat(document.getElementById('shiftsPerDay').value)      || 1;
+
+  // 2) รวมวัตถุดิบที่ "ต้องอัด"
+  const totalKgPerDay = petPerDay + hdpePerDay + paperPerDay + aluPerDay;
+
+  // 3) rate kg/hr ที่ต้องรองรับ
+  const totalHours = hrsPerShift * shiftsPerDay;
+  const ratePerHour = totalHours > 0 ? totalKgPerDay / totalHours : 0;
+
+  // 4) ตัดสินใจประเภทเครื่อง
+  const verticalRate   = 150;   // kg/hr/เครื่อง (สมมติ vertical baler)
+  const horizontalRate = 1000;  // kg/hr/เครื่อง (สมมติ horizontal baler)
+
+  let machineType = "";
+  let machinesNeeded = 0;
+  let peopleNeeded = 0;
+  let totalPowerKW = 0;
+  let powerPerMachine = 0;
+
+  if (ratePerHour < 200) {
+    // แนวตั้ง
+    machineType = "เครื่องอัดแนวตั้ง (Vertical baler)";
+    machinesNeeded = ceil(ratePerHour / verticalRate);
+    if (machinesNeeded < 1 && totalKgPerDay > 0) machinesNeeded = 1;
+
+    peopleNeeded = machinesNeeded; // 1 คน/เครื่อง
+    powerPerMachine = 5; // kW ประมาณ
+    totalPowerKW = machinesNeeded * powerPerMachine;
+  } else {
+    // แนวนอน
+    machineType = "เครื่องอัดแนวนอน (Horizontal baler)";
+    machinesNeeded = ceil(ratePerHour / horizontalRate);
+    if (machinesNeeded < 1 && totalKgPerDay > 0) machinesNeeded = 1;
+
+    peopleNeeded = Math.max(2, machinesNeeded); // อย่างน้อย 2 คน
+    powerPerMachine = 25; // kW ประมาณ
+    totalPowerKW = machinesNeeded * powerPerMachine;
+  }
+
+  // 5) จัดระดับสเกลธุรกิจจากปริมาณรวม/วัน
+  // <1 ตัน/วัน = เล็ก, 1-5 ตัน/วัน = กลาง, >5 ตัน/วัน = ใหญ่
+  let scaleText = "";
+  let scaleClass = "";
+  const tonsPerDay = totalKgPerDay / 1000.0;
+
+  if (tonsPerDay < 1) {
+    scaleText = "ขนาดเล็ก (🟢 จุดรับซื้อหลัก / เริ่มทดลองตลาด)";
+    scaleClass = "tag-green";
+  } else if (tonsPerDay < 5) {
+    scaleText = "ขนาดกลาง (🟡 มีอำนาจต่อรองกับโรงงานปลายทาง)";
+    scaleClass = "tag-yellow";
+  } else {
+    scaleText = "ขนาดใหญ่ (🔴 ศูนย์รวบรวมระดับจังหวัด/ภูมิภาค)";
+    scaleClass = "tag-red";
+  }
+
+  // 6) วิเคราะห์เชิงธุรกิจ
+  // พูดถึง: ขวดแก้ว (reverse logistics), และวัตถุดิบอัดขาย
+  const analysisBiz = `
+ปริมาณรีไซเคิลรวม ${totalKgPerDay.toFixed(0)} กก./วัน (~${tonsPerDay.toFixed(2)} ตัน/วัน)
+อัตราที่ต้องการให้เครื่องรับไหว ~${ratePerHour.toFixed(1)} กก./ชม.
+
+ขวดแก้ว ${glassPerDay.toFixed(0)} ใบ/วัน:
+• คุณกำลังเล่นเกม reverse logistics (คืนขวดดีให้โรงงานสุรา)
+• สิ่งนี้สร้างความสัมพันธ์ระยะยาว/สัญญาถึงโรงงานปลายทาง
+• คู่แข่งรายย่อยทั่วไปไม่คัดละเอียดระดับนี้
+`.trim();
+
+  // 7) ข้อแนะนำปฏิบัติการ
+  let tips = "";
+  if (machineType.includes("แนวตั้ง")) {
+    tips = `
+แนวทางเริ่มต้น = เครื่องอัดแนวตั้ง ${machinesNeeded} เครื่อง
+• ต้นทุนเครื่องต่ำกว่าแนวนอนมาก
+• ใช้แรงคนเป็นหลัก (คัด แยก ป้อน)
+• ดีสำหรับการเริ่มธุรกิจ / พิสูจน์ว่ามีของเข้าเสถียรทุกวัน
+• ถ้าปริมาณโตจน ${ratePerHour.toFixed(1)} กก./ชม. เกิน ~200 ให้เริ่มวางแผนแนวนอน
+`.trim();
+  } else {
+    tips = `
+คุณอยู่ระดับที่ต้องคิดเครื่องอัดแนวนอน
+• นี่คือระดับลานกลาง-ใหญ่
+• โฟล์คลิฟท์และการจัดสโตเรจก้อนจะสำคัญกว่าคนป้อนมือ
+• คุณควรเจรจารับของแบบเหมาเป็นตันจากคู่ค้ารายย่อย/อุตสาหกรรม
+`.trim();
+  }
+
+  // 8) โอกาสเป็น Hub / เจ้าใหญ่
+  // heuristic ง่าย: ถ้า >=5 ตัน/วัน ถือว่า potential high
+  let hub = "";
+  if (tonsPerDay >= 5 || glassPerDay >= 8000) {
+    hub = `
+ศักยภาพระดับสูง:
+• คุณกำลังอยู่ในโซนที่สามารถเป็น HUB จังหวัดได้
+• คุณต่อรองราคาได้ทั้งฝั่งซื้อ (ของเข้า) และฝั่งขาย (ปลายทางโรงงาน)
+• ถ้า maintain volume ได้สม่ำเสมอ 3-6 เดือน คุณจะถูกมองเป็นแหล่งหลัก ไม่ใช่ผู้เล่นชั่วคราว
+`.trim();
+  } else if (tonsPerDay >= 1) {
+    hub = `
+ศักยภาพปานกลาง:
+• คุณเริ่มมี volume พอที่จะคุย "สัญญารับประจำ" กับโรงงานปลายทาง
+• จุดชี้เป็นชี้ตายคือความสม่ำเสมอรายวัน/รายสัปดาห์
+• ถ้าเพิ่ม network รถรับซื้อหน้าบ้าน/หน้าร้าน/โรงงานย่อย จะขึ้นระดับ HUB ได้
+`.trim();
+  } else {
+    hub = `
+ศักยภาพกำลังตั้งไข่:
+• ตอนนี้คุณยังเป็นจุดรับซื้อเชิงทดสอบ
+• โฟกัสคุณภาพวัสดุและการคัด (โดยเฉพาะขวดแก้ว)
+• จุดเด่นคือความสะอาด/การคัดละเอียดมากกว่าปริมาณ
+`.trim();
+  }
+
+  // 9) อัปเดต DOM
+  document.getElementById('totalKgPerDay').textContent = totalKgPerDay.toFixed(0) + " กก./วัน";
+  document.getElementById('ratePerHour').textContent  = ratePerHour.toFixed(1) + " กก./ชม.";
+  document.getElementById('machineType').textContent  = machineType;
+  document.getElementById('machinesNeeded').textContent = machinesNeeded + " เครื่อง";
+  document.getElementById('totalPower').textContent   = totalPowerKW.toFixed(1) + " kW";
+  document.getElementById('peopleNeeded').textContent = peopleNeeded + " คน/กะ";
+  document.getElementById('glassBottlesEcho').textContent = glassPerDay.toFixed(0) + " ใบ/วัน";
+
+  document.getElementById('scaleTag').innerHTML =
+    `<span class="tag-inline ${scaleClass}">${scaleText}</span>`;
+
+  document.getElementById('businessAnalysis').textContent = analysisBiz;
+  document.getElementById('operationTips').textContent = tips;
+  document.getElementById('hubPotential').textContent = hub;
+}
+
+// คำนวณครั้งแรกตอนโหลดหน้า
+calculateCapacity();
+</script>
+
+</body>
+</html>
