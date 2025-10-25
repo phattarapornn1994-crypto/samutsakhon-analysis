@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>วิเคราะห์การแข่งขันรอบลานกระทิงแดง - สมุทรสาคร</title>
+
+  <style>
+    /* ---------- โทนสี / Layout หลัก (เหมือน map.html) ---------- */
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    header {
+      background: #1e293b;
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      font-size: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    header .brand {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    header nav a {
+      color: #94a3b8;
+      margin-right: 12px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    header nav a:hover {
+      color: #fff;
+    }
+
+    footer {
+      color:#475569;
+      background:#0f172a;
+      font-size:12px;
+      text-align:center;
+      padding:12px 0 16px;
+      border-top:1px solid #334155;
+      line-height:1.4;
+    }
+
+    /* ---------- คอนเทนต์ในหน้านี้ ---------- */
+    main {
+      padding: 24px clamp(16px,2vw,24px) 48px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .page-title-block {
+      display: grid;
+      gap: 8px;
+    }
+    .page-eyebrow {
+      font-size: 12px;
+      font-weight: 500;
+      color: #38bdf8;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(18px, 1vw, 20px);
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.4;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:8px;
+    }
+    .site-pill {
+      background:#1e40af;
+      color:#fff;
+      font-size:12px;
+      font-weight:500;
+      line-height:1.4;
+      border-radius:999px;
+      padding:2px 8px;
+      border:1px solid rgb(255 255 255 / .15);
+      box-shadow:0 16px 40px rgb(0 0 0 / .6);
+    }
+    .site-coord {
+      font-size:12px;
+      font-weight:400;
+      color:#94a3b8;
+      line-height:1.4;
+    }
+
+    .cards-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .cards-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: rgba(15,23,42,0.8);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 24px 80px rgb(0 0 0 / .8);
+      min-height: 200px;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:12px;
+    }
+    .card-title {
+      font-size:14px;
+      line-height:1.4;
+      font-weight:600;
+      color:#fff;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+    }
+    .badge {
+      font-size:11px;
+      line-height:1.3;
+      font-weight:500;
+      border-radius:999px;
+      padding:2px 8px;
+      border:1px solid rgb(255 255 255 / .12);
+      background:#1e293b;
+      color:#cbd5e1;
+      box-shadow:0 12px 32px rgb(0 0 0 / .7);
+    }
+    .card-desc {
+      font-size:13px;
+      line-height:1.5;
+      color:#cbd5e1;
+    }
+    .card-desc strong {
+      color:#fff;
+      font-weight:500;
+    }
+
+    /* ---------- ตาราง “คู่แข่ง/โรงงานรอบพื้นที่” ---------- */
+    .table-card {
+      grid-column: 1 / -1; /* full width */
+    }
+
+    .scroll-wrap {
+      overflow-x:auto;
+      margin-top:12px;
+      border-radius:12px;
+      border:1px solid #334155;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      min-width:600px;
+      background:#1e293b;
+      font-size:12px;
+      line-height:1.4;
+      color:#e2e8f0;
+    }
+
+    thead {
+      background:#334155;
+      color:#fff;
+      text-align:left;
+      font-size:12px;
+      font-weight:500;
+    }
+
+    th, td {
+      padding:10px 12px;
+      border-bottom:1px solid #334155;
+      vertical-align:top;
+    }
+
+    th {
+      white-space:nowrap;
+    }
+
+    tbody tr:hover td {
+      background:#47556933;
+    }
+
+    .factory-name {
+      font-weight:600;
+      color:#fff;
+      line-height:1.4;
+      font-size:12px;
+    }
+    .factory-type {
+      color:#94a3b8;
+      line-height:1.4;
+      font-size:12px;
+    }
+
+    /* bullet list in opportunities / risks */
+    ul.clean-list {
+      padding-left:16px;
+      margin:0;
+      font-size:13px;
+      line-height:1.5;
+      color:#cbd5e1;
+    }
+    ul.clean-list li {
+      margin-bottom:8px;
+    }
+    ul.clean-list li strong{
+      color:#fff;
+      font-weight:500;
+    }
+
+    /* Small helper line under title */
+    .subtitle {
+      font-size:12px;
+      color:#94a3b8;
+      line-height:1.4;
+      margin-top:4px;
+    }
+
+    .highlight-number {
+      font-size:16px;
+      font-weight:600;
+      color:#fff;
+    }
+    .highlight-label {
+      font-size:12px;
+      color:#94a3b8;
+      line-height:1.4;
+    }
+
+    .kpi-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+      margin-top:12px;
+    }
+    .kpi-box {
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:12px;
+      padding:12px 16px;
+      box-shadow:0 16px 40px rgb(0 0 0 / .8);
+      min-width:140px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ---------- HEADER / NAV ---------- -->
+  <header>
+    <div class="brand">
+      วิเคราะห์พื้นที่สมุทรสาคร · Prototype
+    </div>
+    <nav>
+      <a href="index.html">สรุป</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html" style="color:#fff;">การแข่งขัน</a>
+      <a href="population.html">ประชากร</a>
+    </nav>
+  </header>
+
+  <!-- ---------- MAIN CONTENT ---------- -->
+  <main>
+    <!-- ส่วนหัวหน้าเพจ -->
+    <section class="page-title-block">
+      <div class="page-eyebrow">STEP 3.2 · Competition / Cluster Analysis</div>
+      <h1>
+        การแข่งขันอุตสาหกรรมรอบ <span class="site-pill">ลานกระทิงแดงใหม่</span>
+        <span class="site-coord">พิกัด 13.565126, 100.279895 · ถนนสายใยรัก อ.เมืองสมุทรสาคร</span>
+      </h1>
+      <div class="subtitle">
+        โฟกัสโซน ~5 กม. รอบจุดตั้งลานฯ ดูว่าอุตสาหกรรมอะไรหนาแน่น ใครคุมเกม และโอกาส/ความเสี่ยงต่อการใช้พื้นที่
+      </div>
+    </section>
+
+    <!-- การ์ด 1: อุตสาหกรรมหลักรอบพื้นที่ -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          กลุ่มอุตสาหกรรมหลักรอบพื้นที่ (รัศมี ~5 กม.)
+          <span class="badge">Industrial cluster</span>
+        </div>
+      </div>
+      <div class="card-desc">
+        พื้นที่รอบลานกระทิงแดงใหม่ ถูกล้อมด้วยกลุ่มอุตสาหกรรมที่ชัดเจน:
+      </div>
+      <ul class="clean-list" style="margin-top:12px;">
+        <li>
+          <strong>อาหารทะเล / ห้องเย็น / แปรรูปสัตว์น้ำ</strong><br />
+          เช่น บริษัท ฉลองชัย ซีฟู้ด, ริชซัม เอ็นเตอร์ไพรส์, ฟินิกซ์ ฟู๊ด ฯลฯ
+          พบโรงงานชำแหละ แกะ ล้างสัตว์น้ำ และห้องเย็นเก็บสินค้า ระยะห่างประมาณ
+          1.6–2 กม. จากจุดลานฯ → หมายถึงมี <strong>ซัพพลายเชนห้องเย็นแน่น</strong>
+          และมีรถห้องเย็นเข้าออกตลอดวัน
+        </li>
+        <li>
+          <strong>อาหารกึ่งสำเร็จรูป / อาหารพร้อมบริโภค / ซีฟู้ดแช่แข็ง</strong><br />
+          เช่น แพนฟู้ด (อาหารกึ่งสำเร็จรูปแช่แข็ง), พี พี เอ็น ซีฟู้ด วิชชิ่ง
+          (กุ้ง/ปลาแช่แข็ง) → คืออุตสาหกรรมมูลค่าเพิ่ม ไม่ใช่แค่ดิบ
+          <strong>แข่งกันด้วยความรวดเร็วโลจิสติกส์และคุณภาพสินค้าเย็น</strong>
+        </li>
+        <li>
+          <strong>บรรจุภัณฑ์ / เคมี / ส่วนผสมอาหารสัตว์</strong><br />
+          มีโรงงานเกี่ยวกับสารปรุงรส ส่วนผสมอาหารสัตว์ และสารเคมีอุตสาหกรรม
+          ซึ่งส่งผลให้รอบจุดนี้มี <strong>วัตถุดิบ/สารตั้งต้น</strong> พร้อมใช้งาน
+          ในรัศมีไม่ไกล
+        </li>
+        <li>
+          <strong>โลหะ/เครื่องจักร/ประกอบชิ้นส่วน</strong><br />
+          โรงงานประกอบชิ้นส่วนอุตสาหกรรม ตู้สวิตช์บอร์ด โครงสร้างเหล็ก ฯลฯ
+          (เช่น พี.เอ.ที.อินเตอร์เทรด) สะท้อนว่าโซนนี้ยังรองรับ
+          <strong>งานซ่อมบำรุงเครื่องจักร/โครงสร้าง</strong> ได้เอง ไม่ต้องออกนอกจังหวัด
+        </li>
+      </ul>
+
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="highlight-number">≈1.6 กม.</div>
+          <div class="highlight-label">โรงงานอาหารทะเลใกล้สุด<br/>จากจุดลานฯ</div>
+        </div>
+        <div class="kpi-box">
+          <div class="highlight-number">หลายโรงงานห้องเย็น</div>
+          <div class="highlight-label">ในระยะ &lt;3 กม.<br/>โครงสร้าง cold-chain พร้อม</div>
+        </div>
+        <div class="kpi-box">
+          <div class="highlight-number">แรงงานภาคผลิต + ค้าปลีก ~10k+</div>
+          <div class="highlight-label">
+            คนเข้ามาทำงานกลางวันในพื้นที่จังหวัด (2567)<br/>
+            ฟีด workforce ให้คลัสเตอร์นี้
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- การ์ด 2: โอกาส / ความเสี่ยง -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          โอกาส & ความเสี่ยงเชิงพื้นที่
+          <span class="badge">Site suitability</span>
+        </div>
+      </div>
+
+      <div class="card-desc">
+        วิเคราะห์เชิงกลยุทธ์ ถ้าจะใช้พื้นที่ลานกระทิงแดงใหม่เป็น Hub โลจิสติกส์ / จุดกระจายสินค้า / จุดรับวัตถุดิบ:
+      </div>
+
+      <ul class="clean-list" style="margin-top:12px;">
+        <li>
+          <strong>ข้อดี: ระบบห้องเย็นพร้อมใช้</strong><br/>
+          โรงงานแช่แข็งและห้องเย็นจำนวนมากในรัศมี ~2 กม. สื่อว่ามี
+          โครงสร้างพื้นฐานห่วงโซ่อาหารทะเลและสินค้าอุณหภูมิควบคุม
+          → สะดวกต่อการ cross-docking สินค้าอุณหภูมิต่ำ
+        </li>
+        <li>
+          <strong>ข้อดี: มีแรงงาน/กิจกรรมกลางวันหนาแน่น</strong><br/>
+          จังหวัดสมุทรสาครมีแรงงานเข้าเขตตอนกลางวันมากกว่า
+          <strong>30,000 คน/วัน</strong> (2567) ทั้งจากภาคการผลิต ค้าส่ง-ค้าปลีก
+          โลจิสติกส์ และราชการ
+          → คือ demand สำหรับบริการเสริม (ร้านอาหาร, อะไหล่, ซ่อมบำรุง)
+        </li>
+        <li>
+          <strong>ข้อท้าทาย: รถบรรทุกหนักจำนวนมาก</strong><br/>
+          อุตสาหกรรมอาหารทะเลแช่แข็งและห้องเย็น = ปริมาณตู้แช่ รถห้องเย็น
+          รถสิบล้อเข้าออกตลอด อาจเกิด <strong>การจราจรหนาแน่น/เสียงดัง/กลิ่น</strong>
+          และข้อจำกัดเวลาเข้า–ออกบางช่วง
+        </li>
+        <li>
+          <strong>ข้อท้าทาย: ภาพลักษณ์สิ่งแวดล้อม</strong><br/>
+          โรงงานแปรรูปอาหารทะเล/รีไซเคิล/สารเคมีอยู่ใกล้กัน
+          อาจมีเรื่องกลิ่น น้ำเสีย หรือการจัดเก็บของเสีย
+          ต้องสื่อสารเรื่องมาตรฐานความสะอาด/ความปลอดภัยให้ชัดเจน
+        </li>
+      </ul>
+    </section>
+
+    <!-- การ์ด 3: ตารางโรงงานรอบพื้นที่ (top ใกล้สุด) -->
+    <section class="card table-card">
+      <div class="card-header">
+        <div class="card-title">
+          โรงงาน / ผู้เล่นรอบลานกระทิงแดง (เรียงใกล้ → ไกล)
+          <span class="badge">~5 กม. radius</span>
+        </div>
+        <div class="badge" style="background:#1e40af; color:#fff;">
+          ใช้พิกัดจริง · ระยะทางคำนวณแบบเส้นตรง (กม.)
+        </div>
+      </div>
+
+      <div class="card-desc">
+        จุดอ้างอิง: ลานกระทิงแดงใหม่ ถนนสายใยรัก พิกัด
+        <strong>13.565126, 100.279895</strong>
+      </div>
+
+      <div class="scroll-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>โรงงาน / บริษัท</th>
+              <th>ประเภท / สิ่งที่ทำ</th>
+              <th>ระยะโดยประมาณจากจุดลานฯ</th>
+              <th>พิกัด</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="factory-name">บริษัท ฉลองชัย ซีฟู้ด</div>
+                <div class="factory-type">ห้องเย็น / ชำแหละสัตว์น้ำ</div>
+              </td>
+              <td>
+                ห้องเย็น แกะ ล้าง สัตว์น้ำ แช่แข็งเพื่อเก็บ/กระจายสินค้าเย็น
+              </td>
+              <td>~1.6 กม.</td>
+              <td>13.5506377, 100.2785697</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">บริษัท ริชซัม เอ็นเตอร์ไพรส์ จำกัด</div>
+                <div class="factory-type">แปรรูปสัตว์น้ำ + ห้องเย็น</div>
+              </td>
+              <td>
+                ชำแหละ แกะ ล้าง สัตว์น้ำ และเก็บในห้องเย็นแช่เยือกแข็ง
+              </td>
+              <td>~1.6 กม.</td>
+              <td>13.5649451, 100.2950581</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">ฟินิกซ์ ฟู๊ด อิมปอร์ต เอ็กซ์ปอร์ต จำกัด</div>
+                <div class="factory-type">ห้องเย็น</div>
+              </td>
+              <td>
+                โซ่ความเย็น (cold chain) สำหรับสินค้าอาหารทะเล/สัตว์น้ำ
+              </td>
+              <td>~1.7 กม.</td>
+              <td>13.5685572, 100.295235</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">บริษัท ส.ชัยวารีห้องเย็น จำกัด</div>
+                <div class="factory-type">ห้องเย็น</div>
+              </td>
+              <td>
+                เก็บรักษาสินค้าแช่แข็ง / คลังสินค้าอุณหภูมิต่ำ
+              </td>
+              <td>~2.1 กม.</td>
+              <td>13.5669339, 100.2986206</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">แพนฟู้ด จำกัด</div>
+                <div class="factory-type">อาหารกึ่งสำเร็จรูปแช่แข็ง + ห้องเย็น</div>
+              </td>
+              <td>
+                อาหารกึ่งสำเร็จรูป, แช่แข็ง, พร้อมกระจายต่อ (ready-to-ship)
+              </td>
+              <td>~2.3 กม.</td>
+              <td>13.567106, 100.259976</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด</div>
+                <div class="factory-type">แปรรูปสัตว์น้ำ / กุ้ง ปลา แช่แข็ง</div>
+              </td>
+              <td>
+                แกะ ล้าง กุ้ง ปลา ปลาหมึก แล้วแช่แข็ง, โซ่อาหารทะเลมูลค่าเพิ่ม
+              </td>
+              <td>~3.2 กม.</td>
+              <td>13.5633684, 100.2471886</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">ขายดี ซีฟู้ดส์ จำกัด</div>
+                <div class="factory-type">ห้องเย็น / ชำแหละสัตว์น้ำ</div>
+              </td>
+              <td>
+                ห้องเย็น / ชำแหละ / แกะ / ล้างสัตว์น้ำ
+              </td>
+              <td>~4.6 กม.</td>
+              <td>13.5234108, 100.2799553</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">ไทย ซี ซิง จำกัด</div>
+                <div class="factory-type">รีไซเคิลตัวทำละลายและเคมีภัณฑ์</div>
+              </td>
+              <td>
+                โรงงานรีไซเคิลสารเคมี/ตัวทำละลายที่ใช้แล้ว → สะท้อนว่าพื้นที่นี้
+                รับกิจกรรมอุตสาหกรรมเคมีด้วย
+              </td>
+              <td>~4.9 กม.</td>
+              <td>13.55577, 100.235732</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="factory-name">พี.เอ.ที.อินเตอร์เทรด จำกัด</div>
+                <div class="factory-type">ชิ้นส่วนโลหะ / ตู้สวิตช์บอร์ด</div>
+              </td>
+              <td>
+                ทำรางสายไฟ ตู้สวิตช์บอร์ด โครงโลหะอุตสาหกรรม (ซัพพอร์ตงานประกอบเครื่องจักร)
+              </td>
+              <td>~9+ กม. (โซนตะวันออก)</td>
+              <td>13.5652123, 100.3738011</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subtitle" style="margin-top:12px;">
+        *ระยะทางเป็นระยะเส้นตรง (straight line) ระหว่างพิกัด ไม่ได้คิดเส้นทางวิ่งจริงบนถนน
+      </div>
+    </section>
+
+    <!-- การ์ด 4: บทสรุปเชิงกลยุทธ์ -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          สรุปเชิงกลยุทธ์สำหรับลานกระทิงแดงใหม่
+          <span class="badge">Executive note</span>
+        </div>
+      </div>
+
+      <div class="card-desc">
+        ภาพรวมการแข่งขันรอบพื้นที่ (~5 กม.) บอกอะไรเรา:
+      </div>
+
+      <ul class="clean-list" style="margin-top:12px;">
+        <li>
+          <strong>พื้นที่นี้คือคลัสเตอร์อาหารทะเล/ห้องเย็นระดับจังหวัด</strong><br/>
+          ผู้เล่นหลักคือกลุ่มโรงงานซีฟู้ด, ห้องเย็น, แปรรูปสัตว์น้ำ, อาหารกึ่งสำเร็จรูปแช่แข็ง
+          → demand หลักของโซนนี้คือห่วงโซ่อุณหภูมิควบคุม (cold-chain logistics)
+        </li>
+        <li>
+          <strong>คู่แข่ง = ไม่ได้แค่ “โรงงานอื่น” แต่คือโครงสร้างโลจิสติกส์ที่พร้อมแล้ว</strong><br/>
+          หมายถึง ถ้าจะตั้งศูนย์กระจายสินค้า / จุดรวบวัตถุดิบ / จุดโหลดสินค้า
+          ต้องขาย “ความเร็ว, ความเสถียร, ความสะอาด/มาตรฐาน” มากกว่าแค่ที่ดินโล่ง
+        </li>
+        <li>
+          <strong>แรงกดดันด้านสิ่งแวดล้อมและการจราจร</strong><br/>
+          ความหนาแน่นของรถห้องเย็นและตู้คอนเทนเนอร์คือทั้งโอกาส (ขนส่งสะดวก)
+          และความเสี่ยง (มลพิษ/ข้อจำกัดเวลาเข้าออก)
+        </li>
+        <li>
+          <strong>แรงงานมีพร้อมทั้งสายผลิตและโลจิสติกส์</strong><br/>
+          จังหวัดสมุทรสาครมีแรงงานกลางวันรวม ๆ มากกว่า 30,000 คน/วัน ปี 2567
+          โดยเฉพาะภาคการผลิต ค้าส่ง-ค้าปลีก การขนส่ง และราชการ
+          แปลว่า “คนทำงานมีจริง ไม่ต้องดึงจากไกล”
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- ---------- FOOTER ---------- -->
+  <footer>
+    <div>พื้นที่ศึกษา: จังหวัดสมุทรสาคร · ลานกระทิงแดงใหม่ (ถ.สายใยรัก)</div>
+    <div style="margin-top:4px;">
+      Prototype วิเคราะห์พื้นที่ · Data: รายชื่อโรงงาน / ประชากรแฝงกลางวัน ปี 2567
+    </div>
+  </footer>
+</body>
+</html>
