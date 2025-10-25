@@ -3,272 +3,206 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>วิเคราะห์ความเสี่ยงพื้นที่ - ลานกระทิงแดง</title>
+  <title>วิเคราะห์ความเสี่ยงพื้นที่ - สมุทรสาคร</title>
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet ใช้แค่นิดเดียวในหน้านี้ (เราไม่ขึ้นแผนที่ แต่เผื่ออนาคต) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""
   />
-
-  <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
 
-  <!-- PapaParse (อ่าน CSV) -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
   <style>
-    :root {
-      --bg-main:#0f172a;
-      --bg-card:#1e293b;
-      --bg-card-glass:rgba(15,23,42,0.8);
-      --line:#334155;
-      --text-dim:#94a3b8;
-      --text:#f8fafc;
-      --text-strong:#fff;
-      --radius-lg:16px;
-      --radius-md:12px;
-    }
-
     body {
       font-family: system-ui, sans-serif;
-      background: var(--bg-main);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100vh;
+      background:#0f172a;
+      color:#f8fafc;
+      margin:0;
+      padding:0;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      min-height:100vh;
     }
 
     header {
-      background: #1e293b;
-      padding: 12px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      background:#1e293b;
+      padding:12px 16px;
+      border-bottom:1px solid #334155;
+      font-size:14px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    header .title-block {
+      display:flex;
+      flex-direction:column;
+      line-height:1.3;
+    }
+    header .main-title {
+      font-size:14px;
+      font-weight:600;
       color:#fff;
     }
-    header .brand {
-      font-weight:600;
-      font-size:14px;
-      color:#fff;
+    header .sub-title {
+      font-size:12px;
+      color:#94a3b8;
+      font-weight:400;
     }
     header nav a {
-      color: #94a3b8;
-      margin-right: 12px;
-      text-decoration: none;
-      font-size: 13px;
+      color:#94a3b8;
+      margin-right:12px;
+      text-decoration:none;
+      font-size:13px;
     }
     header nav a:hover {
-      color: #fff;
+      color:#fff;
+    }
+    header nav a.active {
+      color:#fff;
+      font-weight:600;
     }
 
     main {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      min-height: 0;
-    }
-
-    /* panel ซ้าย */
-    .side-panel {
-      background: #0f172a;
-      border-right:1px solid #334155;
       padding:16px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-      min-height:0;
-      overflow-y:auto;
+      max-width:1200px;
+      width:100%;
+      margin:0 auto;
     }
 
-    .card {
-      background: var(--bg-card-glass);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 20px 60px rgb(0 0 0 / .7);
+    /* กล่อง summary */
+    .score-summary {
+      background:rgba(15,23,42,0.8);
+      border:1px solid #334155;
+      border-radius:16px;
       padding:16px 20px;
-      color:#cbd5e1;
-      font-size:13px;
-      line-height:1.5;
-    }
-    .card h2,
-    .card h3 {
-      margin:0 0 8px;
-      color:#fff;
-      font-size:14px;
-      font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      line-height:1.4;
-    }
-
-    .control-group {
-      margin-bottom:12px;
-      font-size:13px;
-    }
-    .control-group label {
-      color:#fff;
-      font-size:13px;
-      font-weight:500;
-      display:block;
-      margin-bottom:6px;
-    }
-    .control-row-inline {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .radius-value {
-      font-size:12px;
-      color:#94a3b8;
-    }
-    input[type="range"] {
-      width:100%;
-    }
-    .checkbox-list {
-      max-height:120px;
-      overflow-y:auto;
-      background:#1e2537;
-      border:1px solid #334155;
-      border-radius: var(--radius-md);
-      padding:8px 12px;
-      font-size:12px;
-      line-height:1.4;
-    }
-    .checkbox-row {
-      display:flex;
-      align-items:flex-start;
-      gap:6px;
-      margin-bottom:6px;
-      color:#cbd5e1;
-    }
-    .checkbox-row input {
-      margin-top:2px;
-    }
-
-    .metrics-grid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:12px;
-    }
-    .metric-box {
-      background:#1e2537;
-      border:1px solid #334155;
-      border-radius: var(--radius-md);
-      padding:10px 12px;
-      font-size:12px;
-      line-height:1.4;
-      box-shadow:0 12px 32px rgb(0 0 0 / .6);
-    }
-    .metric-label {
-      color:#94a3b8;
-      font-size:11px;
-      margin-bottom:2px;
-    }
-    .metric-value {
-      font-size:16px;
-      font-weight:600;
-      color:#fff;
-      line-height:1.3;
-    }
-    .metric-sub {
-      font-size:11px;
-      color:#94a3b8;
-    }
-
-    .risk-summary-main {
-      background:#1e2537;
-      border:1px solid #334155;
-      border-radius: var(--radius-md);
-      padding:12px 16px;
-      margin-top:12px;
+      margin-bottom:16px;
       box-shadow:0 20px 60px rgb(0 0 0 / .7);
+      display:grid;
+      gap:12px;
     }
-    .risk-score-row {
+    .summary-row {
       display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
       flex-wrap:wrap;
-      gap:8px;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
     }
-    .risk-total {
-      font-size:28px;
-      font-weight:600;
-      line-height:1.1;
-      color:#fff;
+    .summary-left {
+      flex:1 1 200px;
     }
-    .risk-badge {
-      font-size:13px;
-      font-weight:600;
-      line-height:1.2;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid #334155;
-      box-shadow:0 12px 32px rgb(0 0 0 / .6);
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .risk-explain {
-      font-size:12px;
-      color:#cbd5e1;
-      margin-top:8px;
-      line-height:1.5;
-    }
-
-    /* map */
-    #map-wrapper {
-      position:relative;
-      background:#000;
-    }
-    #map {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      min-height:400px;
-    }
-
-    .leaflet-popup-content-wrapper {
-      background:#1e293b;
-      color:#f8fafc;
-      border-radius:12px;
-      border:1px solid #475569;
-      box-shadow:0 20px 60px rgb(0 0 0 / .8);
-    }
-    .leaflet-popup-tip {
-      background:#1e293b;
-      border:1px solid #475569;
-    }
-    .popup-title {
-      font-size:14px;
+    .summary-title {
+      font-size:15px;
       font-weight:600;
       color:#fff;
       margin-bottom:4px;
+      display:flex;
+      align-items:center;
+      gap:8px;
       line-height:1.4;
     }
-    .popup-desc {
-      font-size:12px;
-      color:#cbd5e1;
-      line-height:1.4;
+    .summary-desc {
+      color:#94a3b8;
+      font-size:13px;
+      line-height:1.5;
     }
 
+    .summary-right {
+      flex:0 0 auto;
+      min-width:200px;
+      background:#1e293b;
+      border:1px solid #475569;
+      border-radius:12px;
+      padding:12px 16px;
+      text-align:center;
+    }
+    .score-number {
+      font-size:28px;
+      font-weight:600;
+      line-height:1.2;
+      color:#fff;
+    }
+    .score-risktext {
+      font-size:14px;
+      font-weight:600;
+      margin-top:4px;
+      line-height:1.4;
+    }
+    .score-hint {
+      font-size:12px;
+      color:#94a3b8;
+      line-height:1.4;
+      margin-top:6px;
+    }
+
+    /* ตารางผล */
+    .table-wrap {
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:16px;
+      box-shadow:0 20px 60px rgb(0 0 0 / .7);
+      overflow-x:auto;
+    }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      min-width:800px;
+      font-size:13px;
+      color:#cbd5e1;
+    }
+
+    thead {
+      background:#334155;
+      color:#fff;
+      text-align:left;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+    }
+    thead th {
+      padding:10px 12px;
+      white-space:nowrap;
+      border-bottom:1px solid #475569;
+    }
+
+    tbody tr:nth-child(even){
+      background:#1e2536;
+    }
+    tbody tr:nth-child(odd){
+      background:#1e293b;
+    }
+    tbody td {
+      padding:10px 12px;
+      vertical-align:top;
+      border-bottom:1px solid #334155;
+      line-height:1.4;
+    }
+    tbody td.small {
+      font-size:12px;
+      color:#94a3b8;
+    }
+
+    .risk-badge {
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:12px;
+      font-weight:600;
+      line-height:1.4;
+      min-width:70px;
+      justify-content:center;
+      color:#000;
+    }
+
+    /* footer */
     footer {
       color:#475569;
       background:#0f172a;
@@ -278,555 +212,329 @@
       border-top:1px solid #334155;
     }
 
-    /* สี badge ตามระดับความเสี่ยง */
-    .badge-low     { background:#064e3b; color:#d1fae5; }
-    .badge-medium  { background:#78350f; color:#ffedd5; }
-    .badge-high    { background:#7f1d1d; color:#fee2e2; }
-    .badge-veryhigh{ background:#450a0a; color:#fee2e2; border-color:#dc2626 !important; }
-
-    @media(max-width:900px){
-      main {
-        grid-template-columns:1fr;
-      }
-      #map-wrapper {
-        order:-1;
-        height:50vh;
-        min-height:320px;
-      }
-      .side-panel {
-        max-height:none;
-        border-right:0;
-        border-top:1px solid #334155;
-      }
+    /* legend สี */
+    .legend-box {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 16px;
+      margin-top:8px;
+      font-size:12px;
+      line-height:1.4;
+      color:#94a3b8;
+    }
+    .legend-item {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .legend-dot {
+      width:16px;
+      height:16px;
+      border-radius:4px;
+      font-weight:600;
+      font-size:11px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#000;
     }
   </style>
 </head>
+
 <body>
-
-<header>
-  <div class="brand">📊 วิเคราะห์ความเสี่ยงพื้นที่ (Beta)</div>
-  <nav>
-    <a href="index.html">หน้าแรก</a>
-    <a href="map.html">แผนที่รวม</a>
-    <a href="competition.html">คู่แข่ง & ลูกค้า</a>
-    <a href="risk.html" style="color:#fff;font-weight:600;">ความเสี่ยง</a>
-  </nav>
-</header>
-
-<main>
-  <!-- SIDE PANEL -->
-  <aside class="side-panel">
-
-    <!-- CONTROL -->
-    <section class="card">
-      <h2>⚙ พารามิเตอร์วิเคราะห์</h2>
-
-      <!-- ระยะรัศมี -->
-      <div class="control-group">
-        <div class="control-row-inline">
-          <label for="radiusKm">รัศมีพื้นที่วิเคราะห์ (กม.)</label>
-          <div class="radius-value"><span id="radiusLabel">5</span> กม.</div>
-        </div>
-        <input id="radiusKm" type="range" min="1" max="10" step="1" value="5" />
-        <div style="font-size:11px;color:#94a3b8;line-height:1.4;">
-          ใช้วัดจำนวนคู่แข่งและลูกค้าในวงกลมรอบจุดลานกระทิงแดง
-        </div>
+  <header>
+    <div class="title-block">
+      <div class="main-title">สมุทรสาคร — วิเคราะห์ความเสี่ยงพื้นที่</div>
+      <div class="sub-title">
+        ดู Demand ลูกค้า vs คู่แข่งรีไซเคิล รอบแต่ละตำบล แล้วประเมินโซนสี 🟢🟡🟠🔴
       </div>
+    </div>
+    <nav>
+      <a href="index.html">หน้าแรก</a>
+      <a href="map.html">แผนที่</a>
+      <a href="competition.html">การแข่งขัน</a>
+      <a href="risk.html" class="active">ความเสี่ยง</a>
+    </nav>
+  </header>
 
-      <!-- ลูกค้าคือใคร -->
-      <div class="control-group">
-        <label>กลุ่มลูกค้าที่เราต้องการของ (ซัพพลาย)</label>
-        <div class="checkbox-list" id="customerCategoryList">
-          <!-- จะถูกเติมอัตโนมัติจาก CSV -->
-          <!-- ตัวอย่าง: 
-          <div class="checkbox-row">
-            <input type="checkbox" data-cat="โรงงานผลิตกระดาษ" checked />
-            <span>โรงงานผลิตกระดาษ</span>
+  <main>
+    <!-- SUMMARY TOP CARD -->
+    <section class="score-summary">
+      <div class="summary-row">
+        <div class="summary-left">
+          <div class="summary-title">
+            สรุปความเสี่ยงรวมทั้งจังหวัด
+            <span id="overallColorDot" style="display:inline-flex;width:16px;height:16px;border-radius:4px;border:1px solid #000;"></span>
           </div>
-          -->
-        </div>
-        <div style="font-size:11px;color:#94a3b8;line-height:1.4;margin-top:4px;">
-          ค่าเริ่มต้นจะติ๊กเช่น โรงงานกระดาษ / โรงงานเม็ดพลาสติก / โรงงานสุรา
-          (คุณยังเลือกหมวดอื่นเพิ่มได้เอง)
-        </div>
-      </div>
-    </section>
-
-    <!-- SUMMARY RISK -->
-    <section class="card">
-      <h2>🔥 สรุปความเสี่ยง</h2>
-
-      <div class="risk-summary-main">
-        <div class="risk-score-row">
-          <div class="risk-total" id="totalRiskScore">--</div>
-          <div class="risk-badge badge-low" id="totalRiskBadge">
-            <span id="totalRiskEmoji">🟢</span>
-            <span id="totalRiskLabel">รอข้อมูล</span>
+          <div class="summary-desc">
+            ระบบจะดูสองมุมหลักรอบแต่ละตำบล (รัศมี ~3 กม.):
+            <br/>
+            1) ลูกค้าศักยภาพ = โรงงานกระดาษ / เม็ดพลาสติก / สุรา
+            <br/>
+            2) คู่แข่ง = โรงงานรีไซเคิล
+            <br/><br/>
+            จากนั้นให้คะแนนความเสี่ยง 0 (ปลอดภัย) → 100 (เสี่ยงสูง)
+            โดยคะแนนสูงเกิดจาก "คู่แข่งเยอะ แต่ลูกค้าน้อย"
           </div>
-        </div>
 
-        <div class="risk-explain" id="totalRiskExplain">
-          ระบบจะคำนวณจากคู่แข่งรอบพื้นที่ / ระยะห่างคู่แข่งที่ใกล้ที่สุด / ความหนาแน่นลูกค้า (ซัพพลาย)
-        </div>
-      </div>
-
-      <div class="metrics-grid" style="margin-top:16px;">
-        <div class="metric-box">
-          <div class="metric-label">คู่แข่งรีไซเคิลในรัศมี</div>
-          <div class="metric-value" id="competitorCountBox">--</div>
-          <div class="metric-sub">
-            ความเสี่ยงการแข่งขัน:
-            <span id="competitionRiskBox">--</span>/100
-          </div>
-        </div>
-
-        <div class="metric-box">
-          <div class="metric-label">ลูกค้า (โรงงานที่ติ๊ก)</div>
-          <div class="metric-value" id="customerCountBox">--</div>
-          <div class="metric-sub">
-            ความเสี่ยงซัพพลาย:
-            <span id="supplyRiskBox">--</span>/100
+          <div class="legend-box">
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#22c55e;">🟢</span>
+              <span>ต่ำ (&le;25)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#eab308;">🟡</span>
+              <span>ปานกลาง (&le;50)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#f97316;">🟠</span>
+              <span>เริ่มน่าเป็นห่วง (&le;75)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#ef4444;">🔴</span>
+              <span>สูง (&gt;75)</span>
+            </div>
           </div>
         </div>
 
-        <div class="metric-box">
-          <div class="metric-label">คู่แข่งที่ใกล้ที่สุด</div>
-          <div class="metric-value"><span id="nearestCompetitorKmBox">--</span> กม.</div>
-          <div class="metric-sub">
-            ความเสี่ยงระยะประชิด:
-            <span id="proximityRiskBox">--</span>/100
-          </div>
-        </div>
-
-        <div class="metric-box">
-          <div class="metric-label">คำอธิบายพื้นที่</div>
-          <div class="metric-value" style="font-size:13px;line-height:1.4;" id="situationSummaryBox">
-            --
+        <div class="summary-right">
+          <div class="score-number" id="overallScore">--</div>
+          <div class="score-risktext" id="overallLabel">กำลังคำนวณ...</div>
+          <div class="score-hint">
+            คะแนนเฉลี่ยของทุกตำบล
           </div>
         </div>
       </div>
     </section>
 
-    <!-- HOW TO READ -->
-    <section class="card">
-      <h3>🟢🟡🟠🔴 การแปลผล</h3>
-      <div style="font-size:12px;line-height:1.5;color:#cbd5e1;">
-        <p><b>0-29 (เขียว)</b> = ความเสี่ยงต่ำ พื้นที่ยังโล่ง</p>
-        <p><b>30-59 (เหลือง)</b> = เริ่มชน มีคู่แข่งหรือซัพพลายเริ่มตึง</p>
-        <p><b>60-79 (ส้ม)</b> = แข่งขันดุ / คู่แข่งอยู่ใกล้มาก ต้องมีจุดแข็งเชิงปฏิบัติการ</p>
-        <p><b>80-100 (แดง)</b> = เสี่ยงสูง ตลาดอัดแน่นหรือของไม่พอ</p>
-      </div>
+    <!-- TABLE -->
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>อำเภอ</th>
+            <th>ตำบล</th>
+            <th>ประชากร</th>
+            <th>ลูกค้าใกล้ (≤3 กม.)</th>
+            <th>คู่แข่งใกล้ (≤3 กม.)</th>
+            <th>ความเสี่ยง</th>
+            <th>ระดับ</th>
+          </tr>
+        </thead>
+        <tbody id="riskTableBody">
+          <!-- จะเติมด้วย JS -->
+        </tbody>
+      </table>
     </section>
+  </main>
 
-  </aside>
+  <footer>
+    © สมุทรสาคร risk model demo | client-side only
+  </footer>
 
-  <!-- MAP -->
-  <section id="map-wrapper">
-    <div id="map"></div>
-  </section>
-</main>
+  <script>
+    // -----------------------------
+    // 1) helpers
+    // -----------------------------
 
-<footer>
-  วิเคราะห์ความเสี่ยงพื้นที่เชิงภูมิศาสตร์ทดลอง | ปรับพิกัดลาน / CSV เพื่อให้แม่นยำขึ้น
-</footer>
+    // CSV parser ง่าย ๆ: ต้องไม่มีคอมม่าภายในช่อง
+    function parseCSV(text) {
+      const lines = text.trim().split("\n");
+      const headers = lines[0].split(",");
 
-<script>
-/* --------------------------------------------------
-   CONFIG พื้นฐาน
-   -------------------------------------------------- */
+      return lines.slice(1).map(line => {
+        const cols = line.split(",");
+        const obj = {};
+        headers.forEach((h, i) => {
+          obj[h.trim()] = (cols[i] || "").trim();
+        });
+        return obj;
+      });
+    }
 
-// พิกัด "ลานกระทิงแดง" หรือจุดศูนย์กลางที่ต้องการวิเคราะห์
-// แก้เป็นพิกัดจริงของคุณได้เลย
-const SITE_LAT = 13.59;
-const SITE_LNG = 100.28;
+    // haversine distance (km)
+    function distanceKm(lat1, lon1, lat2, lon2){
+      const R = 6371; // km
+      const toRad = d => d * Math.PI / 180;
+      const dLat = toRad(lat2-lat1);
+      const dLon = toRad(lon2-lon1);
 
-// path CSV ข้อมูลโรงงานทั้งหมด
-const CSV_URL = "data/factories.csv";
+      const a =
+        Math.sin(dLat/2)*Math.sin(dLat/2) +
+        Math.cos(toRad(lat1))*Math.cos(toRad(lat2)) *
+        Math.sin(dLon/2)*Math.sin(dLon/2);
 
-// สมมติฐานสเกลการ normalize
-const MAX_COMPETITORS_SCALE = 30; // ถ้ามีคู่แข่ง >=30 ในรัศมี -> เสี่ยง max
-const BASE_CUSTOMER_GOOD    = 50; // ถ้ามีลูกค้า >=50 ในรัศมี -> ซัพพลายโอเค -> เสี่ยงต่ำ
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
 
-// น้ำหนักรวมความเสี่ยง
-const W_COMPETITION = 0.5;
-const W_PROXIMITY   = 0.3;
-const W_SUPPLY      = 0.2;
+    // นิยามว่าอะไรคือลูกค้าเป้าหมาย
+    function isCustomerCategory(cat){
+      if(!cat) return false;
+      return (
+        cat.includes("โรงงานกระดาษ") ||
+        cat.includes("เม็ดพลาสติก") ||
+        cat.includes("พลาสติก") || // เผื่อเขียนสั้น
+        cat.includes("สุรา") ||
+        cat.includes("เหล้า") ||
+        cat.includes("เครื่องดื่มแอลกอฮอล์")
+      );
+    }
 
-// หมวดลูกค้า default ที่ควรติ๊กอัตโนมัติ
-// (คุณอยากโฟกัส: โรงงานกระดาษ / เม็ดพลาสติก / สุรา)
-const DEFAULT_CUSTOMER_HINTS = [
-  "โรงงานผลิตกระดาษ",
-  "โรงงานผลิตเม็ดพลาสติก",
-  "โรงงานสุรา"
-];
+    // นิยามว่าอะไรคือคู่แข่งรีไซเคิล
+    function isCompetitorCategory(cat){
+      if(!cat) return false;
+      return (
+        cat.includes("รีไซเคิล") ||
+        cat.includes("รับซื้อของเก่า") ||
+        cat.includes("ศูนย์รีไซเคิล")
+      );
+    }
 
-// คีย์ที่ถือว่าเป็น "คู่แข่ง" (โรงงานรีไซเคิล)
-function isCompetitorCategory(cat) {
-  // ตรง ๆ ตามข้อมูลคุณคือ "โรงงานรีไซเคิล"
-  // ถ้าอยากรวมอย่างอื่น ก็เพิ่มเงื่อนไขได้
-  return cat && cat.includes("รีไซเคิล");
-}
+    // ให้คะแนนความเสี่ยง:
+    // - demandScore ยิ่งลูกค้าเยอะยิ่งดี = ความเสี่ยงลด
+    //   > เราจะ map ลูกค้า 0..5 โรงงาน = 0..100 คะแนนดี
+    // - competitionScore ยิ่งคู่แข่งเยอะยิ่งแย่ = ความเสี่ยงเพิ่ม
+    //   > map คู่แข่ง 0..5 โรงงาน = 0..100 ความกดดัน
+    //
+    // riskRaw = 0.6*(competitionScore) + 0.4*(100 - demandScore)
+    // 0   = ปลอดภัยมาก
+    // 100 = แข่งดุ ลูกค้าน้อย
+    function calcRisk(customersNearby, competitorsNearby){
+      const cap = 5; // เกิน 5 มองว่าแน่นแล้ว
+      const demandScore = Math.min(customersNearby / cap, 1) * 100;
+      const competitionScore = Math.min(competitorsNearby / cap, 1) * 100;
+      const raw = 0.6*competitionScore + 0.4*(100 - demandScore);
+      return raw;
+    }
 
-/* --------------------------------------------------
-   สร้างแผนที่ Leaflet
-   -------------------------------------------------- */
-
-const map = L.map("map", {
-  zoomControl: true,
-  attributionControl: true,
-});
-
-// base tile (ใช้ OSM)
-const osm = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom: 20,
-    attribution: '&copy; OpenStreetMap contributors',
-  }
-).addTo(map);
-
-// ตั้งกล้องไปจุดลาน
-map.setView([SITE_LAT, SITE_LNG], 12);
-
-// marker จุดลานกระทิงแดง
-const siteMarker = L.circleMarker([SITE_LAT, SITE_LNG], {
-  radius:8,
-  color:"#38bdf8",
-  weight:2,
-  fillColor:"#0ea5e9",
-  fillOpacity:0.9
-})
-.bindPopup(`
-  <div class="popup-title">จุดวิเคราะห์หลัก</div>
-  <div class="popup-desc">ลานกระทิงแดง / จุดศูนย์กลางธุรกิจ</div>
-`)
-.addTo(map);
-
-// วงกลมรัศมีที่ผู้ใช้เลือก
-let radiusCircle = null;
-
-// กลุ่ม marker ของคู่แข่ง (แดง) และลูกค้า (ฟ้า)
-const competitorLayer = L.layerGroup().addTo(map);
-const customerLayer   = L.layerGroup().addTo(map);
-
-// เก็บข้อมูลโรงงานทั้งหมดหลังโหลด CSV
-let factoryData = [];
-
-// เก็บ checkbox DOM map สำหรับหมวด
-const categoryCheckboxes = {}; // { "โรงงานผลิตกระดาษ": inputElement, ... }
-
-/* --------------------------------------------------
-   Utils: ระยะทาง (km) ด้วย haversine
-   -------------------------------------------------- */
-function haversineKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; // โลก ~6371 km
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
-
-/* --------------------------------------------------
-   ความเสี่ยงย่อย
-   -------------------------------------------------- */
-function calcCompetitionRiskScore(competitorCount) {
-  // คู่แข่งเยอะ -> เสี่ยงสูง
-  const raw = competitorCount / MAX_COMPETITORS_SCALE;
-  const clamped = Math.min(raw, 1);
-  return clamped * 100;
-}
-
-function calcSupplyRiskScore(customerCount) {
-  // ลูกค้ายิ่งเยอะ -> ซัพพลายดี -> เสี่ยงต่ำ
-  // กลับด้านเป็น "ความเสี่ยง"
-  const opportunity = Math.min(customerCount / BASE_CUSTOMER_GOOD, 1);
-  return (1 - opportunity) * 100;
-}
-
-function calcProximityRiskScore(nearestKm) {
-  // ใกล้มาก (<1km) = เสี่ยง 100
-  // ไกลมาก (>=5km) = เสี่ยง 0
-  if (!isFinite(nearestKm)) {
-    // ถ้าไม่มีคู่แข่งเลย
-    return 0;
-  }
-  if (nearestKm <= 1) return 100;
-  if (nearestKm >= 5) return 0;
-  const t = (nearestKm - 1) / (5 - 1); // 0 ที่1km ->1 ที่5km
-  return (1 - t) * 100;
-}
-
-function calcTotalRiskIndex(rComp, rProx, rSupp) {
-  return (rComp * W_COMPETITION) +
-         (rProx * W_PROXIMITY) +
-         (rSupp * W_SUPPLY);
-}
-
-/* --------------------------------------------------
-   ตีความคะแนนรวม -> สี/ป้าย
-   -------------------------------------------------- */
-function interpretRisk(score) {
-  // return {label,emoji,badgeClass}
-  if (score < 30) {
-    return {
-      label: "ความเสี่ยงต่ำ",
-      emoji: "🟢",
-      badgeClass: "badge-low",
-      explain: "พื้นที่ค่อนข้างปลอดภัย คู่แข่งยังไม่หนาแน่น หรือมีซัพพลายลูกค้ามากพอ"
-    };
-  } else if (score < 60) {
-    return {
-      label: "ปานกลาง",
-      emoji: "🟡",
-      badgeClass: "badge-medium",
-      explain: "เริ่มมีแรงกดดันจากคู่แข่ง หรือซัพพลายเริ่มจำกัด ต้องจับตาเรื่องราคา/ต้นทุน"
-    };
-  } else if (score < 80) {
-    return {
-      label: "ค่อนข้างสูง",
-      emoji: "🟠",
-      badgeClass: "badge-high",
-      explain: "พื้นที่แข่งขันค่อนข้างดุ / มีคู่แข่งค่อนข้างใกล้ ต้องมีจุดแข็งปฏิบัติการ"
-    };
-  } else {
-    return {
-      label: "สูงมาก",
-      emoji: "🔴",
-      badgeClass: "badge-veryhigh",
-      explain: "ตลาดอัดแน่นหรือของอาจไม่พอ แรงบีบด้านราคาจะสูง กำไรต่อกิโลกรัมอาจบาง"
-    };
-  }
-}
-
-/* --------------------------------------------------
-   ฟังก์ชันวาด / คำนวณตามรัศมีและหมวดลูกค้า
-   -------------------------------------------------- */
-function updateAnalysis() {
-  const radiusKm = parseFloat(document.getElementById("radiusKm").value);
-  document.getElementById("radiusLabel").textContent = radiusKm.toString();
-
-  // อัปเดตรัศมีวงบนแผนที่
-  const radiusMeters = radiusKm * 1000;
-  if (radiusCircle) {
-    map.removeLayer(radiusCircle);
-  }
-  radiusCircle = L.circle([SITE_LAT, SITE_LNG], {
-    radius: radiusMeters,
-    color:"#facc15",
-    weight:2,
-    fillColor:"#fde047",
-    fillOpacity:0.08
-  }).addTo(map);
-
-  // หมวดลูกค้าที่ถูกติ๊ก
-  const activeCustomerCats = Object.keys(categoryCheckboxes)
-    .filter(cat => categoryCheckboxes[cat].checked);
-
-  // เคลียร์ layer marker ก่อนวาดใหม่
-  competitorLayer.clearLayers();
-  customerLayer.clearLayers();
-
-  let competitorsInRange = [];
-  let customersInRange   = [];
-
-  // loop โรงงานทั้งหมด
-  for (const item of factoryData) {
-    const dKm = haversineKm(SITE_LAT, SITE_LNG, item.lat, item.lng);
-    if (dKm <= radiusKm) {
-      if (isCompetitorCategory(item.category)) {
-        competitorsInRange.push({ ...item, distKm:dKm });
-      }
-      // ลูกค้า = หมวดที่ติ๊ก
-      if (activeCustomerCats.includes(item.category)) {
-        customersInRange.push({ ...item, distKm:dKm });
+    // แปลงคะแนน -> สี/เลเบล/อีโมจิ
+    function classifyRisk(score){
+      // rule:
+      // <=25   เขียว
+      // <=50   เหลือง
+      // <=75   ส้ม
+      // >75    แดง
+      if(score <= 25){
+        return { label:"ต่ำ", color:"#22c55e", emoji:"🟢" };
+      } else if(score <= 50){
+        return { label:"ปานกลาง", color:"#eab308", emoji:"🟡" };
+      } else if(score <= 75){
+        return { label:"เริ่มน่าเป็นห่วง", color:"#f97316", emoji:"🟠" };
+      } else {
+        return { label:"สูง", color:"#ef4444", emoji:"🔴" };
       }
     }
-  }
 
-  // หา nearest competitor
-  let nearestDist = Infinity;
-  competitorsInRange.forEach(c => {
-    if (c.distKm < nearestDist) nearestDist = c.distKm;
-  });
+    // -----------------------------
+    // 2) main logic
+    // -----------------------------
 
-  // คำนวณ risk ย่อย
-  const competitorCount = competitorsInRange.length;
-  const customerCount   = customersInRange.length;
+    Promise.all([
+      fetch("../data/subdistricts.csv").then(r=>r.text()),
+      fetch("../data/factories.csv").then(r=>r.text())
+    ])
+    .then(([subText, facText]) => {
+      const subRows = parseCSV(subText);
+      const facRows = parseCSV(facText);
 
-  const rComp = calcCompetitionRiskScore(competitorCount);
-  const rSupp = calcSupplyRiskScore(customerCount);
-  const rProx = calcProximityRiskScore(nearestDist);
+      // เตรียม factories ให้อยู่ในรูป {lat,lng,category}
+      const factories = facRows
+        .map(f => {
+          const lat = parseFloat(f.lat);
+          const lng = parseFloat(f.lng);
+          return {
+            lat,
+            lng,
+            cat: f.category || "",
+            name: f.name || ""
+          };
+        })
+        .filter(p => !isNaN(p.lat) && !isNaN(p.lng));
 
-  const totalRisk = calcTotalRiskIndex(rComp, rProx, rSupp);
+      // คำนวณต่อ 1 ตำบล
+      const result = subRows.map(s => {
+        const slat = parseFloat(s.lat);
+        const slng = parseFloat(s.lng);
+        const pop = Number(s.population);
 
-  // แปลผลรวม
-  const interp = interpretRisk(totalRisk);
+        if(isNaN(slat) || isNaN(slng)){
+          return null;
+        }
 
-  // อัปเดต UI summary
-  document.getElementById("competitorCountBox").textContent = competitorCount;
-  document.getElementById("customerCountBox").textContent   = customerCount;
-  document.getElementById("nearestCompetitorKmBox").textContent =
-    isFinite(nearestDist) ? nearestDist.toFixed(2) : "-";
+        // นับในรัศมี 3 กม.
+        let customersNearby = 0;
+        let competitorsNearby = 0;
+        factories.forEach(f => {
+          const dist = distanceKm(slat, slng, f.lat, f.lng);
+          if(dist <= 3){
+            if(isCustomerCategory(f.cat)) customersNearby++;
+            if(isCompetitorCategory(f.cat)) competitorsNearby++;
+          }
+        });
 
-  document.getElementById("competitionRiskBox").textContent = rComp.toFixed(0);
-  document.getElementById("supplyRiskBox").textContent      = rSupp.toFixed(0);
-  document.getElementById("proximityRiskBox").textContent   = rProx.toFixed(0);
+        const riskScore = calcRisk(customersNearby, competitorsNearby);
+        const riskInfo = classifyRisk(riskScore);
 
-  document.getElementById("totalRiskScore").textContent     = totalRisk.toFixed(0) + "/100";
-  document.getElementById("totalRiskEmoji").textContent     = interp.emoji;
-  document.getElementById("totalRiskLabel").textContent     = interp.label;
-  document.getElementById("totalRiskExplain").textContent   = interp.explain;
-
-  // ตั้งคลาสของ badge ให้ตรงระดับ
-  const badge = document.getElementById("totalRiskBadge");
-  badge.className = "risk-badge " + interp.badgeClass;
-
-  // situation summary สั้นๆ
-  let summaryTxt = "";
-  summaryTxt += `คู่แข่งรีไซเคิล ${competitorCount} แห่ง`;
-  if (isFinite(nearestDist)) {
-    summaryTxt += ` (ใกล้สุด ~${nearestDist.toFixed(2)} กม.)`;
-  }
-  summaryTxt += ` | ลูกค้าที่เลือก ${customerCount} แห่ง`;
-  summaryTxt += ` | รัศมี ${radiusKm} กม.`;
-  document.getElementById("situationSummaryBox").textContent = summaryTxt;
-
-  // วาด marker คู่แข่ง (แดงเข้ม)
-  competitorsInRange.forEach(c => {
-    const m = L.circleMarker([c.lat, c.lng], {
-      radius:6,
-      color:"#dc2626",
-      weight:2,
-      fillColor:"#ef4444",
-      fillOpacity:0.8
-    }).bindPopup(`
-      <div class="popup-title">${c.name || "(ไม่มีชื่อ)"}</div>
-      <div class="popup-desc">
-        <div><b>หมวด:</b> ${c.category}</div>
-        <div><b>ระยะ:</b> ${c.distKm.toFixed(2)} กม.</div>
-        <div style="margin-top:4px;">${c.address || ""}</div>
-      </div>
-    `);
-    competitorLayer.addLayer(m);
-  });
-
-  // วาด marker ลูกค้า (ฟ้า)
-  customersInRange.forEach(c => {
-    const m = L.circleMarker([c.lat, c.lng], {
-      radius:6,
-      color:"#0ea5e9",
-      weight:2,
-      fillColor:"#38bdf8",
-      fillOpacity:0.8
-    }).bindPopup(`
-      <div class="popup-title">${c.name || "(ไม่มีชื่อ)"}</div>
-      <div class="popup-desc">
-        <div><b>หมวด:</b> ${c.category}</div>
-        <div><b>ระยะ:</b> ${c.distKm.toFixed(2)} กม.</div>
-        <div style="margin-top:4px;">${c.address || ""}</div>
-      </div>
-    `);
-    customerLayer.addLayer(m);
-  });
-
-}
-
-/* --------------------------------------------------
-   เตรียม checkbox หมวดลูกค้าแบบไดนามิก
-   -------------------------------------------------- */
-function buildCustomerCategoryList(uniqueCats) {
-  const listEl = document.getElementById("customerCategoryList");
-  listEl.innerHTML = "";
-
-  uniqueCats.forEach(cat => {
-    if (!cat) return;
-    const row = document.createElement("div");
-    row.className = "checkbox-row";
-
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.setAttribute("data-cat", cat);
-
-    // default checked? ถ้าชื่อหมวด match hints ของเรา
-    input.checked = DEFAULT_CUSTOMER_HINTS.some(h => cat.includes(h));
-
-    const labelSpan = document.createElement("span");
-    labelSpan.textContent = cat;
-
-    row.appendChild(input);
-    row.appendChild(labelSpan);
-    listEl.appendChild(row);
-
-    categoryCheckboxes[cat] = input;
-
-    // เวลาติ๊ก/เอาติ๊กออก -> คำนวณใหม่
-    input.addEventListener("change", () => {
-      updateAnalysis();
-    });
-  });
-}
-
-/* --------------------------------------------------
-   โหลด CSV แล้วเริ่มระบบ
-   -------------------------------------------------- */
-fetch(CSV_URL)
-  .then(res => res.text())
-  .then(csvText => {
-    const parsed = Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-    });
-
-    // map ไปเป็น object ที่เราใช้
-    factoryData = parsed.data
-      .map(row => {
-        // บังคับเลขให้เป็น float
-        const lat = parseFloat(row.lat);
-        const lng = parseFloat(row.lng);
-        // กรองทิ้งถ้าไม่มีพิกัดโอเค
-        if (isNaN(lat) || isNaN(lng)) return null;
         return {
-          category: row.category ? row.category.trim() : "",
-          name:     row.name ? row.name.trim() : "",
-          type:     row.type ? row.type.trim() : "",
-          address:  row.address ? row.address.trim() : "",
-          lat,
-          lng
+          district_th: s.district_th || s["อำเภอ"] || "",
+          subdistrict_th: s.subdistrict_th || s["ตำบล_TH"] || "",
+          population: isNaN(pop) ? null : pop,
+          customersNearby,
+          competitorsNearby,
+          riskScore,
+          riskInfo
         };
-      })
-      .filter(x => x !== null);
+      }).filter(Boolean);
 
-    // unique categories ทั้งหมด
-    const uniqueCatsSet = new Set();
-    factoryData.forEach(item => {
-      if (item.category && item.category !== "") {
-        uniqueCatsSet.add(item.category);
+      // เติมตาราง
+      const tbody = document.getElementById("riskTableBody");
+      tbody.innerHTML = "";
+      result.forEach(r => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${r.district_th || "-"}</td>
+          <td>
+            <div style="color:#fff;font-weight:600;">
+              ${r.subdistrict_th || "-"}
+            </div>
+          </td>
+          <td>${r.population !== null ? r.population.toLocaleString("th-TH") + " คน" : "-"}</td>
+          <td>${r.customersNearby}</td>
+          <td>${r.competitorsNearby}</td>
+          <td>${r.riskScore.toFixed(1)}</td>
+          <td>
+            <span class="risk-badge" style="background:${r.riskInfo.color};">
+              ${r.riskInfo.emoji} ${r.riskInfo.label}
+            </span>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      // คำนวณภาพรวม
+      if(result.length > 0){
+        const avgScore = result.reduce((sum,r)=>sum+r.riskScore,0)/result.length;
+        const overall = classifyRisk(avgScore);
+
+        document.getElementById("overallScore").textContent = avgScore.toFixed(1);
+        document.getElementById("overallLabel").textContent = `${overall.emoji} ${overall.label}`;
+
+        const dot = document.getElementById("overallColorDot");
+        dot.style.background = overall.color;
+        dot.title = overall.label + " ("+avgScore.toFixed(1)+")";
+      } else {
+        document.getElementById("overallScore").textContent = "--";
+        document.getElementById("overallLabel").textContent = "ไม่มีข้อมูล";
       }
+    })
+    .catch(err => {
+      console.error("โหลด CSV ล้มเหลว:", err);
+      document.getElementById("overallScore").textContent = "ERR";
+      document.getElementById("overallLabel").textContent = "โหลดข้อมูลไม่สำเร็จ";
     });
-    const uniqueCats = Array.from(uniqueCatsSet).sort();
-
-    // สร้าง checkbox เลือกหมวดลูกค้า
-    buildCustomerCategoryList(uniqueCats);
-
-    // bind event ของ radius
-    document.getElementById("radiusKm").addEventListener("input", () => {
-      updateAnalysis();
-    });
-
-    // คำนวณครั้งแรก
-    updateAnalysis();
-  })
-  .catch(err => {
-    console.error("โหลด CSV ไม่ได้:", err);
-    document.getElementById("totalRiskExplain").textContent =
-      "เกิดปัญหาในการโหลดข้อมูลโรงงาน (CSV) กรุณาตรวจสอบไฟล์ data/factories.csv";
-  });
-</script>
-
+  </script>
 </body>
 </html>
