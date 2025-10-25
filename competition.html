@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>การแข่งขันรอบลานกระทิงแดง - สมุทรสาคร</title>
+
+    <style>
+      body {
+        background: #0f172a;
+        color: #f8fafc;
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      header {
+        background: #1e293b;
+        padding: 12px 16px;
+        border-bottom: 1px solid #334155;
+        font-size: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      header nav a {
+        color: #94a3b8;
+        margin-right: 12px;
+        text-decoration: none;
+        font-size: 13px;
+      }
+      header nav a:hover {
+        color: #fff;
+      }
+
+      main {
+        padding: 24px clamp(16px, 2vw, 32px);
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        display: grid;
+        gap: 24px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      @media (min-width: 1000px) {
+        .grid-2 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .card {
+        background: radial-gradient(
+            circle at 0% 0%,
+            rgba(30, 41, 59, 0.9) 0%,
+            rgba(15, 23, 42, 0.8) 60%
+          ),
+          #0f172a;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 20px 24px;
+        box-shadow: 0 30px 80px rgb(0 0 0 / 0.8);
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        margin: 0 0 8px;
+        line-height: 1.4;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .subtle {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+
+      .stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        font-size: 13px;
+        color: #cbd5e1;
+      }
+
+      .stat-box {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid #47556966;
+        border-radius: 12px;
+        padding: 12px 16px;
+        min-width: 160px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        line-height: 1.4;
+        color: #94a3b8;
+      }
+
+      .stat-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        line-height: 1.3;
+      }
+
+      .tag-chip {
+        display: inline-block;
+        padding: 4px 8px;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid #475569;
+        border-radius: 999px;
+        font-size: 11px;
+        line-height: 1.2;
+        color: #e2e8f0;
+        font-weight: 500;
+        margin: 2px 4px 2px 0;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #cbd5e1;
+        min-width: 800px;
+      }
+
+      thead {
+        background: #1e293b;
+        color: #fff;
+      }
+
+      th {
+        text-align: left;
+        font-weight: 500;
+        padding: 10px 12px;
+        border-bottom: 1px solid #334155;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      tbody tr:nth-child(even) {
+        background: rgba(30, 41, 59, 0.3);
+      }
+
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #33415566;
+        vertical-align: top;
+      }
+
+      .biz-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        line-height: 1.4;
+      }
+
+      .biz-cat {
+        font-size: 11px;
+        color: #94a3b8;
+        line-height: 1.3;
+      }
+
+      footer {
+        color: #475569;
+        background: #0f172a;
+        font-size: 12px;
+        text-align: center;
+        padding: 12px 0 16px;
+        border-top: 1px solid #334155;
+      }
+
+      code.inline {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid #334155;
+        border-radius: 6px;
+        padding: 2px 6px;
+        color: #7dd3fc;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <header>
+      <div style="font-weight:600; color:#fff; font-size:13px;">
+        🏭 การแข่งขันรอบลานกระทิงแดง
+      </div>
+      <nav>
+        <a href="index.html">หน้าแรก</a>
+        <a href="map.html">แผนที่</a>
+        <a href="population.html">ประชากร</a>
+        <a href="competition.html" style="color:#fff;">การแข่งขัน</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- การสรุปเชิงธุรกิจ -->
+      <section class="card">
+        <div class="section-title">
+          <div>สรุป Landscape ใกล้จุดลานกระทิงแดง</div>
+          <div class="subtle">
+            จุดอ้างอิง: 13.565126, 100.279895
+            <br />
+            ถนนสายใยรัก · อำเภอเมืองสมุทรสาคร
+          </div>
+        </div>
+
+        <div class="stat-row" id="summaryStats">
+          <!-- เติมด้วย JS -->
+        </div>
+
+        <div style="margin-top:16px;font-size:12px;line-height:1.5;color:#cbd5e1;">
+          กลุ่มหลักรอบพื้นที่มักเกี่ยวข้องกับ:
+          <span class="tag-chip">อาหารทะเล / ห้องเย็น</span>
+          <span class="tag-chip">อาหาร & เครื่องดื่ม</span>
+          <span class="tag-chip">พลาสติก / บรรจุภัณฑ์</span>
+          <span class="tag-chip">โลหะ / ชิ้นส่วนอุตสาหกรรม</span>
+          <span class="tag-chip">เคมี / ส่วนผสมอาหาร</span>
+          <br />
+          โฟกัสต่อไป: ใครบ้างที่เป็น “คู่แข่งเชิงพื้นที่” (แปลว่าใกล้มาก ๆ) และใครบ้างที่เป็น “ซัพพลายเชน / พันธมิตรได้”
+        </div>
+      </section>
+
+      <!-- ตารางรายชื่อโรงงาน/กิจการ -->
+      <section class="card">
+        <div class="section-title">
+          <div>โรงงาน / ธุรกิจรอบพื้นที่</div>
+          <div class="subtle">
+            เราจะคำนวณระยะทางจากลานกระทิงแดงในขั้นถัดไป แล้วจัดอันดับตามความใกล้
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ชื่อกิจการ</th>
+                <th>หมวด</th>
+                <th>รายละเอียด</th>
+                <th>ตำบล / อำเภอ</th>
+                <th>Lat</th>
+                <th>Lng</th>
+                <th>ระยะจากลาน (กม.)</th>
+              </tr>
+            </thead>
+            <tbody id="factoryTableBody">
+              <!-- เติมด้วย JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      วิเคราะห์ความหนาแน่นคู่แข่ง = ความเสี่ยง & โอกาสเชิงโลจิสติก, โซ่อุปทาน,
+      และภาพลักษณ์พื้นที่
+    </footer>
+
+    <script>
+      // พิกัดลานกระทิงแดง (reference point)
+      const REF_POINT = {
+        name: "ลานกระทิงแดง",
+        lat: 13.565126,
+        lng: 100.279895,
+      };
+
+      // -------------------------------------------------
+      // ✅ TODO: ต่อไปเราจะย้ายข้อมูลโรงงานไปเป็นไฟล์ JSON
+      //    เหมือน population/workforce
+      //    แต่ชั่วคราวเราจะ hardcode เป็น array ในหน้านี้ก่อน
+      // -------------------------------------------------
+
+      const factories = [
+        {
+          category: "โรงงานอาหารและเครื่องดื่ม",
+          name: "บริษัท เอวาน่า อินดัสทรี จำกัด",
+          desc: "ผลิตน้ำดื่ม",
+          tambon: "นาโคก",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.45785,
+          lng: 100.08628,
+        },
+        {
+          category: "โรงงานรีไซเคิล",
+          name: "บริษัท วิธ บีเอ็นไอ จำกัด",
+          desc: "ขยะชุมชน -> ปุ๋ยอินทรีย์ / เม็ดพลาสติก / เศษโลหะ",
+          tambon: "ชัยมงคล",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5125726,
+          lng: 100.2957658,
+        },
+        {
+          category: "โรงงานห้องเย็นและชำแหละ",
+          name: "บริษัท แม็คริช โพรเกรส จำกัด",
+          desc: "ชำแหละ แกะ ล้าง สัตว์น้ำ",
+          tambon: "มหาชัย",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5354263,
+          lng: 100.2616811,
+        },
+        {
+          category: "โรงงานพลาสติกอื่นๆ",
+          name: "บริษัท พี.เอส.พี.สเปเชียลตี้ส์ จำกัด (มหาชน)",
+          desc: "น้ำมันหล่อลื่น + บรรจุภัณฑ์พลาสติก",
+          tambon: "ท่าจีน",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5294242,
+          lng: 100.2439203,
+        },
+        {
+          category: "โรงงานสารเคมี",
+          name: "บริษัท สยามโกลบอล เคมิคอล จำกัด",
+          desc: "เรซินสังเคราะห์ / เคมีภัณฑ์อุตสาหกรรม",
+          tambon: "ชัยมงคล",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5347226,
+          lng: 100.1672698,
+        },
+        {
+          category: "โรงงานอาหารและเครื่องดื่ม",
+          name: "บริษัท ซีพีเอฟ ฟู้ด แอนด์ เบฟเวอร์เรจ จำกัด",
+          desc: "อาหารจากพืช/ผัก ผลไม้ บรรจุภัณฑ์ปิดผนึก",
+          tambon: "บางโทรัด",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.512959,
+          lng: 100.158482,
+        },
+        {
+          category: "โรงงานประกอบชิ้นส่วน",
+          name: "บริษัท ครูเกอร์ เวนทิเลชั่น อินดัสทรีส์ เอเซีย จำกัด",
+          desc: "พัดลมอุตสาหกรรม / อุปกรณ์ระบายอากาศ",
+          tambon: "โคกขาม",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5456437,
+          lng: 100.3399666,
+        },
+        {
+          category: "โรงงานห้องเย็นและชำแหละ",
+          name: "บริษัท พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด",
+          desc: "ชำแหละ-ล้างกุ้ง/ปลา แช่แข็ง",
+          tambon: "ท่าทราย",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5633684,
+          lng: 100.2471886,
+        },
+        {
+          category: "โรงงานพลาสติกอื่นๆ",
+          name: "บริษัท อินโนโกร จำกัด",
+          desc: "ผลิตถุง/บรรจุภัณฑ์พลาสติก",
+          tambon: "ท่าทราย",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.57138,
+          lng: 100.28158,
+        },
+        {
+          category: "โรงงานอาหารและเครื่องดื่ม",
+          name: "บริษัท เวลล์-โกรว์ จำกัด",
+          desc: "เครื่องปรุงรส / วัตถุดิบกึ่งสำเร็จรูป",
+          tambon: "พันท้ายนรสิงห์",
+          amphoe: "เมืองสมุทรสาคร",
+          lat: 13.5733863,
+          lng: 100.3596824,
+        },
+      ];
+
+      // -------------------------------------------------
+      // helper: (ตอนนี้เรายังไม่คำนวณระยะ, จะทำ step ถัดไป)
+      // -------------------------------------------------
+      function renderTable() {
+        const tbody = document.getElementById("factoryTableBody");
+        tbody.innerHTML = "";
+
+        factories.forEach((f) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <div class="biz-name">${f.name}</div>
+              <div class="biz-cat">${f.category}</div>
+            </td>
+            <td>${f.category}</td>
+            <td style="max-width:240px;color:#cbd5e1;">${f.desc}</td>
+            <td>
+              ${f.tambon}<br />
+              <span class="subtle" style="font-size:11px;">
+                อ.${f.amphoe}
+              </span>
+            </td>
+            <td>${f.lat.toFixed(6)}</td>
+            <td>${f.lng.toFixed(6)}</td>
+            <td class="distance-cell subtle" style="font-size:11px;color:#94a3b8;">
+              (คำนวณในขั้นถัดไป)
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // นับสถิติหมวดธุรกิจเพื่อสรุป landscape
+      function summarizeCategories() {
+        const countByCategory = {};
+        factories.forEach((f) => {
+          countByCategory[f.category] = (countByCategory[f.category] || 0) + 1;
+        });
+
+        // หาหมวดที่พบบ่อยที่สุด
+        let topCat = null;
+        Object.entries(countByCategory).forEach(([cat, count]) => {
+          if (!topCat || count > topCat.count) {
+            topCat = { cat, count };
+          }
+        });
+
+        const summaryEl = document.getElementById("summaryStats");
+        summaryEl.innerHTML = `
+          <div class="stat-box">
+            <div class="stat-label">จำนวนกิจการที่บันทึกไว้</div>
+            <div class="stat-value">${factories.length} แห่ง</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label">หมวดเด่นรอบพื้นที่</div>
+            <div class="stat-value" style="font-size:14px;line-height:1.4;">
+              ${topCat.cat}
+              <div class="subtle" style="font-size:11px;font-weight:400;">
+                พบ ${topCat.count} แห่ง
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label">จุดอ้างอิง (Target)</div>
+            <div class="stat-value" style="font-size:14px;line-height:1.4;">
+              ${REF_POINT.lat.toFixed(6)}, ${REF_POINT.lng.toFixed(6)}
+              <div class="subtle" style="font-size:11px;font-weight:400;">
+                ${REF_POINT.name} / ถนนสายใยรัก
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // เรียกทำงานตอนโหลด
+      renderTable();
+      summarizeCategories();
+    </script>
+  </body>
+</html>
