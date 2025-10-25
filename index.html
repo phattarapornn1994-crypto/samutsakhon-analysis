@@ -2,807 +2,650 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>ภาพรวมโครงการรีไซเคิลเชิงพื้นที่ - สมุทรสาคร</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ศูนย์กลางรวบรวมวัสดุรีไซเคิล · สมุทรสาคร</title>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
 
   <style>
     :root {
-      --bg-page:#f8fafc;
-      --bg-card:#ffffff;
-      --border-card:#e2e8f0;
-      --text-main:#0f172a;
-      --text-dim:#64748b;
-      --radius-xl:20px;
-      --radius-lg:16px;
-      --radius-md:12px;
-      --shadow-card:0 32px 60px rgb(15 23 42 / 0.07);
+      --bg-page: #ffffff;
+      --bg-card: #f8fafc;
+      --border-card: #e2e8f0;
+      --text-main: #0f172a;
+      --text-sub: #475569;
+      --radius-lg: 16px;
+      --radius-sm: 10px;
+    }
 
-      --col-green:#10b981;
-      --col-yellow:#eab308;
-      --col-orange:#fb923c;
-      --col-red:#ef4444;
-      --col-blue:#0ea5e9;
-
-      --bg-green:#ecfdf5;
-      --bg-yellow:#fefce8;
-      --bg-orange:#fff7ed;
-      --bg-red:#fff1f2;
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      margin:0;
-      background:var(--bg-page);
-      color:var(--text-main);
-      font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        "Helvetica Neue",
-        sans-serif;
-      display:grid;
-      grid-template-rows:auto 1fr auto;
-      min-height:100vh;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0 16px 64px;
+      line-height: 1.5;
     }
 
-    /* ---------- NAV / HEADER (global nav style) ---------- */
+    /* ---------- NAV TOP (เหมือนทุกหน้า) ---------- */
     header.site-header {
-      background:#ffffff;
-      border-bottom:1px solid #e2e8f0;
-      display:flex;
-      flex-wrap:wrap;
-      align-items:flex-start;
-      justify-content:space-between;
-      padding:16px 20px;
-      row-gap:12px;
-      box-shadow:0 20px 40px rgb(0 0 0 / 0.03);
-      position:relative;
-      z-index:10;
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      margin: 0 -16px 24px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
     }
 
     .brand-block {
-      display:flex;
-      flex-direction:column;
-      min-width:240px;
-      max-width:360px;
-    }
-    .brand-title {
-      font-size:15px;
-      font-weight:600;
-      color:#0f172a;
-      display:flex;
-      align-items:center;
-      flex-wrap:wrap;
-      gap:8px;
-      line-height:1.4;
-    }
-    .brand-badge {
-      background:#ecfeff;
-      color:#0ea5e9;
-      border:1px solid #0ea5e9;
-      border-radius:8px;
-      font-size:11px;
-      font-weight:500;
-      padding:2px 6px;
-      line-height:1.2;
-    }
-    .brand-sub {
-      font-size:12px;
-      color:#64748b;
-      line-height:1.4;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--text-main);
+      font-weight: 600;
     }
 
-    nav.main-nav {
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      column-gap:10px;
-      row-gap:8px;
-      font-size:13px;
-      font-weight:500;
-    }
-    nav.main-nav a {
-      text-decoration:none;
-      color:#1e293b;
-      background:#ffffff;
-      border:1px solid #e2e8f0;
-      border-radius:10px;
-      padding:8px 10px;
-      line-height:1.2;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      box-shadow:0 10px 20px rgb(0 0 0 / 0.03);
-    }
-    nav.main-nav a span.emoji {
-      font-size:16px;
-      line-height:1;
-    }
-    nav.main-nav a.active {
-      background:#0ea5e9;
-      border-color:#0ea5e9;
-      color:#fff;
-      box-shadow:0 16px 32px rgb(14 165 233 / 0.35);
-      font-weight:600;
+    .brand-block div:last-child {
+      font-weight: 400;
+      font-size: 12px;
+      color: var(--text-sub);
     }
 
-    /* ---------- PAGE WRAP ---------- */
-    main.page {
-      padding:32px 16px 80px;
-      max-width:1280px;
-      width:100%;
-      margin:0 auto;
-      display:grid;
-      grid-template-rows:auto auto auto;
-      row-gap:32px;
+    nav.nav-main {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
-    /* ---------- HERO BLOCK ---------- */
-    .hero-card {
-      background:var(--bg-card);
-      border:1px solid var(--border-card);
-      border-radius:var(--radius-xl);
-      box-shadow:var(--shadow-card);
-      padding:24px;
-      display:grid;
-      grid-template-columns:1fr;
-      row-gap:24px;
+    nav.nav-main a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 8px;
     }
-    @media(min-width:950px){
-      .hero-card {
-        grid-template-columns:1fr 360px;
-        column-gap:28px;
-        align-items:flex-start;
+
+    nav.nav-main a.active {
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-weight: 600;
+      border: 1px solid #bfdbfe;
+    }
+
+    nav.nav-main a span.icon {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    /* ---------- PAGE LAYOUT ---------- */
+    main.page-wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      main.page-wrapper {
+        grid-template-columns: 1fr;
       }
     }
 
-    .hero-left-headline {
-      display:flex;
-      flex-wrap:wrap;
-      align-items:flex-start;
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .hero-left-headline h1 {
-      margin:0;
-      font-size:20px;
-      font-weight:600;
-      color:#0f172a;
-      line-height:1.4;
-    }
-    .hero-chip {
-      background:#fff7ed;
-      border:1px solid var(--col-orange);
-      color:#9a3412;
-      font-size:11px;
-      font-weight:600;
-      line-height:1.2;
-      padding:4px 6px;
-      border-radius:8px;
-      white-space:nowrap;
+    /* ---------- LEFT COLUMN: บทนำ + จุดขายหลัก ---------- */
+    .intro-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px rgb(0 0 0 / 0.05);
+      padding: 20px 24px 24px;
+      margin-bottom: 20px;
     }
 
-    .hero-desc {
-      font-size:13px;
-      color:#475569;
-      line-height:1.6;
-      white-space:pre-line;
-      margin:0;
-      max-width:600px;
+    .intro-headline {
+      font-size: 20px;
+      line-height: 1.4;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .intro-headline-badge {
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fdba74;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      line-height: 1.3;
     }
 
-    .hero-desc ul {
-      margin:8px 0 0 20px;
-      padding:0;
-    }
-    .hero-desc li {
-      margin-bottom:4px;
+    .intro-desc {
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-sub);
     }
 
-    /* ---------- RISK SUMMARY PANEL ---------- */
+    .intro-desc strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* การ์ดจุดขายหลัก */
+    .value-card {
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 32px rgb(0 0 0 / 0.04);
+      padding: 20px 24px 24px;
+      margin-bottom: 20px;
+    }
+
+    .value-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .value-title-badge {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 2px 8px;
+      line-height: 1.3;
+    }
+
+    .value-points {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      row-gap: 16px;
+    }
+
+    .value-point-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 12px;
+    }
+
+    .value-icon {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .value-text-main {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .value-text-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+
+    .value-inline-highlight {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+      font-size: 12px;
+      line-height: 1.3;
+      border-radius: 8px;
+      padding: 2px 6px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    /* ---------- RIGHT COLUMN: RISK SNAPSHOT ---------- */
+
     .risk-panel {
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px rgb(0 0 0 / 0.05);
+      padding: 16px 20px 20px;
+      display: grid;
+      row-gap: 16px;
+      height: fit-content;
     }
-    .risk-panel-title {
-      font-size:13px;
-      font-weight:600;
-      color:#0f172a;
-      line-height:1.4;
-      display:flex;
-      align-items:center;
-      gap:8px;
+
+    .risk-header {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
     }
-    .risk-panel-title span.emoji {
-      font-size:16px;
-      line-height:1;
+    .risk-header .icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+    .risk-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.4;
+      margin-top: 2px;
     }
 
     .risk-grid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
 
     .risk-box {
-      border-radius:var(--radius-lg);
-      border:1px solid var(--border-card);
-      box-shadow:0 20px 32px rgb(0 0 0 / 0.04);
-      padding:12px 14px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      min-height:110px;
-      font-size:12px;
-      line-height:1.45;
+      background: #f8fafc;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text-main);
+      box-shadow: 0 10px 24px rgb(0 0 0 / 0.04);
     }
 
-    .risk-header-row {
-      display:flex;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      align-items:flex-start;
-      gap:8px;
-    }
-    .risk-title {
-      font-size:12px;
-      font-weight:600;
-      color:#0f172a;
-      line-height:1.4;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .risk-badge {
-      font-size:11px;
-      font-weight:600;
-      border-radius:999px;
-      padding:3px 8px;
-      line-height:1.2;
-      border:1px solid transparent;
-      min-width:78px;
-      text-align:center;
-      box-shadow:0 10px 20px rgb(0 0 0 / 0.06);
+    .risk-row-head {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      line-height: 1.4;
+      margin-bottom: 8px;
     }
 
-    /* สีพื้นหลังของกล่อง + badge */
-    .risk-low     { background:var(--bg-green);  border-color:var(--col-green);   color:#065f46; }
-    .risk-mid     { background:var(--bg-yellow); border-color:var(--col-yellow);  color:#713f12; }
-    .risk-high    { background:var(--bg-red);    border-color:var(--col-red);     color:#991b1b; }
-    .risk-room    { background:var(--bg-green);  border-color:var(--col-green);   color:#065f46; }
-
-    .risk-box-low    { background:var(--bg-green);  }
-    .risk-box-mid    { background:var(--bg-yellow); }
-    .risk-box-high   { background:var(--bg-red);    }
-    .risk-box-room   { background:var(--bg-green);  }
-
-    .risk-body {
-      margin-top:8px;
-      font-size:11.5px;
-      color:#475569;
-      line-height:1.45;
+    .risk-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid transparent;
     }
 
-    /* ---------- 4 PILLARS GRID ---------- */
-    .pillars-wrap {
-      display:flex;
-      flex-direction:column;
-      gap:16px;
+    /* สีไฟจราจร */
+    .chip-red {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-color: #fca5a5;
+    }
+    .chip-yellow {
+      background: #fef9c3;
+      color: #854d0e;
+      border-color: #fde047;
+    }
+    .chip-green {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
     }
 
-    .pillars-head {
-      display:flex;
-      flex-direction:column;
-      gap:4px;
+    .risk-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.4;
     }
 
-    .pillars-title-row {
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:8px;
-      font-size:14px;
-      font-weight:600;
-      color:#0f172a;
-      line-height:1.4;
+    /* ---------- FOUR DECISION BLOCKS ---------- */
+
+    section.decision-4blocks-wrapper {
+      max-width: 1280px;
+      margin: 32px auto 0;
     }
 
-    .pillars-desc {
-      font-size:12px;
-      color:#64748b;
-      line-height:1.4;
+    .decision-headline {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+      margin-bottom: 16px;
     }
 
-    .pillars-grid {
-      display:grid;
-      grid-template-columns:1fr;
-      gap:16px;
-    }
-    @media(min-width:640px){
-      .pillars-grid { grid-template-columns:repeat(2,1fr); }
-    }
-    @media(min-width:1024px){
-      .pillars-grid { grid-template-columns:repeat(4,1fr); }
+    .decision-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(min(260px,100%),1fr));
     }
 
-    .pillar-card {
-      background:var(--bg-card);
-      border:1px solid var(--border-card);
-      border-radius:var(--radius-lg);
-      box-shadow:var(--shadow-card);
-      padding:16px;
-      display:flex;
-      flex-direction:column;
-      min-height:210px;
+    .decision-card {
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 16px 32px rgb(0 0 0 / 0.04);
+      padding: 16px 20px 20px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-main);
+      display: grid;
+      row-gap: 10px;
     }
 
-    .pillar-head {
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      gap:12px;
-      margin-bottom:12px;
+    .decision-topline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text-main);
     }
 
-    .pillar-head-left {
-      display:flex;
-      flex-wrap:nowrap;
-      gap:10px;
-      align-items:flex-start;
+    .decision-icon {
+      font-size: 16px;
+      line-height: 1;
+      margin-right: 4px;
     }
 
-    .pillar-icon-circle {
-      width:40px;
-      height:40px;
-      border-radius:12px;
-      border:1px solid #e2e8f0;
-      background:#f8fafc;
-      font-size:18px;
-      font-weight:600;
-      color:#0f172a;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      line-height:1;
-      box-shadow:0 16px 24px rgb(0 0 0 / .05);
+    .decision-chip {
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .pillar-titles {
-      min-width:0;
+    .decision-chip.supply   { background:#dcfce7; border-color:#86efac; color:#166534;}
+    .decision-chip.demand   { background:#fef9c3; border-color:#fde047; color:#854d0e;}
+    .decision-chip.logi     { background:#dbeafe; border-color:#bfdbfe; color:#1e3a8a;}
+    .decision-chip.risk     { background:#fee2e2; border-color:#fca5a5; color:#b91c1c;}
+
+    .decision-body {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.5;
     }
 
-    .pillar-main-title {
-      font-size:13px;
-      font-weight:600;
-      color:#0f172a;
-      line-height:1.4;
-      margin:0 0 4px;
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:6px;
+    .decision-body strong {
+      color: var(--text-main);
+      font-weight: 600;
     }
-
-    .mini-pill {
-      font-size:11px;
-      font-weight:600;
-      line-height:1.2;
-      border-radius:999px;
-      padding:2px 6px;
-      border:1px solid transparent;
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-    }
-    .mini-green {
-      background:#ecfdf5;
-      border-color:#10b981;
-      color:#065f46;
-    }
-    .mini-yellow {
-      background:#fefce8;
-      border-color:#eab308;
-      color:#854d0e;
-    }
-    .mini-red {
-      background:#fff1f2;
-      border-color:#ef4444;
-      color:#991b1b;
-    }
-    .mini-blue {
-      background:#ecfeff;
-      border-color:#0ea5e9;
-      color:#075985;
-    }
-
-    .pillar-sub {
-      font-size:12px;
-      font-weight:400;
-      color:#64748b;
-      line-height:1.4;
-      margin:0;
-    }
-
-    .pillar-body {
-      font-size:12.5px;
-      line-height:1.5;
-      color:#475569;
-      white-space:pre-line;
-    }
-    .pillar-body ul {
-      margin:0 0 0 18px;
-      padding:0;
-    }
-    .pillar-body li {
-      margin-bottom:4px;
-    }
-
-    /* ---------- BOTTOM SECTION (capacity + red flags) ---------- */
-    .bottom-grid {
-      display:grid;
-      grid-template-columns:1fr;
-      gap:24px;
-    }
-    @media(min-width:840px){
-      .bottom-grid { grid-template-columns:1fr 1fr; }
-    }
-
-    .note-card {
-      background:var(--bg-card);
-      border:1px solid var(--border-card);
-      border-radius:var(--radius-lg);
-      box-shadow:var(--shadow-card);
-      padding:20px;
-      font-size:12.5px;
-      line-height:1.55;
-      color:#475569;
-    }
-
-    .note-head {
-      font-size:13px;
-      font-weight:600;
-      color:#0f172a;
-      line-height:1.4;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:12px;
-    }
-    .note-icon {
-      width:36px;
-      height:36px;
-      border-radius:10px;
-      border:1px solid #e2e8f0;
-      background:#f8fafc;
-      font-size:16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 16px 24px rgb(0 0 0 / .05);
-    }
-
-    .note-body {
-      font-size:12.5px;
-      line-height:1.55;
-      color:#475569;
-    }
-    .note-body ul {
-      margin:0 0 0 20px;
-      padding:0;
-    }
-    .note-body li {
-      margin-bottom:6px;
-    }
-
-    footer.site-footer {
-      background:#ffffff;
-      border-top:1px solid #e2e8f0;
-      text-align:center;
-      font-size:11px;
-      color:#94a3b8;
-      line-height:1.4;
-      padding:14px 16px 20px;
-      box-shadow:0 -20px 40px rgb(0 0 0 / 0.03);
-    }
-
   </style>
 </head>
 <body>
 
-  <!-- HEADER / NAV -->
+  <!-- NAVBAR เหมือนทุกหน้า -->
   <header class="site-header">
     <div class="brand-block">
-      <div class="brand-title">
-        <span>โครงการฮับรีไซเคิล สมุทรสาคร</span>
-        <span class="brand-badge">Prototype</span>
-      </div>
-      <div class="brand-sub">
-        จุดรวบรวม → คัดแยก → อัดก้อน → ป้อนโรงงานปลายน้ำ (แก้ว, พลาสติก, กระดาษ, อะลูฯ)
-      </div>
+      <div>สมุทรสาคร · โครงการ Hub รีไซเคิลจังหวัด</div>
+      <div>ภาพรวมธุรกิจต้นแบบศูนย์รวมวัสดุรีไซเคิลระดับจังหวัด</div>
     </div>
 
-    <nav class="main-nav">
-      <a href="index.html" class="active"><span class="emoji">🏠</span><span>ภาพรวม</span></a>
-      <a href="map.html"><span class="emoji">🗺️</span><span>แผนที่</span></a>
-      <a href="competition.html"><span class="emoji">⚔️</span><span>คู่แข่ง&ลูกค้า</span></a>
-      <a href="logistics.html"><span class="emoji">🚚</span><span>การขนส่ง</span></a>
-      <a href="population.html"><span class="emoji">👥</span><span>ประชากร</span></a>
-      <a href="supply.html"><span class="emoji">♻️</span><span>ประมาณการสินค้า</span></a>
-      <a href="capacity.html"><span class="emoji">🏭</span><span>กำลังการผลิต</span></a>
-      <a href="risk.html"><span class="emoji">🚨</span><span>ความเสี่ยง</span></a>
+    <nav class="nav-main">
+      <a href="index.html" class="active"><span class="icon">🏠</span><span>หน้าแรก</span></a>
+      <a href="map.html"><span class="icon">🗺️</span><span>แผนที่</span></a>
+      <a href="competition.html"><span class="icon">⚔️</span><span>คู่แข่ง/ลูกค้า</span></a>
+      <a href="logistics.html"><span class="icon">🚚</span><span>การขนส่ง</span></a>
+      <a href="population.html"><span class="icon">👥</span><span>ประชากร</span></a>
+      <a href="supply.html"><span class="icon">📦</span><span>ประมาณการสินค้า</span></a>
+      <a href="capacity.html"><span class="icon">🏭</span><span>กำลังการผลิต</span></a>
+      <a href="risk.html"><span class="icon">🚨</span><span>ความเสี่ยง</span></a>
     </nav>
   </header>
 
   <!-- MAIN CONTENT -->
-  <main class="page">
+  <main class="page-wrapper">
 
-    <!-- TOP HERO -->
-    <section class="hero-card">
-      <!-- LEFT SIDE -->
-      <div class="hero-left">
-        <div class="hero-left-headline">
-          <h1>ศูนย์กลางรวบรวมวัสดุรีไซเคิล (“ลานกระทิงแดง”)</h1>
-          <div class="hero-chip">โมเดลรายได้รีไซเคิลอุตสาหกรรม</div>
+    <!-- LEFT COLUMN -->
+    <section>
+      <article class="intro-card">
+        <div class="intro-headline">
+          <div>ศูนย์กลางรวบรวมวัสดุรีไซเคิล (“ลานกระทิงแดง”)</div>
+          <div class="intro-headline-badge">โมเดลรายได้รีไซเคิลอุตสาหกรรม</div>
         </div>
 
-        <p class="hero-desc">
-          เป้าหมาย: ตั้งฮับกลางในสมุทรสาคร รับวัสดุรีไซเคิลจากแรงงาน/โรงงานรอบจังหวัด
-          → คัดแยก → อัดก้อนมาตรฐาน → ส่งให้โรงงานปลายทางโดยตรง
+        <div class="intro-desc">
+          เป้าหมาย: ตั้งฮับกลางในสมุทรสาคร รับวัสดุรีไซเคิลจากแรงงาน / โรงงานรอบจังหวัด
+          → คัดแยก → อัดก้อนมาตรฐาน → ส่งให้โรงงานปลายน้ำโดยตรง
+          <br/><br/>
+          <strong>คีย์เวิร์ด:</strong> “ศูนย์เดียว รับได้หลายประเภท” ไม่ใช่แค่ของเก่าเล็ก ๆ กระจัดกระจาย
+          แต่เป็นสเกลรถพ่วง / รถเทรลเลอร์ 30 ตัน / เที่ยว เพื่อกดต้นทุนโลจิสติกส์ต่อกิโลกรัมลงอย่างชัดเจน
+        </div>
+      </article>
 
-          จุดขายหลัก:
-          <ul>
-            <li>ขวดแก้วดี = ส่งกลับโรงงานสุราแบบ “ใช้ซ้ำเลย” ขายเป็นใบ (ไม่ต้องบด)</li>
-            <li>PET / HDPE / กระดาษลูกฟูก / กระป๋องอลูมิเนียม = อัดก้อนแนวนอน ขนาดมาตรฐานโรงงาน</li>
-            <li>รวมขึ้นรถใหญ่เที่ยวละ ~30 ตัน → ลดต้นทุนขนส่งต่อกิโล</li>
-          </ul>
-        </p>
-      </div>
+      <article class="value-card">
+        <div class="value-title">
+          <span style="font-size:16px;">💡</span>
+          <span>จุดขายหลักของ Hub รีไซเคิล</span>
+          <span class="value-title-badge">โมเดลนี้ใช้ได้จริงในเชิงอุตสาหกรรม</span>
+        </div>
 
-      <!-- RIGHT SIDE : RISK SUMMARY -->
-      <aside class="risk-panel">
-        <div class="risk-panel-title">
-          <span class="emoji">🚦</span>
+        <ul class="value-points">
+          <li class="value-point-row">
+            <div class="value-icon">🍾</div>
+            <div>
+              <div class="value-text-main">
+                ขวดแก้วดี = ส่งกลับโรงงานสุราแบบ “ใช้ซ้ำเลย”
+              </div>
+              <div class="value-text-sub">
+                คัดด้วยคน / แยกยี่ห้อ / ไม่ต้องบด → <strong>ขายเป็นใบ</strong> ได้ราคา premium
+              </div>
+            </div>
+          </li>
+
+          <li class="value-point-row">
+            <div class="value-icon">📦</div>
+            <div>
+              <div class="value-text-main">
+                PET / HDPE / กล่องลูกฟูก / กระป๋องอลูมิเนียม
+              </div>
+              <div class="value-text-sub">
+                เข้าเครื่องอัดก้อน <strong>แนวนอน</strong> → ก้อนมาตรฐาน รับซื้อได้ทันทีโดยโรงงานปลายน้ำ
+              </div>
+            </div>
+          </li>
+
+          <li class="value-point-row">
+            <div class="value-icon">🚛</div>
+            <div>
+              <div class="value-text-main">
+                รวมขึ้นรถใหญ่เที่ยวละ ~30 ตัน
+                <span class="value-inline-highlight">ลดต้นทุนโลจิสติกส์/กก.</span>
+              </div>
+              <div class="value-text-sub">
+                รถออกน้อยเที่ยว แต่แต่ละเที่ยว <strong>เต็มลูกรถ</strong> → ค่าขนส่งต่อกิโลต่ำกว่าคู่แข่งรายย่อย
+              </div>
+            </div>
+          </li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- RIGHT COLUMN : RISK SNAPSHOT -->
+    <aside class="risk-panel">
+      <div>
+        <div class="risk-header">
+          <span class="icon">📊</span>
           <span>สถานะความเสี่ยงปัจจุบัน (4 ด้านหลัก)</span>
         </div>
-
-        <div class="risk-grid">
-
-          <!-- BOX 1 community -->
-          <div class="risk-box risk-box-mid">
-            <div class="risk-header-row">
-              <div class="risk-title">ชุมชนรอบไซต์</div>
-              <div class="risk-badge risk-mid">🟡 ปานกลาง</div>
-            </div>
-            <div class="risk-body">
-              ต้องคุมเสียง/กลิ่น/น้ำเสีย
-              ถ้าสกปรก = ชุมชนร้องเรียนเร็ว
-            </div>
-          </div>
-
-          <!-- BOX 2 competitors -->
-          <div class="risk-box risk-box-high">
-            <div class="risk-header-row">
-              <div class="risk-title">คู่แข่งในรัศมี</div>
-              <div class="risk-badge risk-high">🔴 หนาแน่น</div>
-            </div>
-            <div class="risk-body">
-              ลานรับซื้อรายย่อยเยอะมาก  
-              ต้องชนะด้วย “รับถึงที่ + จ่ายเงินเร็ว + โปร่งใส”
-            </div>
-          </div>
-
-          <!-- BOX 3 flood -->
-          <div class="risk-box risk-box-mid">
-            <div class="risk-header-row">
-              <div class="risk-title">น้ำท่วม / ระบายน้ำ</div>
-              <div class="risk-badge risk-mid">🟡 เฝ้าระวัง</div>
-            </div>
-            <div class="risk-body">
-              พื้นที่บางส่วนเป็นที่ลุ่ม  
-              ต้องยกพื้น, ทำรางระบายน้ำ
-            </div>
-          </div>
-
-          <!-- BOX 4 scale -->
-          <div class="risk-box risk-box-low">
-            <div class="risk-header-row">
-              <div class="risk-title">ศักยภาพขยายสเกล</div>
-              <div class="risk-badge risk-low">🟢 ทำได้</div>
-            </div>
-            <div class="risk-body">
-              1 เครื่องอัดแนวนอน + ทีม 2 คน/กะ  
-              ยังเหลือกำลัง → โตต่อได้
-            </div>
-          </div>
-
-        </div>
-      </aside>
-    </section>
-
-    <!-- FOUR PILLARS -->
-    <section class="pillars-wrap">
-      <div class="pillars-head">
-        <div class="pillars-title-row">
-          <span>4 มุมมองหลักที่ใช้ตัดสินใจลงทุน</span>
-        </div>
-        <div class="pillars-desc">
-          Supply → Demand → Logistics → Risk  
-          (รายละเอียดเจาะลึกอยู่ในแต่ละหน้า)
-        </div>
+        <div class="risk-sub">อัปเดตจากหน้า “ความเสี่ยง”</div>
       </div>
 
-      <div class="pillars-grid">
+      <div class="risk-grid">
 
-        <!-- SUPPLY -->
-        <div class="pillar-card">
-          <div class="pillar-head">
-            <div class="pillar-head-left">
-              <div class="pillar-icon-circle">♻️</div>
-              <div class="pillar-titles">
-                <p class="pillar-main-title">
-                  วัสดุเข้าระบบ (Supply)
-                  <span class="mini-blue">ของเข้าเยอะ</span>
-                </p>
-                <p class="pillar-sub">
-                  PET / HDPE / กระดาษลูกฟูก / กระป๋องอลู / ขวดแก้ว
-                </p>
-              </div>
-            </div>
+        <!-- ความเสี่ยงชุมชน -->
+        <div class="risk-box">
+          <div class="risk-row-head">
+            <span>ชุมชนรอบไซต์</span>
+            <span class="risk-chip chip-yellow">
+              <span style="font-size:10px;">🟡</span> ปานกลาง
+            </span>
           </div>
-
-          <div class="pillar-body">
-            <ul>
-              <li>จังหวัดอุตสาหกรรม → มีของเหลือทิ้งทุกวัน</li>
-              <li>แรงงานต่างด้าวหนาแน่น = สายเก็บ/สายขายของเก่าสร้างซัพพลายเอง</li>
-              <li>วัตถุดิบเกิดในจังหวัด ไม่ต้องรอป้อนจากกรุงเทพฯ</li>
-            </ul>
+          <div class="risk-desc">
+            ต้องคุมเสียง/กลิ่น/น้ำเสีย ถ้ามีปริมาณรถเข้า-ออกทั้งวัน
+            <br/>สค.กท = ชุมชนร้องเรียนเร็ว
           </div>
         </div>
 
-        <!-- DEMAND -->
-        <div class="pillar-card">
-          <div class="pillar-head">
-            <div class="pillar-head-left">
-              <div class="pillar-icon-circle">🏭</div>
-              <div class="pillar-titles">
-                <p class="pillar-main-title">
-                  ลูกค้าปลายน้ำ (Demand)
-                  <span class="mini-green">ตลาดพร้อมซื้อ</span>
-                </p>
-                <p class="pillar-sub">
-                  โรงงานกระดาษ / หลอมเม็ดพลาสติก / โรงงานสุรา
-                </p>
-              </div>
-            </div>
+        <!-- น้ำท่วม / ระบายน้ำ -->
+        <div class="risk-box">
+          <div class="risk-row-head">
+            <span>น้ำท่วม / ระบายน้ำ</span>
+            <span class="risk-chip chip-yellow">
+              <span style="font-size:10px;">🟡</span> เฝ้าระวัง
+            </span>
           </div>
-
-          <div class="pillar-body">
-            <ul>
-              <li>ขวดแก้วดี = ส่งกลับโรงงานสุราแบบใช้ซ้ำ (ขายเป็นใบ)</li>
-              <li>PET / กระดาษ / อะลูมิเนียม = อัดก้อนแล้วขาย</li>
-              <li>ลูกค้าปลายน้ำอยู่รัศมีใกล้ → ระบายสต็อกเร็ว ไม่จมสต็อก</li>
-            </ul>
+          <div class="risk-desc">
+            พื้นที่บางส่วนเป็นที่ลุ่ม ต้องยกพื้นลาน และวางระบบระบายน้ำ/กันน้ำเสีย
           </div>
         </div>
 
-        <!-- LOGISTICS -->
-        <div class="pillar-card">
-          <div class="pillar-head">
-            <div class="pillar-head-left">
-              <div class="pillar-icon-circle">🚚</div>
-              <div class="pillar-titles">
-                <p class="pillar-main-title">
-                  โลจิสติกส์ / ทางเข้าออก
-                  <span class="mini-yellow">ต้องจัดดี</span>
-                </p>
-                <p class="pillar-sub">
-                  โซนอุตสาหกรรม ไม่ใช่กลางชุมชน
-                </p>
-              </div>
-            </div>
+        <!-- คู่แข่งรีไซเคิล -->
+        <div class="risk-box">
+          <div class="risk-row-head">
+            <span>คู่แข่งในรัศมี</span>
+            <span class="risk-chip chip-red">
+              <span style="font-size:10px;">🔴</span> หนาแน่น
+            </span>
           </div>
-
-          <div class="pillar-body">
-            <ul>
-              <li>รถใหญ่เข้าได้ → ขนทีเดียว ~30 ตัน/เที่ยว</li>
-              <li>ลดต้นทุนขนส่งต่อกิโล = คีย์ของกำไร</li>
-              <li>ต้องดีไซน์จุดกลับรถ/จอดรอ ไม่ให้ไปกวนบ้านคน</li>
-            </ul>
+          <div class="risk-desc">
+            ลานรับซื้อรายย่อยเยอะมาก ต้องชนะด้วย “รับถึงที่ + จ่ายเงินเร็ว + ไม่งอแงเรื่องคัด”
           </div>
         </div>
 
-        <!-- RISK -->
-        <div class="pillar-card">
-          <div class="pillar-head">
-            <div class="pillar-head-left">
-              <div class="pillar-icon-circle">🚨</div>
-              <div class="pillar-titles">
-                <p class="pillar-main-title">
-                  ความเสี่ยงพื้นที่ (Risk)
-                  <span class="mini-red">ต้องคุมภาพลักษณ์</span>
-                </p>
-                <p class="pillar-sub">
-                  น้ำท่วม / กลิ่น / รถบรรทุก / คู่แข่งรอบข้าง
-                </p>
-              </div>
-            </div>
+        <!-- ศักยภาพขยายสเกล -->
+        <div class="risk-box">
+          <div class="risk-row-head">
+            <span>ศักยภาพขยายสเกล</span>
+            <span class="risk-chip chip-green">
+              <span style="font-size:10px;">🟢</span> ทำได้
+            </span>
           </div>
-
-          <div class="pillar-body">
-            <ul>
-              <li>ห้ามดูเหมือน “ลานของเก่าเถื่อน”</li>
-              <li>ต้องโชว์ว่าคือ “ศูนย์คัดแยกอุตสาหกรรมสะอาด”</li>
-              <li>ยกพื้น, มีร่องน้ำ, มีระบบจัดการคราบ/น้ำเสีย ตั้งแต่วันแรก</li>
-            </ul>
+          <div class="risk-desc">
+            1 เครื่องอัดแนวนอน + ทีม 2 คน/กะ ยังเหลือกำลัง →
+            โตต่อได้ถ้าเพิ่มช่องทางรับของ
           </div>
         </div>
 
       </div>
-    </section>
-
-    <!-- CAPACITY + NEXT STEPS -->
-    <section class="bottom-grid">
-
-      <!-- CAPACITY -->
-      <div class="note-card">
-        <div class="note-head">
-          <div class="note-icon">📦</div>
-          <div>กำลังการผลิต (Capacity / Operation Model)</div>
-        </div>
-
-        <div class="note-body">
-          <ul>
-            <li>ใช้ “เครื่องอัดแนวนอน” (horizontal baler)
-              → ป้อนต่อเนื่อง, ก้อนสวย ขายง่าย โรงงานชอบ</li>
-
-            <li>สมมติปริมาณรวมทั้งปีตอนเริ่ม:
-              1 เครื่องหลัก (~25 kW) + ทีมปฏิบัติการ 2 คน/กะ
-              → ยังไม่ตันทันที = ยังมี room ขยาย</li>
-
-            <li>อัดก้อนขึ้นรถใหญ่ ~30 ตัน/เที่ยว
-              → เราส่งออกแบบอุตสาหกรรม ไม่ใช่ขายปลีกทีละกิโล</li>
-
-            <li>Positioning:
-              คุณคือ “Hub คัดแยกอุตสาหกรรม” ไม่ใช่ “ลานของเก่า”</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- RED FLAGS -->
-      <div class="note-card">
-        <div class="note-head">
-          <div class="note-icon">📝</div>
-          <div>Check list ก่อนลงเงินจริง</div>
-        </div>
-
-        <div class="note-body">
-          <ul>
-            <li>รัศมีคู่แข่ง: ลานรับซื้อยิบย่อยเยอะมาก  
-                → กลยุทธ์เราคือ บริการรับถึงจุด + จ่ายเงินไว</li>
-
-            <li>เสียง/กลิ่น/น้ำเสีย:
-                ต้องคุมภาพลักษณ์สะอาด ไม่ให้ชุมชนมองว่าเป็นกองขยะเถื่อน</li>
-
-            <li>ความเสี่ยงน้ำท่วม:
-                ต้องยกพื้น, ทำรางระบายน้ำ, กันของลอยตอนฝนหนัก</li>
-
-            <li>ใบอนุญาต/กฎหมาย:
-                branding ต้องเป็น “ศูนย์จัดการรีไซเคิล”  
-                ไม่ใช่ “กองของเก่า”</li>
-          </ul>
-        </div>
-      </div>
-
-    </section>
-
+    </aside>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    © วิเคราะห์เชิงพื้นที่ จ.สมุทรสาคร — Dashboard ตัดสินใจลงทุน (Prototype)
-  </footer>
+  <!-- 4 BLOCKS FOR DECISION -->
+  <section class="decision-4blocks-wrapper">
+    <div class="decision-headline">
+      <span style="font-size:16px;">🧭</span>
+      <span>4 มุมมองหลักที่ใช้ตัดสินใจลงทุน</span>
+    </div>
+
+    <div class="decision-grid">
+      <!-- SUPPLY -->
+      <div class="decision-card">
+        <div class="decision-topline">
+          <div><span class="decision-icon">📦</span>Supply วัตถุดิบรีไซเคิล</div>
+          <div class="decision-chip supply">
+            🟢 พร้อม
+          </div>
+        </div>
+        <div class="decision-body">
+          โรงงาน / แรงงานต่างด้าว / จุดรับซื้อของเก่า มีอยู่หนาแน่นในรัศมีขนส่งสั้น
+          <br/>
+          <strong>มีของให้รวบ</strong> ทุกวัน → ป้อนเข้าเครื่องอัดได้ต่อเนื่อง
+        </div>
+      </div>
+
+      <!-- DEMAND -->
+      <div class="decision-card">
+        <div class="decision-topline">
+          <div><span class="decision-icon">🥤</span>Demand ปลายน้ำ</div>
+          <div class="decision-chip demand">
+            🟡 ต้องบริหาร
+          </div>
+        </div>
+        <div class="decision-body">
+          ขวดแก้วดี = ส่งกลับโรงงานสุราใช้ซ้ำเลย
+          <br/>
+          พลาสติก/กระดาษอัดก้อน = มีตลาดรับ แต่ราคาผันผวน
+        </div>
+      </div>
+
+      <!-- LOGISTICS -->
+      <div class="decision-card">
+        <div class="decision-topline">
+          <div><span class="decision-icon">🚚</span>Logistics / ต้นทุนขนส่ง</div>
+          <div class="decision-chip logi">
+            🟢 ได้เปรียบ
+          </div>
+        </div>
+        <div class="decision-body">
+          จุดศูนย์กลางอยู่ใกล้โครงข่ายถนนหลัก รถหัวลากเข้าได้
+          <br/>
+          <strong>วิ่งเที่ยวละ ~30 ตัน</strong> → ลดต้นทุน/กก. เมื่อเทียบกับรายย่อยที่ต้องวิ่งหลายเที่ยวเล็ก
+        </div>
+      </div>
+
+      <!-- RISK -->
+      <div class="decision-card">
+        <div class="decision-topline">
+          <div><span class="decision-icon">🚨</span>Risk / ใบอนุญาต / เพื่อนบ้าน</div>
+          <div class="decision-chip risk">
+            🟡 คุมได้
+          </div>
+        </div>
+        <div class="decision-body">
+          ความเสี่ยงสำคัญคือ <strong>ชุมชนรอบไซต์ + น้ำเสีย</strong>.
+          ถ้าคุมเรื่องเสียง/กลิ่น/น้ำทิ้ง → โครงการยังเดินได้
+        </div>
+      </div>
+    </div>
+  </section>
+
 </body>
 </html>
