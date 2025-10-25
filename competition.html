@@ -279,192 +279,224 @@
       และภาพลักษณ์พื้นที่
     </footer>
 
-    <script>
-      // พิกัดลานกระทิงแดง (reference point)
-      const REF_POINT = {
-        name: "ลานกระทิงแดง",
-        lat: 13.565126,
-        lng: 100.279895,
-      };
+<script>
+  // จุดอ้างอิง = ลานกระทิงแดง ถนนสายใยรัก
+  const REF_POINT = {
+    name: "ลานกระทิงแดง",
+    lat: 13.565126,
+    lng: 100.279895,
+  };
 
-      // -------------------------------------------------
-      // ✅ TODO: ต่อไปเราจะย้ายข้อมูลโรงงานไปเป็นไฟล์ JSON
-      //    เหมือน population/workforce
-      //    แต่ชั่วคราวเราจะ hardcode เป็น array ในหน้านี้ก่อน
-      // -------------------------------------------------
+  // ---- ข้อมูลโรงงาน/กิจการรอบพื้นที่ ----
+  // ถ้าจะเพิ่มโรงงานใหม่ ก็เพิ่ม object ใหม่ใน array นี้ได้เลย
+  const factories = [
+    {
+      category: "โรงงานอาหารและเครื่องดื่ม",
+      name: "บริษัท เอวาน่า อินดัสทรี จำกัด",
+      desc: "ผลิตน้ำดื่ม",
+      tambon: "นาโคก",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.45785,
+      lng: 100.08628,
+    },
+    {
+      category: "โรงงานรีไซเคิล",
+      name: "บริษัท วิธ บีเอ็นไอ จำกัด",
+      desc: "ขยะชุมชน -> ปุ๋ยอินทรีย์ / เม็ดพลาสติก / เศษโลหะ",
+      tambon: "ชัยมงคล",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5125726,
+      lng: 100.2957658,
+    },
+    {
+      category: "โรงงานห้องเย็นและชำแหละ",
+      name: "บริษัท แม็คริช โพรเกรส จำกัด",
+      desc: "ชำแหละ แกะ ล้าง สัตว์น้ำ",
+      tambon: "มหาชัย",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5354263,
+      lng: 100.2616811,
+    },
+    {
+      category: "โรงงานพลาสติกอื่นๆ",
+      name: "บริษัท พี.เอส.พี.สเปเชียลตี้ส์ จำกัด (มหาชน)",
+      desc: "น้ำมันหล่อลื่น + บรรจุภัณฑ์พลาสติก",
+      tambon: "ท่าจีน",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5294242,
+      lng: 100.2439203,
+    },
+    {
+      category: "โรงงานสารเคมี",
+      name: "บริษัท สยามโกลบอล เคมิคอล จำกัด",
+      desc: "เรซินสังเคราะห์ / เคมีภัณฑ์อุตสาหกรรม",
+      tambon: "ชัยมงคล",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5347226,
+      lng: 100.1672698,
+    },
+    {
+      category: "โรงงานอาหารและเครื่องดื่ม",
+      name: "บริษัท ซีพีเอฟ ฟู้ด แอนด์ เบฟเวอร์เรจ จำกัด",
+      desc: "อาหารจากพืช/ผัก ผลไม้ บรรจุในภาชนะปิดสนิท",
+      tambon: "บางโทรัด",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.512959,
+      lng: 100.158482,
+    },
+    {
+      category: "โรงงานประกอบชิ้นส่วน",
+      name: "บริษัท ครูเกอร์ เวนทิเลชั่น อินดัสทรีส์ เอเซีย จำกัด",
+      desc: "พัดลมอุตสาหกรรม / ระบบระบายอากาศ",
+      tambon: "โคกขาม",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5456437,
+      lng: 100.3399666,
+    },
+    {
+      category: "โรงงานห้องเย็นและชำแหละ",
+      name: "บริษัท พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด",
+      desc: "ชำแหละ-ล้างกุ้ง/ปลา แช่แข็ง",
+      tambon: "ท่าทราย",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5633684,
+      lng: 100.2471886,
+    },
+    {
+      category: "โรงงานพลาสติกอื่นๆ",
+      name: "บริษัท อินโนโกร จำกัด",
+      desc: "ผลิตถุง/บรรจุภัณฑ์พลาสติก",
+      tambon: "ท่าทราย",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.57138,
+      lng: 100.28158,
+    },
+    {
+      category: "โรงงานอาหารและเครื่องดื่ม",
+      name: "บริษัท เวลล์-โกรว์ จำกัด",
+      desc: "เครื่องปรุงรส วัตถุดิบกึ่งสำเร็จรูป",
+      tambon: "พันท้ายนรสิงห์",
+      amphoe: "เมืองสมุทรสาคร",
+      lat: 13.5733863,
+      lng: 100.3596824,
+    },
+  ];
 
-      const factories = [
-        {
-          category: "โรงงานอาหารและเครื่องดื่ม",
-          name: "บริษัท เอวาน่า อินดัสทรี จำกัด",
-          desc: "ผลิตน้ำดื่ม",
-          tambon: "นาโคก",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.45785,
-          lng: 100.08628,
-        },
-        {
-          category: "โรงงานรีไซเคิล",
-          name: "บริษัท วิธ บีเอ็นไอ จำกัด",
-          desc: "ขยะชุมชน -> ปุ๋ยอินทรีย์ / เม็ดพลาสติก / เศษโลหะ",
-          tambon: "ชัยมงคล",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5125726,
-          lng: 100.2957658,
-        },
-        {
-          category: "โรงงานห้องเย็นและชำแหละ",
-          name: "บริษัท แม็คริช โพรเกรส จำกัด",
-          desc: "ชำแหละ แกะ ล้าง สัตว์น้ำ",
-          tambon: "มหาชัย",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5354263,
-          lng: 100.2616811,
-        },
-        {
-          category: "โรงงานพลาสติกอื่นๆ",
-          name: "บริษัท พี.เอส.พี.สเปเชียลตี้ส์ จำกัด (มหาชน)",
-          desc: "น้ำมันหล่อลื่น + บรรจุภัณฑ์พลาสติก",
-          tambon: "ท่าจีน",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5294242,
-          lng: 100.2439203,
-        },
-        {
-          category: "โรงงานสารเคมี",
-          name: "บริษัท สยามโกลบอล เคมิคอล จำกัด",
-          desc: "เรซินสังเคราะห์ / เคมีภัณฑ์อุตสาหกรรม",
-          tambon: "ชัยมงคล",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5347226,
-          lng: 100.1672698,
-        },
-        {
-          category: "โรงงานอาหารและเครื่องดื่ม",
-          name: "บริษัท ซีพีเอฟ ฟู้ด แอนด์ เบฟเวอร์เรจ จำกัด",
-          desc: "อาหารจากพืช/ผัก ผลไม้ บรรจุภัณฑ์ปิดผนึก",
-          tambon: "บางโทรัด",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.512959,
-          lng: 100.158482,
-        },
-        {
-          category: "โรงงานประกอบชิ้นส่วน",
-          name: "บริษัท ครูเกอร์ เวนทิเลชั่น อินดัสทรีส์ เอเซีย จำกัด",
-          desc: "พัดลมอุตสาหกรรม / อุปกรณ์ระบายอากาศ",
-          tambon: "โคกขาม",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5456437,
-          lng: 100.3399666,
-        },
-        {
-          category: "โรงงานห้องเย็นและชำแหละ",
-          name: "บริษัท พี พี เอ็น ซีฟู้ด วิชชิ่ง จำกัด",
-          desc: "ชำแหละ-ล้างกุ้ง/ปลา แช่แข็ง",
-          tambon: "ท่าทราย",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5633684,
-          lng: 100.2471886,
-        },
-        {
-          category: "โรงงานพลาสติกอื่นๆ",
-          name: "บริษัท อินโนโกร จำกัด",
-          desc: "ผลิตถุง/บรรจุภัณฑ์พลาสติก",
-          tambon: "ท่าทราย",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.57138,
-          lng: 100.28158,
-        },
-        {
-          category: "โรงงานอาหารและเครื่องดื่ม",
-          name: "บริษัท เวลล์-โกรว์ จำกัด",
-          desc: "เครื่องปรุงรส / วัตถุดิบกึ่งสำเร็จรูป",
-          tambon: "พันท้ายนรสิงห์",
-          amphoe: "เมืองสมุทรสาคร",
-          lat: 13.5733863,
-          lng: 100.3596824,
-        },
-      ];
+  // -----------------------------
+  // ฟังก์ชันคำนวณระยะทางระหว่างสองพิกัด (km)
+  // สูตร Haversine (ระยะโค้งบนโลก)
+  // -----------------------------
+  function calcDistanceKm(lat1, lng1, lat2, lng2) {
+    const R = 6371; // รัศมีโลกหน่วยกม.
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLng = (lng2 - lng1) * (Math.PI / 180);
 
-      // -------------------------------------------------
-      // helper: (ตอนนี้เรายังไม่คำนวณระยะ, จะทำ step ถัดไป)
-      // -------------------------------------------------
-      function renderTable() {
-        const tbody = document.getElementById("factoryTableBody");
-        tbody.innerHTML = "";
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
 
-        factories.forEach((f) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>
-              <div class="biz-name">${f.name}</div>
-              <div class="biz-cat">${f.category}</div>
-            </td>
-            <td>${f.category}</td>
-            <td style="max-width:240px;color:#cbd5e1;">${f.desc}</td>
-            <td>
-              ${f.tambon}<br />
-              <span class="subtle" style="font-size:11px;">
-                อ.${f.amphoe}
-              </span>
-            </td>
-            <td>${f.lat.toFixed(6)}</td>
-            <td>${f.lng.toFixed(6)}</td>
-            <td class="distance-cell subtle" style="font-size:11px;color:#94a3b8;">
-              (คำนวณในขั้นถัดไป)
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // กิโลเมตร
+  }
+
+  // คำนวณและเพิ่ม distanceKm ให้ทุกโรงงาน + sort จากใกล้ -> ไกล
+  function annotateAndSort() {
+    factories.forEach((f) => {
+      f.distanceKm = calcDistanceKm(
+        REF_POINT.lat,
+        REF_POINT.lng,
+        f.lat,
+        f.lng
+      );
+    });
+
+    factories.sort((a, b) => a.distanceKm - b.distanceKm);
+  }
+
+  // อัปเดตการ์ดสรุปด้านบนหน้า
+  function renderSummary() {
+    const el = document.getElementById("summaryStats");
+
+    // นับจำนวนตามหมวด
+    const countByCat = {};
+    factories.forEach((f) => {
+      countByCat[f.category] = (countByCat[f.category] || 0) + 1;
+    });
+
+    // หา category ที่เยอะสุด
+    let topCat = null;
+    Object.entries(countByCat).forEach(([cat, count]) => {
+      if (!topCat || count > topCat.count) {
+        topCat = { cat, count };
       }
+    });
 
-      // นับสถิติหมวดธุรกิจเพื่อสรุป landscape
-      function summarizeCategories() {
-        const countByCategory = {};
-        factories.forEach((f) => {
-          countByCategory[f.category] = (countByCategory[f.category] || 0) + 1;
-        });
+    el.innerHTML = `
+      <div class="stat-box">
+        <div class="stat-label">จำนวนกิจการที่บันทึก</div>
+        <div class="stat-value">${factories.length} แห่ง</div>
+      </div>
 
-        // หาหมวดที่พบบ่อยที่สุด
-        let topCat = null;
-        Object.entries(countByCategory).forEach(([cat, count]) => {
-          if (!topCat || count > topCat.count) {
-            topCat = { cat, count };
-          }
-        });
-
-        const summaryEl = document.getElementById("summaryStats");
-        summaryEl.innerHTML = `
-          <div class="stat-box">
-            <div class="stat-label">จำนวนกิจการที่บันทึกไว้</div>
-            <div class="stat-value">${factories.length} แห่ง</div>
+      <div class="stat-box">
+        <div class="stat-label">หมวดเด่นรอบพื้นที่</div>
+        <div class="stat-value" style="font-size:14px;line-height:1.4;">
+          ${topCat.cat}
+          <div class="subtle" style="font-size:11px;font-weight:400;">
+            พบ ${topCat.count} แห่ง
           </div>
+        </div>
+      </div>
 
-          <div class="stat-box">
-            <div class="stat-label">หมวดเด่นรอบพื้นที่</div>
-            <div class="stat-value" style="font-size:14px;line-height:1.4;">
-              ${topCat.cat}
-              <div class="subtle" style="font-size:11px;font-weight:400;">
-                พบ ${topCat.count} แห่ง
-              </div>
-            </div>
+      <div class="stat-box">
+        <div class="stat-label">จุดอ้างอิง</div>
+        <div class="stat-value" style="font-size:14px;line-height:1.4;">
+          ${REF_POINT.lat.toFixed(6)}, ${REF_POINT.lng.toFixed(6)}
+          <div class="subtle" style="font-size:11px;font-weight:400;">
+            ${REF_POINT.name} / ถนนสายใยรัก
           </div>
+        </div>
+      </div>
+    `;
+  }
 
-          <div class="stat-box">
-            <div class="stat-label">จุดอ้างอิง (Target)</div>
-            <div class="stat-value" style="font-size:14px;line-height:1.4;">
-              ${REF_POINT.lat.toFixed(6)}, ${REF_POINT.lng.toFixed(6)}
-              <div class="subtle" style="font-size:11px;font-weight:400;">
-                ${REF_POINT.name} / ถนนสายใยรัก
-              </div>
-            </div>
-          </div>
-        `;
-      }
+  // วาดตารางโรงงาน
+  function renderTable() {
+    const tbody = document.getElementById("factoryTableBody");
+    tbody.innerHTML = "";
 
-      // เรียกทำงานตอนโหลด
-      renderTable();
-      summarizeCategories();
-    </script>
+    factories.forEach((f) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>
+          <div class="biz-name">${f.name}</div>
+          <div class="biz-cat">${f.category}</div>
+        </td>
+        <td>${f.category}</td>
+        <td style="max-width:240px;color:#cbd5e1;">${f.desc}</td>
+        <td>
+          ${f.tambon}<br />
+          <span class="subtle" style="font-size:11px;">อ.${f.amphoe}</span>
+        </td>
+        <td>${f.lat.toFixed(6)}</td>
+        <td>${f.lng.toFixed(6)}</td>
+        <td class="distance-cell" style="font-size:12px;color:#fff;font-weight:600;">
+          ${f.distanceKm.toFixed(2)} กม.
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // โหลดหน้า:
+  // 1) คำนวณระยะทาง + เรียง
+  // 2) สร้างการ์ดสรุป
+  // 3) วาดตาราง
+  annotateAndSort();
+  renderSummary();
+  renderTable();
+</script>
   </body>
 </html>
