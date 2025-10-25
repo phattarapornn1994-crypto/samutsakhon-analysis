@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>คู่แข่ง & ลูกค้า (ระยะรัศมี)</title>
+  <title>คู่แข่ง & ลูกค้า ใกล้ Hub</title>
 
   <!-- Leaflet CSS -->
   <link
@@ -12,6 +12,7 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""
   />
+
   <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -23,19 +24,17 @@
     :root {
       --bg-page: #ffffff;
       --bg-card: #ffffff;
-      --bg-side: #f8fafc;
       --border-card: #e2e8f0;
-      --text-main: #1e293b;
+      --text-main: #0f172a;
       --text-dim: #64748b;
       --accent: #0ea5e9;
       --radius-lg: 16px;
       --radius-md: 12px;
       --shadow-card: 0 24px 40px rgb(0 0 0 / 0.06);
 
-      --recycle-color: #ef4444;     /* แดง */
-      --liquor-color:  #8b5cf6;     /* ม่วง */
-      --other-color:   #3b82f6;     /* น้ำเงิน */
-      --hub-color:     #f97316;     /* ส้ม */
+      --recycle-color: #ef4444;   /* คู่แข่ง (รีไซเคิล) = แดง */
+      --customer-color: #3b82f6;  /* ลูกค้าที่เป็นโรงงานอื่น = น้ำเงิน */
+      --hub-color: #f97316;       /* Hub เรา = ส้ม */
     }
 
     body {
@@ -76,7 +75,7 @@
     .brand-title {
       font-size: 15px;
       font-weight: 600;
-      color: var(--text-main);
+      color: #1e293b;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -84,7 +83,7 @@
 
     .brand-sub {
       font-size: 12px;
-      color: var(--text-dim);
+      color: #64748b;
       line-height: 1.3;
     }
 
@@ -100,7 +99,7 @@
 
     nav.main-nav a {
       text-decoration: none;
-      color: var(--text-main);
+      color: #1e293b;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
@@ -110,10 +109,12 @@
       align-items: center;
       gap: 6px;
     }
+
     nav.main-nav a span.emoji {
       font-size: 16px;
       line-height: 1;
     }
+
     nav.main-nav a.active {
       background: #0ea5e9;
       border-color: #0ea5e9;
@@ -121,65 +122,19 @@
       box-shadow: 0 12px 24px rgb(14 165 233 / 0.35);
     }
 
-    /* ---------- PAGE LAYOUT: 2 คอลัมน์ ---------- */
-    main.page {
+    /* ---------- PAGE LAYOUT ---------- */
+    main.page-body {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: minmax(0, 1fr) 320px;
       height: calc(100vh - 64px);
       max-height: calc(100vh - 64px);
-      overflow: hidden;
+      border-top: 1px solid var(--border-card);
     }
 
-    section.map-area {
-      background: #fff;
-      border-right: 1px solid var(--border-card);
-      display: flex;
-      min-width: 0;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    aside.side-panel {
-      background: var(--bg-side);
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      overflow-y: auto;
-      padding: 16px;
-      row-gap: 16px;
-    }
-
-    /* ---------- MAP WRAPPER ---------- */
-    .map-head {
-      padding: 16px;
-      border-bottom: 1px solid var(--border-card);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: flex-start;
-      row-gap: 8px;
-    }
-    .map-head-left h1 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      line-height: 1.3;
-    }
-    .map-head-left .hint {
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.4;
-      margin-top: 4px;
-    }
-
-    .map-wrapper {
+    /* MAP AREA */
+    .map-wrap {
       position: relative;
-      flex: 1;
-      min-height: 300px;
+      background: #fff;
     }
 
     #map {
@@ -187,226 +142,270 @@
       inset: 0;
     }
 
-    /* ---------- PANEL / CARD STYLE ---------- */
-    .panel-card {
+    /* SIDE PANEL */
+    aside.side-panel {
       background: var(--bg-card);
-      border: 1px solid var(--border-card);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      padding: 16px 20px;
+      border-left: 1px solid var(--border-card);
+      padding: 16px;
+      overflow-y: auto;
       font-size: 13px;
-      color: var(--text-main);
       line-height: 1.5;
-    }
-
-    .panel-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
-    .panel-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      line-height: 1.4;
-    }
-
-    .badge-soft {
-      font-size: 11px;
-      font-weight: 500;
-      background: #ecfeff;
-      color: #0e7490;
-      border: 1px solid #67e8f9;
-      padding: 2px 6px;
-      border-radius: 6px;
-      line-height: 1.2;
-    }
-
-    .panel-body {
-      font-size: 13px;
-      color: var(--text-main);
-      line-height: 1.5;
-    }
-
-    /* ---------- RADIUS CONTROL ---------- */
-    .radius-control {
-      display: grid;
-      grid-template-columns: 1fr;
-      row-gap: 10px;
-      font-size: 13px;
-    }
-    .radius-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-    }
-    .radius-row label {
-      font-size: 13px;
-      font-weight: 500;
       color: var(--text-main);
     }
-    .radius-row small {
-      color: var(--text-dim);
-      font-weight: 400;
-    }
-    .radius-inputs {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .radius-inputs input[type="range"] {
-      width: 140px;
-    }
-    .radius-number-wrap {
-      background: #f0fdf4;
-      border: 1px solid #86efac;
-      border-radius: 8px;
-      padding: 6px 8px;
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      box-shadow: 0 16px 24px rgb(0 0 0 / 0.04);
-    }
-    .radius-number-wrap input[type="number"] {
-      width: 60px;
-      border: 0;
-      background: transparent;
-      color: var(--text-main);
-      font-size: 14px;
-      font-weight: 600;
-      outline: none;
-    }
-    .radius-unit {
-      font-size: 12px;
-      color: var(--text-dim);
-      white-space: nowrap;
-    }
 
-    /* ---------- CATEGORY FILTER ---------- */
-    .cat-filter-wrap {
-      font-size: 13px;
-      line-height: 1.4;
-      display: grid;
-      row-gap: 10px;
-    }
-
-    .cat-filter-head {
-      font-weight: 500;
-      color: var(--text-main);
-      font-size: 13px;
-    }
-    .cat-filter-hint {
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.4;
-    }
-
-    .cat-list {
-      background: #fff;
+    .panel-card {
+      background: #ffffff;
       border: 1px solid var(--border-card);
       border-radius: var(--radius-md);
-      padding: 12px;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-headline {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .panel-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    /* RADIUS CONTROL */
+    .radius-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .radius-row input[type="number"] {
+      width: 60px;
+      padding: 4px 6px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+    }
+
+    /* CATEGORY FILTER */
+    .category-list {
       max-height: 140px;
       overflow-y: auto;
-      box-shadow: inset 0 0 8px rgb(0 0 0 / .03);
-      display: grid;
-      row-gap: 8px;
-      font-size: 13px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px;
+      background: #f8fafc;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-bottom: 8px;
     }
-    .cat-row {
+
+    .category-item {
       display: flex;
       align-items: flex-start;
-      gap: 8px;
-      font-size: 13px;
+      gap: 6px;
+      margin-bottom: 6px;
+      color: #1e293b;
+      cursor: pointer;
     }
-    .cat-row input[type="checkbox"] {
+    .category-item input[type="checkbox"] {
       margin-top: 2px;
     }
 
-    /* ---------- RESULT LIST ---------- */
-    .result-box {
-      background: #fff;
-      border: 1px solid var(--border-card);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      max-height: 220px;
-      overflow-y: auto;
-      box-shadow: inset 0 0 8px rgb(0 0 0 / .03);
-      font-size: 12px;
-      line-height: 1.4;
-      color: var(--text-main);
-    }
-    .result-box .res-head {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text-main);
+    .filter-actions {
       display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .result-box ul {
-      margin: 0;
-      padding-left: 18px;
-    }
-    .result-box li {
-      margin-bottom: 4px;
-    }
-    .res-distance {
-      color: var(--text-dim);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    /* ---------- LEGEND ---------- */
-    .legend-box {
-      font-size: 12px;
-      line-height: 1.4;
-      color: var(--text-main);
-      display: grid;
-      row-gap: 6px;
-    }
-
-    .legend-row {
-      display: flex;
-      align-items: center;
+      justify-content: flex-end;
       gap: 8px;
+      margin-bottom: 12px;
     }
 
-    .legend-dot {
-      width: 16px;
-      height: 16px;
+    .btn-small {
+      appearance: none;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 12px;
+      line-height: 1.2;
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: pointer;
+      color: #0f172a;
+    }
+    .btn-small:hover {
+      background: #e2e8f0;
+    }
+
+    /* SUMMARY BOXES */
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-box {
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      padding: 10px;
+      box-shadow: 0 16px 24px rgb(0 0 0 / .04);
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.3;
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-top: 4px;
+    }
+    .stat-competitor {
+      color: var(--recycle-color);
+    }
+    .stat-customer {
+      color: var(--customer-color);
+    }
+
+    .list-sites {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #1e293b;
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+    }
+    .site-entry {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .site-entry:last-child {
+      border-bottom: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .site-name-line {
+      font-weight: 600;
+      color: #0f172a;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .site-name-line .badge {
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 2px 6px;
       border-radius: 999px;
-      border: 2px solid #fff;
-      box-shadow: 0 8px 16px rgb(0 0 0 / .2);
-      flex-shrink: 0;
+      border: 1px solid transparent;
+    }
+    .badge-competitor {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+    .badge-customer {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #bfdbfe;
     }
 
-    @media (max-width: 900px) {
-      main.page {
+    .site-meta {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    /* POPUP STYLE (light) */
+    .leaflet-popup-content-wrapper {
+      background:#ffffff;
+      color:#0f172a;
+      border-radius:12px;
+      border:1px solid #cbd5e1;
+      box-shadow:0 24px 40px rgb(0 0 0 / .2);
+    }
+    .leaflet-popup-tip {
+      background:#ffffff;
+      border:1px solid #cbd5e1;
+    }
+    .popup-title {
+      font-size:14px;
+      font-weight:600;
+      color:#0f172a;
+      margin-bottom:4px;
+      line-height:1.4;
+    }
+    .popup-desc {
+      font-size:12px;
+      color:#475569;
+      line-height:1.4;
+    }
+
+    /* LAYER CONTROL STYLE */
+    .leaflet-control-layers {
+      background:#ffffff !important;
+      border:1px solid #cbd5e1 !important;
+      border-radius:12px !important;
+      color:#0f172a !important;
+      box-shadow:0 20px 40px rgb(0 0 0 / .15) !important;
+      font-size:12px;
+      line-height:1.4;
+      padding:6px 8px;
+    }
+    .leaflet-control-layers-expanded {
+      background:#ffffff !important;
+      color:#0f172a !important;
+    }
+    .leaflet-control-layers-list label {
+      color:#334155;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-bottom:4px;
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    @media (max-width:900px){
+      main.page-body {
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto;
+      }
+      aside.side-panel {
+        position: relative;
         height: auto;
-        max-height: none;
-      }
-      section.map-area {
-        border-right: none;
+        max-height: 45vh;
+        order: -1;
+        border-left: none;
         border-bottom: 1px solid var(--border-card);
-        max-height: 60vh;
       }
-      .map-wrapper {
-        min-height: 280px;
+      .map-wrap {
+        height: 55vh;
+      }
+    }
+
+    @media (min-width:901px){
+      .map-wrap {
+        height: 100%;
       }
     }
   </style>
@@ -417,10 +416,10 @@
   <header class="site-header">
     <div class="brand-block">
       <div class="brand-title">
-        <span>⚔️ คู่แข่ง & ลูกค้าในรัศมี</span>
+        <span>⚔️ คู่แข่ง & ลูกค้า</span>
       </div>
       <div class="brand-sub">
-        เลือกหมวดโรงงาน → วาดรัศมีจากจุดลานเรา → ดูว่าใครอยู่ใกล้ / ใครคือคู่แข่งตรง
+        เลือกรัศมี / เลือกหมวดโรงงานเพื่อดูว่ามีใครบ้างรอบ Hub | มีเส้นปะระยะทางจากเรา → ทุกจุด
       </div>
     </div>
 
@@ -436,165 +435,119 @@
     </nav>
   </header>
 
-  <main class="page">
-
-    <!-- ===== LEFT: MAP ===== -->
-    <section class="map-area">
-
-      <div class="map-head">
-        <div class="map-head-left">
-          <h1>
-            <span>🗺️ แผนที่รัศมีคู่แข่ง / ลูกค้า</span>
-          </h1>
-          <div class="hint">
-            จุดส้ม = จุดปฏิบัติการเรา (ลานกระทิงแดง)<br/>
-            วงกลม = รัศมีที่เรากำลังวิเคราะห์ (กม.)<br/>
-            ปักหมุดสีต่าง ๆ = โรงงานรีไซเคิล / ลูกค้า / อื่น ๆ
-          </div>
-        </div>
-      </div>
-
-      <div class="map-wrapper">
-        <div id="map"></div>
-      </div>
+  <!-- PAGE BODY -->
+  <main class="page-body">
+    <!-- MAP -->
+    <section class="map-wrap">
+      <div id="map"></div>
     </section>
 
-    <!-- ===== RIGHT: CONTROL / RESULT ===== -->
+    <!-- RIGHT PANEL -->
     <aside class="side-panel">
 
-      <!-- Radius control -->
-      <section class="panel-card">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span>📏 รัศมีวิเคราะห์</span>
-            <span class="badge-soft">กม. จากจุดเรา</span>
+      <!-- 1. FILTER / CONTROL -->
+      <div class="panel-card">
+        <div class="panel-headline">
+          <span>🎯 พื้นที่ที่สนใจ</span>
+        </div>
+        <div class="panel-desc">
+          เราโฟกัสรอบ "Hub ลานกระทิงแดง" ภายในรัศมีที่กำหนด
+          และเลือกเฉพาะประเภทโรงงานที่อยากดู
+        </div>
+
+        <div class="radius-row">
+          <label for="radiusKm"><strong>รัศมี (กม.)</strong></label>
+          <input id="radiusKm" type="number" min="0.5" step="0.5" value="5" />
+          <span id="radiusInfo" style="color:#475569;">≈ วงกลม 5 กม.</span>
+        </div>
+
+        <div style="font-size:12px;color:#0f172a;font-weight:600;margin-bottom:6px;">
+          เลือกหมวดโรงงานที่ต้องการดู:
+        </div>
+
+        <div id="categoryList" class="category-list">
+          <!-- เติม checkbox ตามหมวดจาก CSV -->
+        </div>
+
+        <div class="filter-actions">
+          <button id="clearBtn" class="btn-small">Clear</button>
+          <button id="applyBtn" class="btn-small" style="border-color:#0ea5e9;color:#0ea5e9;">
+            Apply
+          </button>
+        </div>
+
+        <div style="font-size:11px;color:#64748b;line-height:1.4;">
+          ● จุดแดง = โรงงานรีไซเคิล / รับซื้อของเก่า (คู่แข่งตรง ๆ)<br/>
+          ● จุดน้ำเงิน = โรงงานอื่น (ลูกค้าอุตสาหกรรม / แหล่งซัพพลาย)<br/>
+          ● วงกลมจาง = พื้นที่ให้บริการที่เรารับเก็บของได้สะดวก<br/>
+          ● เส้นปะ = ระยะขนส่งตรงจาก Hub ไปจุดนั้น
+        </div>
+      </div>
+
+      <!-- 2. SUMMARY -->
+      <div class="panel-card">
+        <div class="panel-headline">
+          <span>📊 สรุปในรัศมีนี้</span>
+        </div>
+
+        <div class="mini-stats">
+          <div class="stat-box">
+            <div class="stat-label">คู่แข่ง (รีไซเคิล)</div>
+            <div class="stat-value stat-competitor" id="competitorCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">ลูกค้า / แหล่งวัตถุดิบ</div>
+            <div class="stat-value stat-customer" id="customerCount">0</div>
           </div>
         </div>
 
-        <div class="panel-body radius-control">
-          <div class="radius-row">
-            <label>เลือกระยะ</label>
-            <small>(0.5 - 20 กม.)</small>
-          </div>
-
-          <div class="radius-inputs">
-            <input id="radiusRange" type="range" min="0.5" max="20" step="0.5" value="5" />
-            <div class="radius-number-wrap">
-              <input id="radiusNumber" type="number" min="0.5" max="20" step="0.5" value="5" />
-              <div class="radius-unit">กม.</div>
-            </div>
-          </div>
-          <div style="font-size:12px;color:var(--text-dim);line-height:1.4;">
-            ระบบจะกรองเฉพาะโรงงานที่อยู่ภายในรัศมีนี้ และโชว์ระยะทางจริง (คำนวณแบบเส้นตรง)
-          </div>
-        </div>
-      </section>
-
-      <!-- Category filter -->
-      <section class="panel-card">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span>🏷️ เลือกหมวดโรงงานที่อยากดู</span>
-            <span class="badge-soft">ติ๊กได้หลายอัน</span>
-          </div>
+        <div class="panel-desc" style="margin-bottom:8px;">
+          รายชื่อโรงงานที่อยู่ในระยะบริการของเรา
         </div>
 
-        <div class="panel-body cat-filter-wrap">
-          <div class="cat-filter-head">
-            หมวดหมู่โรงงาน
-          </div>
-          <div class="cat-filter-hint">
-            • “โรงงานรีไซเคิล” = คู่แข่งรับซื้อของเก่า / รีไซเคิลโดยตรง<br/>
-            • “โรงงานสุรา” เราแยกออกมาต่างหาก (ขวดแก้วคือ supply ระดับพรีเมียมของเรา)
-          </div>
-
-          <div class="cat-list" id="categoryList">
-            <!-- สร้างรายการเช็กบ็อกซ์ผ่าน JS -->
-          </div>
+        <div id="siteList" class="list-sites">
+          <!-- เติมรายชื่อโรงงานตามตัวกรอง -->
         </div>
-      </section>
+      </div>
 
-      <!-- Result in radius -->
-      <section class="panel-card">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span>📍 รายชื่อในรัศมี</span>
-          </div>
+      <!-- 3. NOTE STRATEGY -->
+      <div class="panel-card">
+        <div class="panel-headline">
+          <span>💡 มุมกลยุทธ์</span>
         </div>
-
-        <div class="panel-body">
-          <div class="result-box">
-            <div class="res-head">
-              🧭 รายชื่อโรงงานในระยะ <span id="currentRadiusLabel">5.0</span> กม.
-            </div>
-            <ul id="resultList">
-              <!-- รายชื่อ+ระยะ จะถูกเติมด้วย JS -->
-            </ul>
-          </div>
-
-          <div style="font-size:12px;color:var(--text-dim);line-height:1.4;margin-top:8px;">
-            ลูกค้าใกล้ = ต้นทุนขนส่งต่ำ / เก็บขวดไว<br/>
-            คู่แข่งใกล้ = เขามีสิทธิ์รับซื้อก่อนเรา
-          </div>
+        <div style="font-size:12px; color:#475569; line-height:1.5;">
+          - ถ้ามีคู่แข่งรีไซเคิลหนาแน่นมากใกล้ Hub = แข่งรับซื้อของเก่าแรงขึ้น (ราคา, ความเร็วเก็บ)<br/><br/>
+          - ถ้าลูกค้าพวกโรงงานกระดาษ / พลาสติก / สุรา กระจุกตัวใกล้ Hub = ต้นทุนขนส่งเราต่ำ เรามีโอกาสเป็นจุดรวบรวมหลัก (hub) เพราะวิ่งสั้น วนรถไว
         </div>
-      </section>
-
-      <!-- Legend -->
-      <section class="panel-card">
-        <div class="panel-head">
-          <div class="panel-title">
-            <span>🖍️ คำอธิบายสีหมุด</span>
-          </div>
-        </div>
-
-        <div class="panel-body">
-          <div class="legend-box">
-            <div class="legend-row">
-              <div class="legend-dot" style="background:var(--hub-color);border-color:#fff;"></div>
-              <div><strong>จุดลานเรา</strong> (Hub)</div>
-            </div>
-            <div class="legend-row">
-              <div class="legend-dot" style="background:var(--recycle-color);border-color:#fff;"></div>
-              <div><strong>รีไซเคิล</strong> / รับซื้อของเก่า = คู่แข่งหลัก</div>
-            </div>
-            <div class="legend-row">
-              <div class="legend-dot" style="background:var(--liquor-color);border-color:#fff;"></div>
-              <div><strong>โรงงานสุรา</strong> = ลูกค้าแก้ว reuse</div>
-            </div>
-            <div class="legend-row">
-              <div class="legend-dot" style="background:var(--other-color);border-color:#fff;"></div>
-              <div><strong>ลูกค้า/โรงงานอื่น</strong> (กระดาษ / พลาสติก / ฯลฯ)</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
 
     </aside>
   </main>
 
+  <!-- SCRIPT -->
   <script>
     // ---------------------------
-    // CSV parser (แบบเดียวกับ map.html สไตล์ที่เราใช้)
-    // รองรับฟอร์แมต:
-    // category,name,detail,"address with ,",lat,lng
+    // CSV parser: category,name,detail,"address,maybe,commas",lat,lng
     // ---------------------------
     function parseFactoriesCSV(csvText) {
       const lines = csvText.trim().split('\n');
-      const arr = [];
+      const factories = [];
 
       let startIndex = 0;
-      const firstLower = lines[0].toLowerCase();
-      const hasHeader =
-        firstLower.includes('category') ||
-        firstLower.includes('name') ||
-        firstLower.includes('lat');
-      if (hasHeader) startIndex = 1;
+      const headerLine = lines[0].toLowerCase();
+      if (
+        headerLine.includes('category') ||
+        headerLine.includes('name') ||
+        headerLine.includes('lat')
+      ) {
+        startIndex = 1;
+      }
 
       for (let i = startIndex; i < lines.length; i++) {
         let row = lines[i].trim();
         if (!row) continue;
 
-        // เก็บ address จาก "...."
+        // จับ address ใน "..."
         let address = '';
         const addressMatch = row.match(/"([^"]*)"/);
         if (addressMatch) {
@@ -605,43 +558,34 @@
         const parts = row.split(',').map(p => p.trim());
         if (parts.length < 6) continue;
 
-        const categoryRaw = parts[0] || '';
+        const category = parts[0] || '';
         const name = parts[1] || '';
         const detail = parts[2] || '';
-
-        let addressRebuild = parts[3];
-        if (addressRebuild === '##ADDRESS_PLACEHOLDER##') {
-          addressRebuild = address;
+        let rebuiltAddress = parts[3];
+        if (rebuiltAddress === '##ADDRESS_PLACEHOLDER##') {
+          rebuiltAddress = address;
         }
 
         const lat = parseFloat(parts[4]);
         const lng = parseFloat(parts[5]);
         if (isNaN(lat) || isNaN(lng)) continue;
 
-        // ---- logic แยก "โรงงานสุรา" ออกมาเป็นหมวดพิเศษ ----
-        // สมมติ: ถ้ามีคำว่า "สุรา" ใน name หรือ detail => จัดหมวดเป็น "โรงงานสุรา"
-        // ถ้าไม่ใช่ ก็ใช้ categoryRaw ปกติ
-        let mainCategory = categoryRaw;
-        const textForCheck = (name + " " + detail).toLowerCase();
-        if (textForCheck.includes("สุรา")) {
-          mainCategory = "โรงงานสุรา";
-        }
-
-        arr.push({
-          category: categoryRaw,
-          mainCategory, // อันนี้คือหมวดโชว์ / filter
+        factories.push({
+          category,
           name,
           detail,
-          address: addressRebuild,
+          address: rebuiltAddress,
           lat,
           lng
         });
       }
 
-      return arr;
+      return factories;
     }
 
-    // จุดศูนย์กลางธุรกิจเรา (Hub)
+    // ---------------------------
+    // จุด Hub ของเรา
+    // ---------------------------
     const hub = {
       name: "ลานกระทิงแดง (Hub เรา)",
       address: "ถนนสายใยรัก สมุทรสาคร",
@@ -649,121 +593,226 @@
       lng: 100.279895
     };
 
-    // กลัวใช้หลายครั้ง:
-    function isRecycleFactory(f) {
-      return f.mainCategory.includes("รีไซเคิล"); // คู่แข่งหลัก
-    }
-
-    // Map globals
+    // ---------------------------
+    // ตัวแปร global
+    // ---------------------------
     let map;
-    let streetLayer;
-    let markersLayer;
-    let circleLayer;
-
-    // Data globals
-    let factories = [];
-    let categoriesSet = new Set(); // รายหมวดทั้งหมด
-    let selectedCategories = new Set(); // รายหมวดที่ติ๊กอยู่
-
-    // DOM refs
-    const radiusRange  = document.getElementById("radiusRange");
-    const radiusNumber = document.getElementById("radiusNumber");
-    const currentRadiusLabel = document.getElementById("currentRadiusLabel");
-    const categoryListBox = document.getElementById("categoryList");
-    const resultList = document.getElementById("resultList");
+    let streetLayer, satelliteLayer;
+    let layerHub;
+    let layerSites;        // markers
+    let layerRadiusCircle; // circle radius
+    let layerRoutes;       // dashed polylines from hub
+    let allFactories = [];
+    let uniqueCategories = [];
 
     // ---------------------------
-    // haversine ระยะทาง (กม.)
+    // Utils
     // ---------------------------
-    function distanceKm(lat1, lon1, lat2, lon2) {
-      const R = 6371; // km
-      const dLat = (lat2-lat1) * Math.PI/180;
-      const dLon = (lon2-lon1) * Math.PI/180;
-      const a =
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c;
+    function isCompetitor(factory) {
+      // ถ้า category มีคำว่า "รีไซเคิล" คือคู่แข่งรับซื้อของเก่า
+      return factory.category && factory.category.includes("รีไซเคิล");
     }
 
-    // ---------------------------
-    // สร้าง / อัพเดทหมุดบนแผนที่ตามรัศมีและหมวดที่เลือก
-    // ---------------------------
-    function renderMapAndList() {
-      const r = parseFloat(radiusNumber.value) || 5;
-      currentRadiusLabel.textContent = r.toFixed(1);
+    function distanceKm(lat1,lng1,lat2,lng2){
+      // haversine
+      const R = 6371; // km
+      const dLat = (lat2-lat1)*Math.PI/180;
+      const dLng = (lng2-lng1)*Math.PI/180;
+      const a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+                Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+                Math.sin(dLng/2)*Math.sin(dLng/2);
+      const c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+      return R*c;
+    }
 
-      // ล้างชั้นเดิม
-      markersLayer.clearLayers();
-      if (circleLayer) {
-        map.removeLayer(circleLayer);
-      }
+    function popupHTML(f) {
+      return `
+        <div class="popup-title">${f.name || "-"}</div>
+        <div class="popup-desc">
+          <div><strong>ประเภท:</strong> ${f.category || "-"}</div>
+          <div><strong>รายละเอียด:</strong> ${f.detail || "-"}</div>
+          <div><strong>ที่อยู่:</strong> ${f.address || "-"}</div>
+          <div><strong>พิกัด:</strong> ${f.lat.toFixed(5)}, ${f.lng.toFixed(5)}</div>
+        </div>
+      `;
+    }
+
+    // เติม list โรงงานด้านขวา
+    function renderSiteList(filtered) {
+      const wrap = document.getElementById("siteList");
+      wrap.innerHTML = "";
+
+      filtered.forEach(f => {
+        const km = distanceKm(hub.lat,hub.lng,f.lat,f.lng).toFixed(2);
+        const badgeClass = isCompetitor(f) ? "badge-competitor" : "badge-customer";
+        const badgeText = isCompetitor(f) ? "คู่แข่ง" : "ลูกค้า/ซัพพลาย";
+        const div = document.createElement("div");
+        div.className = "site-entry";
+        div.innerHTML = `
+          <div class="site-name-line">
+            <div>${f.name || "-"}</div>
+            <div class="badge ${badgeClass}">${badgeText}</div>
+          </div>
+          <div class="site-meta">
+            ${f.category || ""} <br/>
+            ${f.address || ""} <br/>
+            ~ ${km} กม. จาก Hub
+          </div>
+        `;
+        wrap.appendChild(div);
+      });
+    }
+
+    // อัปเดตตัวเลข summary
+    function renderSummary(filtered){
+      const compCount = filtered.filter(isCompetitor).length;
+      const custCount = filtered.filter(f => !isCompetitor(f)).length;
+      document.getElementById("competitorCount").textContent = compCount;
+      document.getElementById("customerCount").textContent = custCount;
+    }
+
+    // ดึงค่ารัศมีและหมวดที่เลือก
+    function getUIState(){
+      const radiusKmInput = document.getElementById("radiusKm");
+      const radiusKm = parseFloat(radiusKmInput.value) || 0;
+
+      const checkedCats = Array.from(
+        document.querySelectorAll(".category-item input[type=checkbox]:checked")
+      ).map(cb => cb.value);
+
+      return { radiusKm, checkedCats };
+    }
+
+    // กรองข้อมูลตามรัศมี + หมวด
+    function filterFactories(){
+      const {radiusKm, checkedCats} = getUIState();
+
+      return allFactories.filter(f => {
+        // filter by category selection
+        if (checkedCats.length>0 && !checkedCats.includes(f.category)) {
+          return false;
+        }
+
+        // filter by distance
+        const d = distanceKm(hub.lat,hub.lng,f.lat,f.lng);
+        return d <= radiusKm;
+      });
+    }
+
+    // วาด map layer ตามผลกรอง
+    function renderMapLayers(){
+      // เคลียร์ชั้นก่อน
+      layerSites.clearLayers();
+      layerRoutes.clearLayers();
+      layerRadiusCircle.clearLayers();
+
+      const {radiusKm} = getUIState();
+      const filtered = filterFactories();
 
       // วาดวงกลมรัศมี
-      circleLayer = L.circle([hub.lat, hub.lng], {
-        radius: r * 1000,
+      const radiusMeters = radiusKm * 1000;
+      const circle = L.circle([hub.lat, hub.lng], {
+        radius: radiusMeters,
         color: "#0ea5e9",
-        weight: 2,
+        weight: 1,
         fillColor: "#0ea5e9",
-        fillOpacity: 0.07
-      }).addTo(map);
+        fillOpacity: 0.08
+      });
+      circle.addTo(layerRadiusCircle);
 
-      // รวมผลลัพธ์ที่เข้าเงื่อนไข เพื่อนำไปโชว์ใน list
-      const insideList = [];
+      // วาด marker + เส้นปะจาก hub
+      filtered.forEach(f => {
+        const fillColor = isCompetitor(f)
+          ? getComputedStyle(document.documentElement).getPropertyValue('--recycle-color').trim()
+          : getComputedStyle(document.documentElement).getPropertyValue('--customer-color').trim();
 
-      factories.forEach(f => {
-        // กรองตามหมวดที่ถูกเลือก
-        if (!selectedCategories.has(f.mainCategory)) return;
+        const marker = L.circleMarker([f.lat,f.lng], {
+          radius: 6,
+          color: "#fff",
+          weight: 1.5,
+          fillColor,
+          fillOpacity: 0.9
+        }).bindPopup(popupHTML(f));
+        marker.addTo(layerSites);
 
-        const dist = distanceKm(hub.lat, hub.lng, f.lat, f.lng);
-        if (dist <= r) {
-          insideList.push({
-            ...f,
-            dist
-          });
-
-          // กำหนดสีหมุด
-          let fillC = "var(--other-color)";
-          let fillHex = getComputedStyle(document.documentElement)
-              .getPropertyValue('--other-color')
-              .trim();
-
-          if (f.mainCategory === "โรงงานสุรา") {
-            fillHex = getComputedStyle(document.documentElement)
-              .getPropertyValue('--liquor-color')
-              .trim();
+        // เส้นปะระยะทางจาก hub → โรงงาน
+        const line = L.polyline(
+          [
+            [hub.lat, hub.lng],
+            [f.lat, f.lng]
+          ],
+          {
+            color: "#475569",
+            weight: 1,
+            opacity: 0.7,
+            dashArray: "4 4" // เส้นปะ
           }
-          if (isRecycleFactory(f)) {
-            fillHex = getComputedStyle(document.documentElement)
-              .getPropertyValue('--recycle-color')
-              .trim();
-          }
-
-          const marker = L.circleMarker([f.lat, f.lng], {
-            radius: 6,
-            color: "#fff",
-            weight: 1.5,
-            fillColor: fillHex,
-            fillOpacity: 0.9
-          }).bindPopup(`
-            <div style="font-size:14px;font-weight:600;color:#0f172a;line-height:1.4;margin-bottom:4px;">
-              ${f.name || "-"}
-            </div>
-            <div style="font-size:12px;color:#475569;line-height:1.4;">
-              <div><strong>หมวด:</strong> ${f.mainCategory || "-"}</div>
-              <div><strong>รายละเอียด:</strong> ${f.detail || "-"}</div>
-              <div><strong>ที่อยู่:</strong> ${f.address || "-"}</div>
-              <div><strong>ระยะ:</strong> ${dist.toFixed(2)} กม.</div>
-              <div><strong>พิกัด:</strong> ${f.lat.toFixed(5)}, ${f.lng.toFixed(5)}</div>
-            </div>
-          `);
-
-          marker.addTo(markersLayer);
-        }
+        );
+        line.addTo(layerRoutes);
       });
 
-      // วาดหมุดฮับเรา (ทับไปอีกรอบให้มันอยู่บนสุด)
+      // อัปเดต panel
+      renderSiteList(filtered);
+      renderSummary(filtered);
+
+      // อัปเดตข้อความรัศมี
+      const radiusInfo = document.getElementById("radiusInfo");
+      radiusInfo.textContent = `≈ วงกลม ${radiusKm} กม.`;
+    }
+
+    // สร้าง checkbox หมวด
+    function buildCategoryList(){
+      const box = document.getElementById("categoryList");
+      box.innerHTML = "";
+      uniqueCategories.forEach(cat => {
+        const div = document.createElement("label");
+        div.className = "category-item";
+        div.innerHTML = `
+          <input type="checkbox" value="${cat}">
+          <span>${cat}</span>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    // เคลียร์ทุก checkbox
+    function clearCategories(){
+      const cbs = document.querySelectorAll(".category-item input[type=checkbox]");
+      cbs.forEach(cb => { cb.checked = false; });
+    }
+
+    // ---------------------------
+    // initMap()
+    // ---------------------------
+    function initMap(){
+      streetLayer = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors"
+        }
+      );
+
+      satelliteLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          maxZoom: 19,
+          attribution: "Tiles © Esri"
+        }
+      );
+
+      map = L.map("map", {
+        center: [hub.lat, hub.lng],
+        zoom: 12,
+        layers: [streetLayer]
+      });
+
+      layerHub = L.layerGroup().addTo(map);
+      layerSites = L.layerGroup().addTo(map);
+      layerRoutes = L.layerGroup().addTo(map);
+      layerRadiusCircle = L.layerGroup().addTo(map);
+
+      // มาร์คจุด HUB เรา
       const hubColor = getComputedStyle(document.documentElement)
         .getPropertyValue('--hub-color')
         .trim();
@@ -775,141 +824,76 @@
         fillColor: hubColor,
         fillOpacity: 0.95
       }).bindPopup(`
-        <div style="font-size:14px;font-weight:600;color:#0f172a;line-height:1.4;margin-bottom:4px;">
-          ★ ${hub.name}
-        </div>
-        <div style="font-size:12px;color:#475569;line-height:1.4;">
+        <div class="popup-title">★ ${hub.name}</div>
+        <div class="popup-desc">
           <div><strong>ที่อยู่:</strong> ${hub.address}</div>
           <div><strong>พิกัด:</strong> ${hub.lat}, ${hub.lng}</div>
         </div>
       `);
 
-      hubMarker.addTo(markersLayer);
+      hubMarker.addTo(layerHub);
 
-      // อัพเดทลิสต์ด้านขวา
-      insideList.sort((a,b)=>a.dist-b.dist);
-
-      resultList.innerHTML = insideList.map(item => {
-        return `
-          <li>
-            <strong>${item.name || "-"}</strong>
-            <span class="res-distance">(${item.dist.toFixed(2)} กม.)</span><br/>
-            <span style="color:#475569;">${item.mainCategory || "-"}</span>
-          </li>
-        `;
-      }).join("");
+      // layer control
+      const baseMaps = {
+        "โหมดถนน (OSM)": streetLayer,
+        "โหมดดาวเทียม (Esri)": satelliteLayer
+      };
+      const overlayMaps = {
+        "Hub ของเรา": layerHub,
+        "โรงงานที่ผ่านตัวกรอง": layerSites,
+        "รัศมีให้บริการ": layerRadiusCircle,
+        "เส้นทาง Hub → โรงงาน": layerRoutes
+      };
+      L.control.layers(baseMaps, overlayMaps, { collapsed:false }).addTo(map);
     }
 
     // ---------------------------
-    // สร้าง checkbox filter ของหมวด
+    // STARTUP
     // ---------------------------
-    function buildCategoryFilters() {
-      // categoriesSet ถูกเตรียมจาก factories (mainCategory)
-      // สร้าง DOM checkbox ตามแต่ละหมวด
-      const cats = Array.from(categoriesSet).sort((a,b)=>a.localeCompare(b,'th'));
+    fetch("data/factories.csv",{cache:"no-store"})
+      .then(r=>r.text())
+      .then(txt=>{
+        allFactories = parseFactoriesCSV(txt);
 
-      categoryListBox.innerHTML = cats.map(cat => {
-        const id = "cat_" + cat.replace(/\s+/g,'_');
-        const hintColor =
-          cat === "โรงงานสุรา"
-            ? "color:var(--liquor-color);font-weight:600;"
-            : (cat.includes("รีไซเคิล")
-                ? "color:var(--recycle-color);font-weight:600;"
-                : "color:var(--other-color);font-weight:600;");
-        return `
-          <label class="cat-row" for="${id}">
-            <input type="checkbox" id="${id}" data-cat="${cat}" checked />
-            <div>
-              <div style="${hintColor}">${cat}</div>
-            </div>
-          </label>
-        `;
-      }).join("");
-
-      // ตั้ง selectedCategories เริ่มต้น = ทุกหมวด
-      selectedCategories = new Set(cats);
-
-      // add listeners
-      cats.forEach(cat => {
-        const id = "cat_" + cat.replace(/\s+/g,'_');
-        const cb = document.getElementById(id);
-        cb.addEventListener("change", () => {
-          if (cb.checked) {
-            selectedCategories.add(cat);
-          } else {
-            selectedCategories.delete(cat);
+        // unique categories
+        const catSet = new Set();
+        allFactories.forEach(f => {
+          if (f.category && f.category.trim() !== "") {
+            catSet.add(f.category.trim());
           }
-          renderMapAndList();
         });
-      });
-    }
+        uniqueCategories = Array.from(catSet).sort();
 
-    // ---------------------------
-    // sync radius input range <-> number
-    // ---------------------------
-    function syncRadiusInputs(from) {
-      if (from === "range") {
-        radiusNumber.value = radiusRange.value;
-      } else {
-        // clamp
-        const v = parseFloat(radiusNumber.value) || 5;
-        if (v < 0.5) radiusNumber.value = 0.5;
-        if (v > 20) radiusNumber.value = 20;
-        radiusRange.value = radiusNumber.value;
-      }
-      renderMapAndList();
-    }
+        // เตรียม UI
+        buildCategoryList();
 
-    radiusRange.addEventListener("input", ()=>syncRadiusInputs("range"));
-    radiusNumber.addEventListener("input", ()=>syncRadiusInputs("number"));
-
-    // ---------------------------
-    // สร้างแผนที่ครั้งแรก
-    // ---------------------------
-    function initMap() {
-      streetLayer = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors"
-        }
-      );
-
-      map = L.map("map", {
-        center: [hub.lat, hub.lng],
-        zoom: 12,
-        layers: [streetLayer],
-      });
-
-      markersLayer = L.layerGroup().addTo(map);
-
-      // ซูมให้เห็น hub ชัด ๆ
-      map.setView([hub.lat, hub.lng], 12);
-
-      renderMapAndList();
-    }
-
-    // ---------------------------
-    // โหลด CSV → เตรียม data
-    // ---------------------------
-    fetch("data/factories.csv", { cache: "no-store" })
-      .then(res => res.text())
-      .then(csvText => {
-        factories = parseFactoriesCSV(csvText);
-
-        // สร้าง mainCategory (เรา set ไปแล้วใน parser) -> สร้างเซ็ตทั้งหมด
-        factories.forEach(f => {
-          categoriesSet.add(f.mainCategory);
-        });
-
+        // init map
         initMap();
-        buildCategoryFilters();
-        renderMapAndList();
+
+        // ปุ่ม Apply
+        document.getElementById("applyBtn").addEventListener("click", ()=>{
+          renderMapLayers();
+        });
+
+        // ปุ่ม Clear
+        document.getElementById("clearBtn").addEventListener("click", ()=>{
+          clearCategories();
+          renderMapLayers();
+        });
+
+        // เปลี่ยนค่ารัศมีแล้วอัปเดตทันที
+        document.getElementById("radiusKm").addEventListener("change", ()=>{
+          renderMapLayers();
+        });
+
+        // เริ่ม render ครั้งแรก
+        renderMapLayers();
       })
-      .catch(err => {
+      .catch(err=>{
         console.error("โหลด factories.csv ไม่ได้:", err);
-        alert("มีปัญหาโหลดข้อมูลโรงงาน (factories.csv)");
+        alert("มีปัญหาในการโหลดข้อมูลโรงงาน (factories.csv)");
       });
   </script>
+
 </body>
 </html>
