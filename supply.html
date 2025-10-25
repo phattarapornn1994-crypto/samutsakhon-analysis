@@ -2,653 +2,747 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ประมาณการสินค้ารีไซเคิลที่เก็บได้ | สมุทรสาคร</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>ซัพพลายวัสดุรีไซเคิลทั้งจังหวัด / ปี</title>
 
   <style>
     :root {
-      --bg-dark-900:#0f172a;
-      --bg-dark-800:#1e293b;
-      --bg-dark-700:#334155;
-      --bg-dark-600:#475569;
-      --text-dim:#94a3b8;
-      --text-soft:#cbd5e1;
-      --text-bright:#fff;
-      --accent:#38bdf8;
-      --card-bg:rgba(15,23,42,.8);
+      --bg-page: #ffffff;
+      --bg-card: #f8fafc;
+      --text-main: #0f172a;
+      --text-dim: #475569;
+      --line-soft: #e2e8f0;
+      --accent: #0ea5e9;
+      --accent-bg: #e0f2fe;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --shadow-card: 0 24px 40px rgb(15 23 42 / .08);
+      --header-bg: #1e293b;
+      --header-text: #fff;
+      --header-dim: #94a3b8;
+      --header-active-bg: #0ea5e9;
+      --header-active-text: #fff;
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-      background: var(--bg-dark-900);
-      color: var(--text-bright);
       margin: 0;
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      line-height: 1.45;
       display: grid;
       grid-template-rows: auto 1fr auto;
       min-height: 100vh;
     }
 
-    header {
-      background: var(--bg-dark-900);
-      border-bottom: 1px solid var(--bg-dark-700);
+    /* ---------- HEADER NAV (โทนเดียวกับหน้าใหม่) ---------- */
+    header.site-header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      border-bottom: 1px solid #334155;
       padding: 12px 16px;
-      font-size: 14px;
-
+    }
+    .top-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
     }
-
-    .brand {
-      font-weight: 600;
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
       font-size: 14px;
-      color: var(--text-bright);
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-
-    nav a {
-      color: var(--text-dim);
-      margin-left: 16px;
+    .brand-sub {
+      font-size: 12px;
+      color: var(--header-dim);
+    }
+    nav.main-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    nav.main-nav a.nav-link {
+      font-size: 12px;
+      line-height: 1.2;
+      color: var(--header-text);
       text-decoration: none;
-      font-size: 13px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
     }
-    nav a:hover {
-      color: var(--text-bright);
+    nav.main-nav a.nav-link .icon {
+      font-size: 14px;
+      line-height: 1;
     }
-    nav a.active {
-      color: var(--accent);
+    nav.main-nav a.nav-link:hover {
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,255,255,.12);
+    }
+    nav.main-nav a.nav-link.active {
+      background: var(--header-active-bg);
+      color: var(--header-active-text);
+      border-color: var(--header-active-bg);
       font-weight: 600;
     }
 
-    main {
-      padding: 16px;
-      color: var(--text-soft);
-      display: grid;
-      gap: 16px;
+    /* ---------- PAGE LAYOUT ---------- */
+    main.page {
+      padding: 24px clamp(16px,2vw,24px) 48px;
       max-width: 1200px;
       width: 100%;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
     }
 
-    section.card {
-      background: var(--card-bg);
-      border: 1px solid var(--bg-dark-700);
-      border-radius: 16px;
-      box-shadow:0 24px 60px rgb(0 0 0 / .8);
-      padding: 16px 20px;
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 20px 24px 24px;
+      display: grid;
+      gap: 20px;
     }
 
-    section.card h2 {
-      margin: 0 0 8px 0;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-bright);
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    section.card .sub {
-      font-size: 12px;
-      line-height: 1.5;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-    }
-
-    .flex-wrap {
+    .card-header-line {
       display: flex;
       flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
       gap: 16px;
     }
 
-    .metric-box {
-      flex: 1 1 200px;
-      background: var(--bg-dark-800);
-      border:1px solid var(--bg-dark-700);
-      border-radius:12px;
-      padding:12px 16px;
-      min-width:200px;
-      box-shadow:0 16px 40px rgb(0 0 0 / .6);
+    .card-title-wrap {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: 12px;
     }
 
-    .metric-label {
-      font-size:12px;
+    .card-icon {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border-radius: var(--radius-md);
+      min-width: 48px;
+      min-height: 48px;
+      max-width: 48px;
+      max-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      box-shadow: 0 16px 32px rgb(14 165 233 / .3);
+    }
+
+    .card-heading-text {
+      display: grid;
+      gap: 4px;
+    }
+
+    .card-headline {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .pill-active {
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      line-height: 1.3;
+      border: 1px solid #86efac;
+    }
+
+    .card-subtext {
+      font-size: 13px;
       color: var(--text-dim);
-      margin-bottom:4px;
-    }
-    .metric-value {
-      font-size:20px;
-      font-weight:600;
-      color: var(--text-bright);
-      line-height:1.3;
-    }
-    .metric-hint {
-      font-size:11px;
-      color: var(--text-soft);
-      line-height:1.4;
-      margin-top:4px;
+      line-height: 1.4;
     }
 
-    .status-pill {
-      display:inline-block;
-      font-size:12px;
-      font-weight:600;
-      border-radius:999px;
-      padding:4px 8px;
-      line-height:1.2;
-      border:1px solid #fff3;
+    .big-number-block {
+      display: grid;
+      text-align: right;
+      gap: 4px;
     }
-
-    .pill-green  { background:#064e3b; color:#4ade80; }
-    .pill-yellow { background:#713f12; color:#fde047; }
-    .pill-orange { background:#7c2d12; color:#fb923c; }
-    .pill-red    { background:#7f1d1d; color:#f87171; }
-
-    .controls-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
-      gap:16px;
+    .big-number {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.2;
     }
-
-    .control-block {
-      background: var(--bg-dark-800);
-      border:1px solid var(--bg-dark-700);
-      border-radius:12px;
-      padding:12px 16px;
-      font-size:13px;
-      color: var(--text-soft);
-      box-shadow:0 16px 40px rgb(0 0 0 / .6);
-    }
-
-    .control-block label {
-      display:block;
-      font-size:12px;
+    .big-number-label {
+      font-size: 13px;
       color: var(--text-dim);
-      margin-bottom:4px;
+      line-height: 1.3;
     }
 
-    .control-row {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
+    /* chips */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
     }
-
-    .control-row input[type="number"] {
-      width:80px;
-      background:#0f172a;
-      border:1px solid var(--bg-dark-700);
-      border-radius:8px;
-      color:#fff;
-      font-size:13px;
-      padding:6px 8px;
-      text-align:right;
+    .chip {
+      background: #fff;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      line-height: 1.3;
+      color: var(--text-main);
+      box-shadow: 0 12px 24px rgb(15 23 42 / .04);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px;
     }
-
-    .explain-box {
-      font-size:11px;
-      line-height:1.5;
+    .chip .m-label {
       color: var(--text-dim);
-      margin-top:8px;
+      font-weight: 400;
+    }
+    .chip strong {
+      color: var(--text-main);
+      font-weight: 600;
     }
 
-    table {
-      width:100%;
-      border-collapse: collapse;
-      font-size:12px;
-      min-width:280px;
+    /* -------- MATERIAL LIST STYLE -------- */
+    .materials-list {
+      background: #fff;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      box-shadow: 0 20px 36px rgb(15 23 42 / .05);
+      display: grid;
+      gap: 0;
     }
 
-    thead {
-      background: var(--bg-dark-800);
+    .material-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 200px) minmax(110px,140px) minmax(120px,160px) 1fr;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .material-row:last-child {
+      border-bottom: 0;
     }
 
-    th, td {
-      text-align:left;
-      padding:8px 10px;
-      border-bottom:1px solid var(--bg-dark-700);
-      color: var(--text-soft);
-      vertical-align: top;
-      line-height:1.4;
+    .mat-head {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
     }
 
-    th {
-      color: var(--text-bright);
-      font-weight:600;
-      font-size:12px;
+    .mat-icon-box {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: var(--radius-md);
+      background: #f1f5f9;
+      border: 1px solid var(--line-soft);
+      box-shadow: 0 12px 24px rgb(15 23 42 / .04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
     }
 
-    footer {
-      background: var(--bg-dark-900);
-      border-top:1px solid var(--bg-dark-700);
-      color:#475569;
-      font-size:12px;
-      text-align:center;
-      padding:12px 0 16px;
+    .mat-name-block {
+      display: grid;
+      gap: 2px;
+    }
+    .mat-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .mat-name .sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-dim);
     }
 
-    @media(max-width:600px){
-      header {
-        flex-direction: column;
-        align-items:flex-start;
-      }
-      nav a {
-        margin-left:0;
-        margin-right:16px;
+    .mat-per-head,
+    .mat-total,
+    .mat-note {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .dim {
+      color: var(--text-dim);
+      font-size: 12px;
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
+    /* -------- INSIGHT BLOCK -------- */
+    .insight-block {
+      font-size: 13px;
+      color: var(--text-main);
+      background: #fff;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      line-height: 1.5;
+      box-shadow: 0 20px 36px rgb(15 23 42 / .05);
+    }
+    .insight-block h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .insight-block ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .insight-block li {
+      margin-bottom: 6px;
+    }
+
+    footer.site-footer {
+      color: #94a3b8;
+      background: var(--bg-page);
+      border-top: 1px solid var(--line-soft);
+      font-size: 11px;
+      text-align: center;
+      padding: 24px 16px 32px;
+      line-height: 1.4;
+    }
+
+    /* responsive tweak */
+    @media(max-width:640px){
+      .material-row {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">สมุทรสาคร — ประมาณการสินค้ารีไซเคิล</div>
-    <nav>
-    <a href="index.html">หน้าแรก</a>
-    <a href="map.html">แผนที่</a>
-    <a href="competition.html">การแข่งขัน / ลูกค้า</a>
-    <a href="population.html">ประชากร</a>
-    <a href="supply.html">ประมาณการสินค้า</a>
-    <a href="risk.html">ความเสี่ยง</a>
-    </nav>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="top-row">
+      <div class="brand-block">
+        <div class="brand-title">
+          <span>♻ สมุทรสาคร Spatial Intelligence</span>
+        </div>
+        <div class="brand-sub">
+          ศูนย์วิเคราะห์ซัพพลายวัสดุรีไซเคิล & โอกาสธุรกิจ
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a class="nav-link" href="index.html"><span class="icon">🏠</span><span>หน้าแรก</span></a>
+        <a class="nav-link" href="map.html"><span class="icon">🗺️</span><span>แผนที่</span></a>
+        <a class="nav-link" href="competition.html"><span class="icon">⚔️</span><span>คู่แข่ง & ลูกค้า</span></a>
+        <a class="nav-link" href="logistics.html"><span class="icon">🚚</span><span>การขนส่ง</span></a>
+        <a class="nav-link" href="population.html"><span class="icon">👥</span><span>ประชากร</span></a>
+        <a class="nav-link active" href="supply.html"><span class="icon">📦</span><span>ซัพพลายวัสดุ</span></a>
+        <a class="nav-link" href="capacity.html"><span class="icon">🏭</span><span>กำลังการผลิต</span></a>
+        <a class="nav-link" href="risk.html"><span class="icon">⚠️</span><span>ความเสี่ยง</span></a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <!-- สรุป -->
+  <main class="page">
+
+    <!-- CARD 1: ภาพรวมซัพพลาย -->
     <section class="card">
-      <h2>ศักยภาพวัสดุรีไซเคิลจากบรรจุภัณฑ์</h2>
-      <div class="sub">
-        สมมติว่าของที่เราสนใจคือ “บรรจุภัณฑ์ที่ขาย/รับซื้อกลับได้” เช่น กล่องกระดาษลูกฟูก ขวดแก้ว
-        ขวด PET กระป๋องเหล็ก/อลูมิเนียม ฯลฯ
-        <br/>
-        เราคิดจากประชากรในจังหวัด ×
-        ปริมาณขยะบรรจุภัณฑ์รีไซเคิล/คน/วัน ×
-        อัตราเก็บกลับได้จริง (%).
-      </div>
-
-      <div class="flex-wrap">
-        <div class="metric-box">
-          <div class="metric-label">ประชากรรวม (ทั้งหมดใน CSV)</div>
-          <div class="metric-value" id="totalPop">-</div>
-          <div class="metric-hint">คน</div>
-        </div>
-
-        <div class="metric-box">
-          <div class="metric-label">
-            ศักยภาพที่เก็บได้ (ตัน / วัน)
-            <span id="statusPill" class="status-pill pill-green">-</span>
-          </div>
-          <div class="metric-value" id="tonsPerDay">-</div>
-          <div class="metric-hint">
-            เฉพาะส่วนที่รีไซเคิล + เก็บกลับได้ตาม % สมมติฐาน
+      <div class="card-header-line">
+        <div class="card-title-wrap">
+          <div class="card-icon">📊</div>
+          <div class="card-heading-text">
+            <div class="card-headline">
+              ศักยภาพซัพพลายวัสดุรีไซเคิลต่อปี
+              <span class="pill-active">Supply</span>
+            </div>
+            <div class="card-subtext">
+              ใช้ประชากรทั้งจังหวัด × ปริมาณขยะรีไซเคิลที่เกิดต่อคน/ปี
+              เพื่อประมาณ “ของเข้า” ที่ศูนย์รวบรวมดึงได้จริงใน 1 ปี
+            </div>
           </div>
         </div>
 
-        <div class="metric-box">
-          <div class="metric-label">ศักยภาพต่อเดือน (ตัน / เดือน)</div>
-          <div class="metric-value" id="tonsPerMonth">-</div>
-          <div class="metric-hint">คูณ ~30 วัน</div>
-        </div>
-
-        <div class="metric-box">
-          <div class="metric-label">ศักยภาพต่อปี (ตัน / ปี)</div>
-          <div class="metric-value" id="tonsPerYear">-</div>
-          <div class="metric-hint">คูณ 365 วัน</div>
+        <div class="big-number-block">
+          <div class="big-number" id="totalPopulation">-</div>
+          <div class="big-number-label">จำนวนประชากรอ้างอิง (คน)</div>
         </div>
       </div>
-    </section>
 
-    <!-- ปรับสมมติฐาน -->
-    <section class="card">
-      <h2>สมมติฐานการคำนวณ (ปรับได้)</h2>
-      <div class="controls-grid">
+      <!-- chips: สมมติฐานต่อหัว -->
+      <div class="chip-row">
+        <div class="chip">
+          <span class="m-label">ขวดแก้วหมุนเวียน:</span>
+          <strong id="bottlePerPerson">15</strong> ใบ/คน/ปี
+        </div>
+        <div class="chip">
+          <span class="m-label">PET:</span>
+          <strong id="petPerPerson">12</strong> กก./คน/ปี
+        </div>
+        <div class="chip">
+          <span class="m-label">HDPE:</span>
+          <strong id="hdpePerPerson">5</strong> กก./คน/ปี
+        </div>
+        <div class="chip">
+          <span class="m-label">กระดาษกล่อง:</span>
+          <strong id="occPerPerson">20</strong> กก./คน/ปี
+        </div>
+        <div class="chip">
+          <span class="m-label">อลูมิเนียม:</span>
+          <strong id="aluPerPerson">2</strong> กก./คน/ปี
+        </div>
+      </div>
 
-        <div class="control-block">
-          <label for="kgPerPerson">
-            ปริมาณบรรจุภัณฑ์รีไซเคิล / คน / วัน (กก.)
-          </label>
-          <div class="control-row">
-            <div>
-              <input type="number" id="kgPerPerson" step="0.01" min="0" />
-              <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">
-                ค่าเริ่มต้น: 0.30
+      <!-- MATERIAL LIST -->
+      <div class="materials-list">
+
+        <!-- GLASS -->
+        <div class="material-row">
+          <div class="mat-head">
+            <div class="mat-icon-box">🍾</div>
+            <div class="mat-name-block">
+              <div class="mat-name">
+                ขวดแก้วใช้ซ้ำ
+                <span class="sub">(ขวดสุรา/เบียร์ดี สภาพไม่แตก)</span>
+              </div>
+              <div class="dim">
+                สินค้าพรีเมียม → ส่งกลับโรงงานบรรจุได้เลย ไม่ต้องหลอม
               </div>
             </div>
-            <div style="font-size:12px;line-height:1.4;color:var(--text-soft);text-align:right;">
-              ของที่ขายได้ เช่น กระดาษลูกฟูก ขวด PET
-              กระป๋องโลหะ ฯลฯ
-            </div>
           </div>
-          <div class="explain-box">
-            จากข้อมูลทั่วไทย ขยะชุมชนรวม ~1 กก./คน/วัน
-            โดยส่วนที่เป็นบรรจุภัณฑ์รีไซเคิลได้ (กระดาษ กล่อง พลาสติกแข็งรีไซเคิลได้ โลหะ) มักอยู่ราว
-            20–35% ของน้ำหนักทั้งหมด
-            ⇒ ประมาณ 0.20–0.35 กก./คน/วัน สำหรับจังหวัดอุตสาหกรรมเราตั้งต้นที่ 0.30
+
+          <div class="mat-per-head">
+            <div id="glassAssumpCell">~15 ใบ/คน/ปี</div>
+            <div class="dim">หน่วยเป็น "ใบ"</div>
+          </div>
+
+          <div class="mat-total">
+            <div id="glassTotalCell"><strong>-</strong> ใบ/ปี</div>
+            <div class="dim">= รายได้มาร์จิ้นสูง</div>
+          </div>
+
+          <div class="mat-note">
+            ถ้าเราคัดแยก/ไม่ให้แตก → เราขายคืนโรงงานสุราโดยตรง
           </div>
         </div>
 
-        <div class="control-block">
-          <label for="recoveryRate">
-            อัตราการเก็บกลับได้ (%)
-          </label>
-          <div class="control-row">
-            <div>
-              <input type="number" id="recoveryRate" step="1" min="0" max="100" />
-              <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">
-                ค่าเริ่มต้น: 40
+        <!-- PET -->
+        <div class="material-row">
+          <div class="mat-head">
+            <div class="mat-icon-box">🥤</div>
+            <div class="mat-name-block">
+              <div class="mat-name">
+                พลาสติก PET
+                <span class="sub">(ขวดน้ำดื่ม น้ำอัดลม)</span>
+              </div>
+              <div class="dim">
+                อัดก้อน (bale) แล้วขายเข้าโรงงานรีไซเคิล
               </div>
             </div>
-            <div style="font-size:12px;line-height:1.4;color:var(--text-soft);text-align:right;">
-              คือเปอร์เซ็นต์ที่เราจะ "ได้ของจริง"
-              หลังหักของที่ปนเปื้อน / ทิ้งรวม ฯลฯ
+          </div>
+
+          <div class="mat-per-head">
+            <div id="petAssumpCell">~12 กก./คน/ปี</div>
+            <div class="dim">คิดเป็นน้ำหนัก</div>
+          </div>
+
+          <div class="mat-total">
+            <div id="petTotalCell"><strong>-</strong> ตัน/ปี</div>
+            <div class="dim">ปริมาณสูง สม่ำเสมอ</div>
+          </div>
+
+          <div class="mat-note">
+            เป็น “ฐานงานหลัก” ศูนย์รวบรวม เพราะมีทุกครัวเรือน
+          </div>
+        </div>
+
+        <!-- HDPE -->
+        <div class="material-row">
+          <div class="mat-head">
+            <div class="mat-icon-box">🧴</div>
+            <div class="mat-name-block">
+              <div class="mat-name">
+                พลาสติก HDPE
+                <span class="sub">(ขวดนม/น้ำยาทำความสะอาด)</span>
+              </div>
+              <div class="dim">
+                คัดสี / อัดก้อน แยกขาวนม vs คละสี → ราคาดี
+              </div>
             </div>
           </div>
-          <div class="explain-box">
-            ถ้าระบบเก็บแยกดี (มีซาเล้ง/ร้านรีไซเคิลหนาแน่น) ค่านี้อาจสูงขึ้น
-            ถ้าเก็บยากหรือพื้นที่โลจิสติกส์ห่างไกล ค่านี้จะต่ำลง
+
+          <div class="mat-per-head">
+            <div id="hdpeAssumpCell">~5 กก./คน/ปี</div>
+            <div class="dim">คิดเป็นน้ำหนัก</div>
+          </div>
+
+          <div class="mat-total">
+            <div id="hdpeTotalCell"><strong>-</strong> ตัน/ปี</div>
+            <div class="dim">กำไรต่อตันค่อนข้างดี</div>
+          </div>
+
+          <div class="mat-note">
+            จุดแข็งคือ “การคัด” ไม่ใช่แค่ปริมาณ
           </div>
         </div>
 
+        <!-- OCC -->
+        <div class="material-row">
+          <div class="mat-head">
+            <div class="mat-icon-box">📦</div>
+            <div class="mat-name-block">
+              <div class="mat-name">
+                กระดาษลูกฟูก / กล่อง e-commerce
+              </div>
+              <div class="dim">
+                อัดก้อน ส่งโรงงานกล่อง/โรงงานกระดาษ
+              </div>
+            </div>
+          </div>
+
+          <div class="mat-per-head">
+            <div id="occAssumpCell">~20 กก./คน/ปี</div>
+            <div class="dim">คิดเป็นน้ำหนัก</div>
+          </div>
+
+          <div class="mat-total">
+            <div id="occTotalCell"><strong>-</strong> ตัน/ปี</div>
+            <div class="dim">Vol. ใหญ่สุด</div>
+          </div>
+
+          <div class="mat-note">
+            เป็นรายได้แน่นอน (base load) เพราะกล่องมีทุกอุตสาหกรรม
+          </div>
+        </div>
+
+        <!-- ALUMINUM -->
+        <div class="material-row">
+          <div class="mat-head">
+            <div class="mat-icon-box">🥫</div>
+            <div class="mat-name-block">
+              <div class="mat-name">
+                กระป๋องอะลูมิเนียม
+                <span class="sub">(กระป๋องเครื่องดื่ม)</span>
+              </div>
+              <div class="dim">
+                มูลค่าโลหะสูง/ตัน เงินหมุนเร็ว
+              </div>
+            </div>
+          </div>
+
+          <div class="mat-per-head">
+            <div id="aluAssumpCell">~2 กก./คน/ปี</div>
+            <div class="dim">คิดเป็นน้ำหนัก</div>
+          </div>
+
+          <div class="mat-total">
+            <div id="aluTotalCell"><strong>-</strong> ตัน/ปี</div>
+            <div class="dim">ห้ามปล่อยรั่วให้คู่แข่ง</div>
+          </div>
+
+          <div class="mat-note">
+            ใครเก็บก่อน ชนะเลย (ของมีค่ามากต่อกก.)
+          </div>
+        </div>
+
+      </div> <!-- /materials-list -->
+
+      <!-- วิธีคำนวณ -->
+      <div class="insight-block">
+        <h4>📐 วิธีคำนวณซัพพลายทั้งจังหวัด</h4>
+        <ul>
+          <li>อ่านจำนวนประชากรทุกตำบลจาก <code>data/subdistricts.csv</code> แล้วรวมเป็นทั้งจังหวัด</li>
+          <li>คูณ “ปริมาณขยะรีไซเคิลต่อหัว/ปี” ของแต่ละวัสดุ</li>
+          <li>ผลลัพธ์ = ศักยภาพวัสดุรีไซเคิลต่อปี ที่สามารถดึงเข้าสูงสุด (เชิงทฤษฎี)</li>
+          <li>ขวดแก้วดี → นับเป็น “ใบ/ปี” เพราะเป้าไม่ใช่หลอม แต่คือส่งกลับโรงงานสุรา</li>
+          <li>PET / HDPE / กระดาษ / อะลูมิเนียม → รายงานเป็น “ตัน/ปี” เพราะเข้ากระบวนการอัดก้อนขาย</li>
+        </ul>
       </div>
     </section>
 
-    <!-- รายอำเภอ -->
+    <!-- CARD 2: มุมมองธุรกิจ -->
     <section class="card">
-      <h2>Breakdown รายอำเภอ</h2>
-      <div class="sub">
-        ค่านี้ใช้สมมติฐานเดียวกันทุกอำเภอ (กก./คน/วัน และ % เก็บกลับ)
-        เพื่อดูว่าอำเภอไหนคือกระเป๋าสินค้าที่น่าสนใจที่สุด
+      <div class="card-header-line">
+        <div class="card-title-wrap">
+          <div class="card-icon">🚀</div>
+          <div class="card-heading-text">
+            <div class="card-headline">
+              โอกาสทางธุรกิจ
+              <span class="pill-active">Hub จังหวัด</span>
+            </div>
+            <div class="card-subtext">
+              ถ้าเรากลายเป็นจุดรวบรวมหลักของจังหวัด
+              เงินรีไซเคิลระดับ “หลายพัน-หลายหมื่นตัน/ปี”
+              จะวิ่งเข้าศูนย์เราแทนกระจายออก
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>อำเภอ</th>
-              <th>ประชากร</th>
-              <th>ตัน/วัน<br/>(เก็บได้)</th>
-              <th>ตัน/เดือน</th>
-              <th>ตัน/ปี</th>
-            </tr>
-          </thead>
-          <tbody id="districtTableBody">
-            <!-- จะถูกเติมด้วย JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- วิธีอ่านค่า -->
-    <section class="card">
-      <h2>วิธีอ่านสีสถานะศักยภาพ 🟢🟡🟠🔴</h2>
-      <div class="sub">
-        ตีความจาก "ตัน/วัน (เก็บได้)" ทั้งจังหวัด:
+      <div class="insight-block">
+        <h4>💼 ทำไมซัพพลายคืออำนาจต่อรอง</h4>
+        <ul>
+          <li>ตัวเลขตัน/ปี = ภาษาที่โรงงานปลายทาง (ผู้ซื้อก้อนรีไซเคิล) เข้าใจทันที</li>
+          <li>เราพูดได้เลยว่า “ผมส่ง PET อัดก้อน X ตัน/ปีให้คุณได้” → นี่คือสัญญาณความน่าเชื่อถือ</li>
+          <li>ขวดแก้วสภาพดีคือสินค้า margin สูงและเป็น niche ที่คู่แข่งเลียนแบบยาก</li>
+          <li>กระดาษและ PET คือ base load กินพื้นที่เก็บเยอะ แต่ทำให้ศูนย์เรามีงานคงที่ทั้งปี</li>
+        </ul>
       </div>
 
-      <div style="font-size:13px;line-height:1.6;color:var(--text-soft);">
-        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
-          <span class="status-pill pill-green">🟢 ต่ำ</span>
-          <div><strong>&lt; 20 ตัน/วัน</strong> ปริมาณไม่ใหญ่มาก กระจายเป็นรายย่อย เก็บแบบ point-to-point</div>
-        </div>
-
-        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
-          <span class="status-pill pill-yellow">🟡 กลาง</span>
-          <div><strong>20–50 ตัน/วัน</strong> เริ่มคุ้มกับ logistics ระดับอำเภอ/คลัสเตอร์</div>
-        </div>
-
-        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
-          <span class="status-pill pill-orange">🟠 สูง</span>
-          <div><strong>50–100 ตัน/วัน</strong> ศักยภาพเข้มข้น คุ้มตั้ง drop-off hub / คลังย่อย</div>
-        </div>
-
-        <div class="legend-row" style="display:flex;align-items:center;gap:8px;">
-          <span class="status-pill pill-red">🔴 มาก</span>
-          <div><strong>&gt; 100 ตัน/วัน</strong> มีระดับ supply ใหญ่พอสำหรับศูนย์คัดแยก / บด / อัดก้อนขนาดอุตสาหกรรม</div>
-        </div>
+      <div class="insight-block">
+        <h4>🏭 ขั้นถัดไป (เชื่อมไปหน้าอื่น)</h4>
+        <ul>
+          <li><strong>capacity.html (กำลังการผลิต):</strong> ใช้ตัวเลขตัน/ปี มาคิดจำนวนเครื่องอัด, ใช้ไฟเท่าไหร่, ต้องมีกี่กะ</li>
+          <li><strong>logistics.html (การขนส่ง):</strong> วางแผนรถบรรทุก ~30 ตัน/เที่ยว, ระยะทางไปโรงงานปลายทาง, ต้นทุนวิ่งรถ</li>
+          <li><strong>risk.html (ความเสี่ยง):</strong> พื้นที่เราโดนร้องเรียนไหม น้ำท่วมง่ายไหม อยู่ในโซนอุตสาหกรรมหรือเปล่า</li>
+        </ul>
       </div>
     </section>
+
   </main>
 
-  <footer>
-    © วิเคราะห์ศักยภาพวัสดุรีไซเคิล · สมุทรสาคร · Prototype (คำนวณหน้าเว็บสดจาก CSV)
+  <footer class="site-footer">
+    © วิเคราะห์ศักยภาพซัพพลายวัสดุรีไซเคิลเชิงพื้นที่ · Prototype เพื่อการตัดสินใจลงทุน
   </footer>
 
   <script>
-    // -----------------------------
-    // โหลด CSV ตำบล แล้วรวมเป็นอำเภอ
-    // subdistricts.csv format (ตัวอย่างที่คุณให้):
-    // อำเภอ,ตำบล_TH,ตำบล_ENG,จำนวนประชากร,พิกัด
-    // -----------------------------
-
-    // parse CSV -> array objects
-    function parseSubdistrictCSV(csvText){
-      const lines = csvText.trim().split("\n");
-      const out = [];
-
-      // ตรวจ header
-      let startIndex = 0;
-      const headerLower = lines[0].toLowerCase();
-      const hasHeader =
-        headerLower.includes("อำเภอ") ||
-        headerLower.includes("จำนวนประชากร");
-      if (hasHeader) startIndex = 1;
-
-      for (let i = startIndex; i < lines.length; i++){
-        const row = lines[i].trim();
-        if (!row) continue;
-
-        // ตรงนี้เรา assume ไม่มี "..." ในกลาง (ไฟล์ประชากรคุณไม่มีคอมม่าครอบ)
-        const parts = row.split(",").map(v => v.trim());
-
-        if (parts.length < 5) continue;
-
-        const amphoe = parts[0];
-        const tambonTH = parts[1];
-        // const tambonEN = parts[2];
-        const popStr = parts[3];
-        // const coord = parts[4];
-
-        // popStr อาจมี comma (38,607) ต้องลบ comma ก่อน parse
-        const cleanPop = popStr.replace(/,/g,"");
-        const pop = parseInt(cleanPop,10);
-        if (isNaN(pop)) continue;
-
-        out.push({
-          amphoe: amphoe,
-          tambonTH: tambonTH,
-          population: pop
-        });
-      }
-
-      return out;
-    }
-
-    // group by amphoe
-    function groupByAmphoe(subdistrictRows){
-      const amphoeMap = {}; // { amphoe: totalPop }
-      subdistrictRows.forEach(r=>{
-        if (!amphoeMap[r.amphoe]){
-          amphoeMap[r.amphoe] = 0;
-        }
-        amphoeMap[r.amphoe] += r.population;
-      });
-
-      // แปลงเป็น array
-      const arr = Object.keys(amphoeMap).map(amphoeName=>({
-        amphoe: amphoeName,
-        population: amphoeMap[amphoeName]
-      }));
-      return arr;
-    }
-
-    // -----------------------------
-    // คำนวณปริมาณสินค้ารีไซเคิล (ตัน)
-    // totalPop: คนทั้งหมด
-    // kgPerPersonPerDay: กก./คน/วัน ของ "บรรจุภัณฑ์รีไซเคิลได้"
-    // recoveryRate: % เก็บกลับได้
-    // return {tonsDay, tonsMonth, tonsYear}
-    // -----------------------------
-    function calcTonnage(totalPop, kgPerPersonPerDay, recoveryRatePct){
-      // กก./วันรวม (ก่อนหัก loss)
-      const kgDayRaw = totalPop * kgPerPersonPerDay;
-
-      // ที่เก็บกลับได้จริง
-      const kgDayRecovered = kgDayRaw * (recoveryRatePct/100);
-
-      const tonsPerDay = kgDayRecovered / 1000; // 1000 kg = 1 ton
-      const tonsPerMonth = tonsPerDay * 30;
-      const tonsPerYear  = tonsPerDay * 365;
-
-      return {
-        tonsPerDay,
-        tonsPerMonth,
-        tonsPerYear
-      };
-    }
-
-    // format ตัวเลขสวย ๆ
-    function fmt(n, digits=2){
-      if (isNaN(n)) return "-";
-      return n.toLocaleString("th-TH", {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits
-      });
-    }
-    function fmtInt(n){
-      if (isNaN(n)) return "-";
-      return n.toLocaleString("th-TH");
-    }
-
-    // ให้สีสถานะตาม tons/day
-    function classifyStatus(tonsPerDay){
-      // 🟢 <20, 🟡 20-50, 🟠 50-100, 🔴 >100
-      if (tonsPerDay > 100){
-        return {text:"🔴 มาก", cls:"pill-red"};
-      } else if (tonsPerDay > 50){
-        return {text:"🟠 สูง", cls:"pill-orange"};
-      } else if (tonsPerDay > 20){
-        return {text:"🟡 กลาง", cls:"pill-yellow"};
-      } else {
-        return {text:"🟢 ต่ำ", cls:"pill-green"};
-      }
-    }
-
-    // อัปเดตตารางอำเภอ
-    function renderDistrictTable(amphoeArr, kgPerPersonPerDay, recoveryRatePct){
-      const tbody = document.getElementById("districtTableBody");
-      tbody.innerHTML = "";
-
-      amphoeArr.forEach(row=>{
-        const pop = row.population;
-        const {tonsPerDay, tonsPerMonth, tonsPerYear} =
-          calcTonnage(pop, kgPerPersonPerDay, recoveryRatePct);
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td style="white-space:nowrap;font-weight:600;color:#fff;">${row.amphoe}</td>
-          <td>${fmtInt(pop)} คน</td>
-          <td>${fmt(tonsPerDay,2)}</td>
-          <td>${fmt(tonsPerMonth,1)}</td>
-          <td>${fmt(tonsPerYear,0)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // อัปเดตการ์ดสรุปบนสุด
-    function renderSummary(totalPop, kgPerPersonPerDay, recoveryRatePct){
-      const totalPopEl = document.getElementById("totalPop");
-      const tonsPerDayEl = document.getElementById("tonsPerDay");
-      const tonsPerMonthEl = document.getElementById("tonsPerMonth");
-      const tonsPerYearEl = document.getElementById("tonsPerYear");
-      const statusPillEl = document.getElementById("statusPill");
-
-      totalPopEl.textContent = fmtInt(totalPop);
-
-      const {tonsPerDay, tonsPerMonth, tonsPerYear} =
-        calcTonnage(totalPop, kgPerPersonPerDay, recoveryRatePct);
-
-      tonsPerDayEl.textContent   = fmt(tonsPerDay,2);
-      tonsPerMonthEl.textContent = fmt(tonsPerMonth,1);
-      tonsPerYearEl.textContent  = fmt(tonsPerYear,0);
-
-      const st = classifyStatus(tonsPerDay);
-      statusPillEl.textContent = st.text;
-      statusPillEl.className = "status-pill " + st.cls;
-    }
-
-    // main flow:
-    // 1. load CSV
-    // 2. parse & group
-    // 3. ตั้งค่า default controls
-    // 4. render ทั้งหน้า
-    let globalState = {
-      totalPop: 0,
-      amphoeArr: [],
-      kgPerPersonPerDay: 0.30, // ค่าเริ่มต้น
-      recoveryRatePct: 40      // %
+    // ===== สมมติฐานต่อหัว (แก้ได้ทีหลัง) =====
+    const ASSUMPTIONS = {
+      glassBottlesPerPersonPerYear: 15, // ใบ / คน / ปี
+      petKgPerPersonPerYear: 12,        // กก. / คน / ปี
+      hdpeKgPerPersonPerYear: 5,        // กก. / คน / ปี
+      occKgPerPersonPerYear: 20,        // กก. / คน / ปี
+      aluKgPerPersonPerYear: 2          // กก. / คน / ปี
     };
 
-    function recalcAndRender(){
-      renderSummary(
-        globalState.totalPop,
-        globalState.kgPerPersonPerDay,
-        globalState.recoveryRatePct
-      );
-      renderDistrictTable(
-        globalState.amphoeArr,
-        globalState.kgPerPersonPerDay,
-        globalState.recoveryRatePct
-      );
-    }
+    // ใส่ลง chip ด้านบน
+    document.getElementById("bottlePerPerson").textContent = ASSUMPTIONS.glassBottlesPerPersonPerYear;
+    document.getElementById("petPerPerson").textContent     = ASSUMPTIONS.petKgPerPersonPerYear;
+    document.getElementById("hdpePerPerson").textContent    = ASSUMPTIONS.hdpeKgPerPersonPerYear;
+    document.getElementById("occPerPerson").textContent     = ASSUMPTIONS.occKgPerPersonPerYear;
+    document.getElementById("aluPerPerson").textContent     = ASSUMPTIONS.aluKgPerPersonPerYear;
 
-    // ตั้งค่า input listeners
-    function setupControls(){
-      const kgInput = document.getElementById("kgPerPerson");
-      const recInput = document.getElementById("recoveryRate");
+    document.getElementById("glassAssumpCell").textContent = `~${ASSUMPTIONS.glassBottlesPerPersonPerYear} ใบ/คน/ปี`;
+    document.getElementById("petAssumpCell").textContent   = `~${ASSUMPTIONS.petKgPerPersonPerYear} กก./คน/ปี`;
+    document.getElementById("hdpeAssumpCell").textContent  = `~${ASSUMPTIONS.hdpeKgPerPersonPerYear} กก./คน/ปี`;
+    document.getElementById("occAssumpCell").textContent   = `~${ASSUMPTIONS.occKgPerPersonPerYear} กก./คน/ปี`;
+    document.getElementById("aluAssumpCell").textContent   = `~${ASSUMPTIONS.aluKgPerPersonPerYear} กก./คน/ปี`;
 
-      kgInput.value = globalState.kgPerPersonPerDay.toString();
-      recInput.value = globalState.recoveryRatePct.toString();
+    // ===== ดึงประชากรรวมจาก subdistricts.csv =====
+    // CSV format:
+    // อำเภอ,ตำบล_TH,ตำบล_ENG,จำนวนประชากร,พิกัด
+    fetch("data/subdistricts.csv", { cache: "no-store" })
+      .then(r => r.text())
+      .then(csvText => {
+        const lines = csvText.trim().split("\n");
 
-      kgInput.addEventListener("input", ()=>{
-        const v = parseFloat(kgInput.value);
-        if (!isNaN(v) && v >= 0){
-          globalState.kgPerPersonPerDay = v;
-          recalcAndRender();
+        // ถ้ามี header ข้ามบรรทัดแรก
+        let startIndex = 0;
+        const first = lines[0].toLowerCase();
+        if (
+          first.includes("จำนวนประชากร") ||
+          first.includes("population") ||
+          first.includes("อำเภอ")
+        ) {
+          startIndex = 1;
         }
-      });
 
-      recInput.addEventListener("input", ()=>{
-        const v = parseFloat(recInput.value);
-        if (!isNaN(v) && v >= 0 && v <= 100){
-          globalState.recoveryRatePct = v;
-          recalcAndRender();
+        let totalPop = 0;
+        for (let i = startIndex; i < lines.length; i++) {
+          const row = lines[i].trim();
+          if (!row) continue;
+          const parts = row.split(",");
+          if (parts.length < 4) continue;
+
+          // parts[3] = จำนวนประชากร อาจมี comma เช่น 38,607
+          const popRaw = parts[3].replace(/[^0-9]/g, "");
+          const popVal = parseInt(popRaw, 10);
+          if (!isNaN(popVal)) {
+            totalPop += popVal;
+          }
         }
-      });
-    }
 
-    // โหลด CSV จริง
-    fetch("data/subdistricts.csv",{cache:"no-store"})
-      .then(res=>res.text())
-      .then(csvText=>{
-        const rows = parseSubdistrictCSV(csvText);
-        const amphoeArr = groupByAmphoe(rows);
+        // แสดงประชากร
+        document.getElementById("totalPopulation").textContent =
+          totalPop.toLocaleString("th-TH");
 
-        // รวมประชากรทั้งจังหวัด
-        const totalPop = amphoeArr.reduce((sum,r)=>sum+r.population,0);
+        // คำนวณซัพพลายรวมจังหวัด/ปี
+        const totalGlassBottlesPerYear =
+          totalPop * ASSUMPTIONS.glassBottlesPerPersonPerYear; // ใบ/ปี
 
-        globalState.totalPop = totalPop;
-        globalState.amphoeArr = amphoeArr;
+        const petTonsPerYear =
+          (totalPop * ASSUMPTIONS.petKgPerPersonPerYear) / 1000.0; // ตัน/ปี
 
-        setupControls();
-        recalcAndRender();
+        const hdpeTonsPerYear =
+          (totalPop * ASSUMPTIONS.hdpeKgPerPersonPerYear) / 1000.0;
+
+        const occTonsPerYear =
+          (totalPop * ASSUMPTIONS.occKgPerPersonPerYear) / 1000.0;
+
+        const aluTonsPerYear =
+          (totalPop * ASSUMPTIONS.aluKgPerPersonPerYear) / 1000.0;
+
+        // อัปเดตเลขในบรรทัดแต่ละวัสดุ
+        document.getElementById("glassTotalCell").innerHTML =
+          `<strong>${totalGlassBottlesPerYear.toLocaleString("th-TH")}</strong> ใบ/ปี`;
+
+        document.getElementById("petTotalCell").innerHTML =
+          `<strong>${petTonsPerYear.toLocaleString("th-TH",{maximumFractionDigits:1})}</strong> ตัน/ปี`;
+
+        document.getElementById("hdpeTotalCell").innerHTML =
+          `<strong>${hdpeTonsPerYear.toLocaleString("th-TH",{maximumFractionDigits:1})}</strong> ตัน/ปี`;
+
+        document.getElementById("occTotalCell").innerHTML =
+          `<strong>${occTonsPerYear.toLocaleString("th-TH",{maximumFractionDigits:1})}</strong> ตัน/ปี`;
+
+        document.getElementById("aluTotalCell").innerHTML =
+          `<strong>${aluTonsPerYear.toLocaleString("th-TH",{maximumFractionDigits:1})}</strong> ตัน/ปี`;
       })
-      .catch(err=>{
-        console.error("โหลด subdistricts.csv ไม่ได้:", err);
-        alert("โหลดข้อมูลประชากร subdistricts.csv ไม่ได้");
+      .catch(err => {
+        console.error("อ่าน subdistricts.csv ไม่ได้", err);
+        document.getElementById("totalPopulation").textContent = "N/A";
+        document.getElementById("glassTotalCell").innerHTML = "<strong>?</strong>";
+        document.getElementById("petTotalCell").innerHTML   = "<strong>?</strong>";
+        document.getElementById("hdpeTotalCell").innerHTML  = "<strong>?</strong>";
+        document.getElementById("occTotalCell").innerHTML   = "<strong>?</strong>";
+        document.getElementById("aluTotalCell").innerHTML   = "<strong>?</strong>";
       });
   </script>
+
 </body>
 </html>
