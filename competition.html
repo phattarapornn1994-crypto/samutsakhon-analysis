@@ -1,465 +1,360 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>การวิเคราะห์การแข่งขัน (รีไซเคิล) - สมุทรสาคร</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>วิเคราะห์การแข่งขัน & ลูกค้า | สมุทรสาคร</title>
 
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
-
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      height: 100vh;
-    }
-
-    header {
-      background: #1e293b;
-      padding: 12px 16px;
-      border-bottom: 1px solid #334155;
-      font-size: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    header .title {
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    header nav a {
-      color: #94a3b8;
-      margin-right: 12px;
-      text-decoration: none;
-      font-size: 13px;
-    }
-    header nav a:hover {
-      color: #fff;
-    }
-
-    /* แถบควบคุมรัศมี */
-    #controls {
-      background:#1e293b;
-      border-bottom:1px solid #334155;
-      padding:12px 16px;
-      display:flex;
-      flex-wrap:wrap;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:16px;
-      font-size:13px;
-      line-height:1.4;
-      color:#cbd5e1;
-    }
-
-    .radius-box {
-      background:rgba(15,23,42,.7);
-      border:1px solid #334155;
-      border-radius:12px;
-      padding:12px 16px;
-      box-shadow:0 20px 60px rgb(0 0 0 / .7);
-      max-width:300px;
-    }
-
-    .radius-box h2 {
-      margin:0 0 8px;
-      font-size:14px;
-      font-weight:600;
-      color:#fff;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-
-    .radius-row {
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .radius-row input[type="range"] {
-      width:160px;
-    }
-
-    .radius-hint {
-      font-size:12px;
-      color:#94a3b8;
-      line-height:1.4;
-      margin-top:8px;
-    }
-
-    .summary-box {
-      background:rgba(15,23,42,.7);
-      border:1px solid #334155;
-      border-radius:12px;
-      padding:12px 16px;
-      box-shadow:0 20px 60px rgb(0 0 0 / .7);
-      font-size:12px;
-      line-height:1.5;
-      color:#cbd5e1;
-      max-width:360px;
-    }
-    .summary-box h3 {
-      margin:0 0 8px;
-      color:#fff;
-      font-size:13px;
-      font-weight:600;
-    }
-
-    /* พื้นที่แผนที่ */
-    #map-wrapper {
-      position: relative;
-      background: #000;
-      min-height:0;
-    }
-
-    #map {
-      width: 100%;
-      height: 100%;
-      min-height: 300px;
-      position: absolute;
-      inset: 0;
-    }
-
-    footer {
-      color:#475569;
-      background:#0f172a;
-      font-size:12px;
-      text-align:center;
-      padding:12px 0 16px;
-      border-top:1px solid #334155;
-    }
-
-    /* popup style */
-    .leaflet-popup-content-wrapper {
-      background:#1e293b;
-      color:#f8fafc;
-      border-radius:12px;
-      border:1px solid #475569;
-      box-shadow:0 20px 60px rgb(0 0 0 / .8);
-    }
-    .leaflet-popup-tip {
-      background:#1e293b;
-      border:1px solid #475569;
-    }
-    .popup-title {
-      font-size:14px;
-      font-weight:600;
-      color:#fff;
-      margin-bottom:4px;
-      line-height:1.4;
-    }
-    .popup-desc {
-      font-size:12px;
-      color:#cbd5e1;
-      line-height:1.4;
-    }
-
-    /* layer control dark mode */
-    .leaflet-control-layers {
-      background:#1e293b !important;
-      border:1px solid #334155 !important;
-      border-radius:12px !important;
-      color:#fff !important;
-      box-shadow:0 20px 60px rgb(0 0 0 / .8) !important;
-      font-size:12px;
-      line-height:1.4;
-    }
-    .leaflet-control-layers-expanded {
-      background:#1e293b !important;
-      color:#fff !important;
-    }
-    .leaflet-control-layers-list label {
-      color:#cbd5e1;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-bottom:4px;
-    }
-  </style>
+<style>
+  :root{
+    --bg900:#0f172a; --bg800:#1e293b; --bg700:#334155; --bg600:#475569;
+    --soft:#cbd5e1; --dim:#94a3b8; --bright:#fff; --accent:#38bdf8;
+    --card:rgba(15,23,42,.9);
+  }
+  body{margin:0;background:var(--bg900);color:var(--bright);font-family:system-ui,sans-serif;height:100vh;display:grid;grid-template-rows:auto 1fr;}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bg700);padding:10px 14px;background:var(--bg900)}
+  header .brand{font-weight:700}
+  header nav a{color:var(--dim);text-decoration:none;margin-left:14px;font-size:13px}
+  header nav a:hover{color:var(--bright)} header nav a.active{color:var(--accent);font-weight:600}
+  #wrap{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 48px);}
+  #side{background:var(--card);border-right:1px solid var(--bg700);overflow:auto}
+  #map{width:100%;height:100%}
+  .pane{border-bottom:1px solid var(--bg700);padding:12px 14px}
+  .pane h3{margin:0 0 6px 0;font-size:14px}
+  .muted{color:var(--dim);font-size:12px}
+  .control{background:var(--bg800);border:1px solid var(--bg700);border-radius:12px;padding:10px 12px;margin-top:6px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .row input[type=range]{width:180px}
+  .chk-list{max-height:180px;overflow:auto;border-top:1px dashed var(--bg700);margin-top:8px;padding-top:8px}
+  .pill{display:inline-block;border:1px solid #fff3;border-radius:999px;padding:2px 8px;font-size:12px;margin-right:6px}
+  .pill-blue{background:#0c4a6e;color:#93c5fd}
+  .pill-orange{background:#7c2d12;color:#fdba74}
+  .pill-red{background:#7f1d1d;color:#fca5a5}
+  .pill-green{background:#064e3b;color:#86efac}
+  .list{background:#180; } /* not used; keep */
+  .box{background:var(--bg800);border:1px solid var(--bg700);border-radius:12px;padding:10px 12px}
+  .danger{background:#7f1d1d22;border-color:#fecaca}
+  .ok{background:#064e3b22;border-color:#bbf7d0}
+  ul{margin:6px 0 0 18px;padding:0}
+  li{margin:2px 0}
+  .small{font-size:12px;color:var(--soft)}
+  .kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kpi .box .v{font-weight:700;font-size:18px}
+  @media(max-width:980px){#wrap{grid-template-columns:1fr} #side{order:2;height:420px}}
+</style>
 </head>
-
 <body>
 <header>
-  <div class="title">🔴 การแข่งขันรอบลานกระทิงแดง (โรงงานรีไซเคิล)</div>
+  <div class="brand">สมุทรสาคร Spatial Intelligence</div>
   <nav>
     <a href="index.html">หน้าแรก</a>
     <a href="map.html">แผนที่</a>
-    <a href="population.html">ประชากร</a>
-    <a href="competition.html" style="color:#fff;">การแข่งขัน</a>
+    <a href="competition.html" class="active">การแข่งขัน</a>
     <a href="risk.html">ความเสี่ยง</a>
+    <a href="supply.html">ประมาณการสินค้า</a>
   </nav>
 </header>
 
-<section id="controls">
-  <div class="radius-box">
-    <h2>รัศมีรอบลานกระทิงแดง</h2>
-    <div class="radius-row">
-      <input id="radiusInput" type="range" min="1000" max="10000" step="500" value="3000" />
-      <div style="font-size:13px;color:#fff;">
-        <span id="radiusLabel">3.0 กม.</span>
+<div id="wrap">
+  <aside id="side">
+    <div class="pane">
+      <h3>วิเคราะห์คู่แข่งและลูกค้า</h3>
+      <div class="muted">รัศมีวิเคราะห์: <span id="radLabel">5</span> กม.</div>
+      <div class="control">
+        <div class="row">
+          <input type="range" id="radiusKm" min="1" max="20" step="1" value="5"/>
+          <input type="number" id="radiusInput" min="1" max="50" step="1" value="5" style="width:60px;background:#0f172a;border:1px solid var(--bg700);border-radius:8px;color:#fff;padding:4px 6px;text-align:right"/> กม.
+        </div>
+        <div class="small">เส้นแดง = วงรัศมีจาก “จุดศูนย์กลาง” (ลานกระทิงแดง)</div>
       </div>
     </div>
-    <div class="radius-hint">
-      เลือกระยะทาง (กม.) เพื่อดูคู่แข่งที่เป็นโรงงานรีไซเคิลในระยะนั้น
-    </div>
-  </div>
 
-  <div class="summary-box">
-    <h3>นิยาม</h3>
-    <div>• "คู่แข่ง" = โรงงานที่เข้าข่ายรีไซเคิล / รับของเก่า / เม็ดพลาสติกรีไซเคิล</div>
-    <div>• วงกลมแดง = พื้นที่เข้าถึงของเรา</div>
-    <div>• หมุดสีแดง = คู่แข่งในพื้นที่นั้น</div>
-    <div style="margin-top:8px;border-top:1px solid #334155;padding-top:8px;">
-      <b>ฐานเรา:</b> ลานกระทิงแดง ถนนสายใยรัก<br/>
-      (13.565126, 100.279895)
+    <div class="pane">
+      <h3>เลือกกลุ่มลูกค้า (โรงงาน)</h3>
+      <div class="control">
+        <label style="display:block;margin-bottom:6px">
+          <input type="radio" name="selmode" value="single" checked/> เลือกประเภทเดียว
+        </label>
+        <label style="display:block;margin-bottom:6px">
+          <input type="radio" name="selmode" value="multi"/> เลือกหลายประเภท
+        </label>
+        <div class="chk-list" id="custList">
+          <!-- เติมด้วย JS -->
+        </div>
+      </div>
+      <div class="small" style="margin-top:6px">
+        <span class="pill pill-blue">ลูกค้า</span>
+        <span class="pill pill-orange">คู่แข่ง (รีไซเคิล)</span>
+        <span class="pill pill-green">ลูกค้าใกล้เรามากกว่าคู่แข่ง</span>
+      </div>
     </div>
-  </div>
-</section>
 
-<div id="map-wrapper">
-  <div id="map"></div>
+    <div class="pane">
+      <h3>คู่แข่งในรัศมี</h3>
+      <div id="competitorList" class="box danger" style="max-height:200px;overflow:auto"></div>
+    </div>
+
+    <div class="pane">
+      <h3>สรุป & ข้อได้เปรียบของเรา</h3>
+      <div class="kpi">
+        <div class="box"><div class="small">ลูกค้าที่เลือก</div><div class="v" id="kAll">-</div></div>
+        <div class="box"><div class="small">อยู่ในรัศมี</div><div class="v" id="kIn">-</div></div>
+        <div class="box"><div class="small">ระยะทางเฉลี่ย (กม.)</div><div class="v" id="kAvg">-</div></div>
+        <div class="box"><div class="small">% ลูกค้าที่ “ใกล้เรา” มากกว่าคู่แข่ง</div><div class="v" id="kCloserPct">-</div></div>
+      </div>
+      <div class="box ok" style="margin-top:8px" id="advBox">
+        <!-- เติมด้วย JS -->
+      </div>
+    </div>
+  </aside>
+
+  <main id="map"></main>
 </div>
 
-<footer>
-  © วิเคราะห์การแข่งขันรอบลานกระทิงแดง · สมุทรสาคร
-</footer>
-
 <script>
-  // -------------------------------
-  // 1) config พื้นที่หลัก
-  // -------------------------------
+/* ================== ข้อมูลตั้งต้น ================== */
+const HUB = { // ลานกระทิงแดง
+  lat: 13.565126, lng: 100.279895, name: "ลานกระทิงแดง (ใหม่)"
+};
 
-  // พิกัดฐานลานกระทิงแดง
-  const redBullLatLng = [13.565126, 100.279895];
+// คีย์เวิร์ดจับ “ลูกค้า” ตามหมวด
+const CUSTOMER_GROUPS = [
+  {key:"paper",    label:"โรงงานกระดาษ/บรรจุภัณฑ์",  match:["กระดาษ","กล่อง","paper","บรรจุภัณฑ์"]},
+  {key:"plastic",  label:"โรงงานเม็ดพลาสติก",       match:["เม็ดพลาสติก","พลาสติก","plastic","PET","PP","PE"]},
+  {key:"alcohol",  label:"โรงงานสุรา/เครื่องดื่ม",  match:["สุรา","เครื่องดื่ม","เบียร์","เหล้า","distill","brew","drink","beverage"]},
+  {key:"other",    label:"อื่นๆ",                     match:[]}
+];
 
-  // สร้างแผนที่
-  const map = L.map('map', {
-    center: redBullLatLng,
-    zoom: 12,
-    zoomControl: true,
-    attributionControl: false
+// คู่แข่ง: “รีไซเคิล/รับซื้อของเก่า”
+function isCompetitor(f){
+  const t = (f.category||"") + " " + (f.detail||"");
+  return /รีไซเคิล|รับซื้อของเก่า|recycle|recycled/i.test(t);
+}
+
+// แมทช์ลูกค้าตาม group
+function matchCustomerByGroups(f, selectedGroups){
+  const text = ((f.category||"") + " " + (f.name||"") + " " + (f.detail||"")).toLowerCase();
+  let hitAny = false;
+
+  for(const g of CUSTOMER_GROUPS){
+    if(!selectedGroups.has(g.key)) continue;
+    if(g.key==="other"){
+      // “อื่นๆ” = ไม่เข้ากลุ่มใด ๆ ข้างบนและไม่ใช่คู่แข่ง
+      const hitKnown = CUSTOMER_GROUPS
+        .filter(x=>x.key!=="other")
+        .some(x=>x.match.some(k=>text.includes(k.toLowerCase())));
+      if(!hitKnown && !isCompetitor(f)) hitAny = true;
+      continue;
+    }
+    if(g.match.length===0) continue;
+    if(g.match.some(k=>text.includes(k.toLowerCase()))) hitAny = true;
+  }
+  return hitAny;
+}
+
+/* =============== เครื่องมือช่วย =============== */
+function haversineKm(a,b){
+  const R=6371; // earth km
+  const dLat=(b.lat-a.lat)*Math.PI/180;
+  const dLng=(b.lng-a.lng)*Math.PI/180;
+  const lat1=a.lat*Math.PI/180, lat2=b.lat*Math.PI/180;
+  const x=Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function fmt(n,d=2){return isNaN(n)?"-":n.toLocaleString("th-TH",{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmtInt(n){return isNaN(n)?"-":n.toLocaleString("th-TH");}
+
+/* =============== สร้าง UI กลุ่มลูกค้า =============== */
+const custListEl = document.getElementById("custList");
+function buildCustomerUI(){
+  custListEl.innerHTML="";
+  CUSTOMER_GROUPS.forEach((g,i)=>{
+    const id = "cg_"+g.key;
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <label>
+        <input type="checkbox" class="cg" id="${id}" data-key="${g.key}" ${g.key!=="other" && g.key!=="alcohol" ? "checked":""}/>
+        ${g.label}
+      </label>`;
+    custListEl.appendChild(div);
+  });
+}
+
+/* =============== สร้างแผนที่ =============== */
+let map, hubMarker, radiusCircle;
+let layerCustomers = L.layerGroup();
+let layerCompetitors = L.layerGroup();
+let layerLines = L.layerGroup();
+
+function initMap(){
+  const street = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"});
+  map = L.map("map",{center:[HUB.lat,HUB.lng],zoom:12,layers:[street]});
+
+  hubMarker = L.circleMarker([HUB.lat,HUB.lng],{
+    radius:10,color:"#fb923c",fillColor:"#f97316",fillOpacity:0.9,weight:2
+  }).bindPopup("จุดศูนย์กลาง: "+HUB.name).addTo(map);
+
+  radiusCircle = L.circle([HUB.lat,HUB.lng],{radius:5000,color:"#ef4444",fillColor:"#ef444411",fillOpacity:0.4,weight:1}).addTo(map);
+
+  layerCustomers.addTo(map);
+  layerCompetitors.addTo(map);
+  layerLines.addTo(map);
+}
+
+/* =============== โหลดข้อมูล & วาด =============== */
+let RAW = []; // จาก factories.csv ทั้งหมด
+function parseCSV(text){
+  // รองรับ: category,name,detail,"address",lat,lng
+  const lines = text.trim().split("\n");
+  const out=[];
+  let i=0;
+  if(/category|name|lat/i.test(lines[0])) i=1;
+
+  for(;i<lines.length;i++){
+    let row = lines[i].trim(); if(!row) continue;
+    let address=""; const m=row.match(/"([^"]*)"/);
+    if(m){address=m[1]; row=row.replace(m[0],"##ADDR##");}
+    const p = row.split(",").map(x=>x.trim()); if(p.length<6) continue;
+    const obj = {
+      category:p[0], name:p[1], detail:p[2],
+      address:p[3]==="##ADDR##"?address:p[3],
+      lat:parseFloat(p[4]), lng:parseFloat(p[5])
+    };
+    if(!isNaN(obj.lat)&&!isNaN(obj.lng)) out.push(obj);
+  }
+  return out;
+}
+
+/* =============== คำนวณ & เรนเดอร์หลัก =============== */
+function renderAll(){
+  const rKm = Number(document.getElementById("radiusKm").value);
+  document.getElementById("radiusInput").value = rKm;
+  document.getElementById("radLabel").textContent = rKm;
+  radiusCircle.setRadius(rKm*1000);
+
+  // เลือกกลุ่ม
+  const mode = [...document.querySelectorAll('input[name="selmode"]')].find(x=>x.checked).value;
+  const checked = new Set([...document.querySelectorAll(".cg:checked")].map(x=>x.dataset.key));
+  if(mode==="single"){
+    // ถ้าเลือกหลาย ให้เหลืออันแรก
+    const arr = [...checked];
+    checked.clear(); if(arr.length>0) checked.add(arr[0]);
+  }
+
+  // แยก competitor / customers
+  const competitors = RAW.filter(isCompetitor);
+  const customers = RAW.filter(f=>matchCustomerByGroups(f,checked));
+
+  // วาด marker
+  layerCompetitors.clearLayers();
+  competitors.forEach(f=>{
+    const m = L.circleMarker([f.lat,f.lng],{
+      radius:6, color:"#fff", weight:1, fillColor:"#d97706", fillOpacity:.9
+    }).bindPopup(`<b>${f.name||"-"}</b><br/>${f.category||"-"}<br/>${f.address||""}`);
+    layerCompetitors.addLayer(m);
   });
 
-  // base layers
-  const streetLayer = L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    { maxZoom: 20 }
-  ).addTo(map);
+  layerCustomers.clearLayers();
+  customers.forEach(f=>{
+    const d = haversineKm({lat:f.lat,lng:f.lng},{lat:HUB.lat,lng:HUB.lng});
+    const m = L.circleMarker([f.lat,f.lng],{
+      radius:7, color:"#fff", weight:1, fillColor:"#3b82f6", fillOpacity:.95
+    }).bindPopup(`<b>${f.name||"-"}</b><br/>${f.category||"-"}<br/>ระยะจากศูนย์: ${fmt(d,2)} กม.`);
+    layerCustomers.addLayer(m);
+  });
 
-  const satelliteLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    { maxZoom: 20 }
-  );
+  // เส้นระยะตรงไปลูกค้าในรัศมี
+  layerLines.clearLayers();
+  const inRadiusCustomers = customers.filter(f=>haversineKm({lat:f.lat,lng:f.lng},HUB)<=rKm);
+  inRadiusCustomers.forEach(f=>{
+    const line = L.polyline([[HUB.lat,HUB.lng],[f.lat,f.lng]],{dashArray:"6,6",weight:1.5,color:"#3b82f6",opacity:.8});
+    layerLines.addLayer(line);
+  });
 
-  const darkLayer = L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    { maxZoom: 20, subdomains: 'abcd' }
-  );
+  // รายการคู่แข่งในรัศมี
+  const inRadCompetitors = competitors
+    .map(c=>({c,dist:haversineKm({lat:c.lat,lng:c.lng},HUB)}))
+    .filter(x=>x.dist<=rKm)
+    .sort((a,b)=>a.dist-b.dist);
 
-  // layer groups
-  const baseLayerGroup = L.layerGroup().addTo(map);      // จุดลานกระทิงแดง
-  const recycleLayer = L.layerGroup().addTo(map);        // คู่แข่งในรัศมี
-  let radiusCircle = null;                               // วงกลมรัศมี
+  const compBox = document.getElementById("competitorList");
+  if(inRadCompetitors.length===0){
+    compBox.innerHTML = '<div class="small">— ไม่มีในรัศมี —</div>';
+  }else{
+    compBox.innerHTML = "<ul>"+inRadCompetitors.map(x=>`<li>${x.c.name||"-"} <span class="small">(${fmt(x.dist,1)} กม.)</span></li>`).join("")+"</ul>";
+  }
 
-  // ปักหมุดลานกระทิงแดงเอง
-  const redBullMarker = L.circleMarker(redBullLatLng, {
-    radius: 8,
-    color: '#22c55e',
-    fillColor: '#22c55e',
-    fillOpacity: 0.9,
-    weight: 2
+  // KPI เบื้องต้น
+  document.getElementById("kAll").textContent = fmtInt(customers.length);
+  document.getElementById("kIn").textContent  = fmtInt(inRadiusCustomers.length);
+  const avg = customers.length? (customers.reduce((s,f)=>s+haversineKm(f,HUB),0)/customers.length):0;
+  document.getElementById("kAvg").textContent = fmt(avg,2);
+
+  // เทียบ “ลูกค้า” ใกล้เรา vs ใกล้คู่แข่ง
+  // สำหรับลูกค้าแต่ละราย หา: distOur = ระยะถึง HUB, distCompetitor = ระยะถึงคู่แข่งที่ใกล้ที่สุด
+  let closerToUs = 0;
+  customers.forEach(cu=>{
+    const dOur = haversineKm(cu,HUB);
+    let dComp = Infinity;
+    competitors.forEach(co=>{
+      const d = haversineKm(cu,co);
+      if(d<dComp) dComp = d;
+    });
+    if(dOur < dComp) closerToUs++;
+  });
+  const closerPct = customers.length? (closerToUs*100/customers.length):0;
+  document.getElementById("kCloserPct").textContent = fmt(closerPct,1)+"%";
+
+  // สรุปข้อได้เปรียบ (ข้อความอัตโนมัติ)
+  const bullets = [];
+  if(inRadCompetitors.length===0){
+    bullets.push("พื้นที่รัศมีที่เลือก ‘ไม่มีคู่แข่งโดยตรง’ → โอกาสตั้งศูนย์กระจาย/รับซื้อได้ดี");
+  }else if(inRadCompetitors.length<=5){
+    bullets.push("จำนวนคู่แข่งในรัศมีค่อนข้างน้อย ("+inRadCompetitors.length+" ราย) → ความหนาแน่นการแข่งขันต่ำ");
+  }else{
+    bullets.push("มีคู่แข่ง "+inRadCompetitors.length+" รายในรัศมี → ต้องแข่งขันด้านราคา/ความสะดวก");
+  }
+  if(closerPct>=60) bullets.push("ลูกค้าประมาณ "+fmt(closerPct,0)+"% อยู่ ‘ใกล้เรา’ มากกว่า ‘ใกล้คู่แข่ง’ → มีข้อได้เปรียบเรื่องเวลาขนส่ง/ค่าน้ำมัน");
+  else if(closerPct>=40) bullets.push("ลูกค้าราว "+fmt(closerPct,0)+"% ใกล้เรา → มีความสามารถแข่งขันแบบกึ่งกลาง");
+  else bullets.push("สัดส่วนลูกค้าที่ใกล้เราไม่มาก → ควรชดเชยด้วยเงื่อนไขรับซื้อ/บริการหน้างาน");
+
+  const avgIn = inRadiusCustomers.length? (inRadiusCustomers.reduce((s,f)=>s+haversineKm(f,HUB),0)/inRadiusCustomers.length):0;
+  if(avgIn>0) bullets.push("ลูกค้าในรัศมี "+rKm+" กม. เฉลี่ย "+fmt(avgIn,1)+" กม. → ทำรอบได้หลายเที่ยว/วัน");
+
+  document.getElementById("advBox").innerHTML = "<ul>"+bullets.map(b=>`<li>${b}</li>`).join("")+"</ul>";
+}
+
+/* =============== listeners =============== */
+function bindControls(){
+  const range = document.getElementById("radiusKm");
+  const box = document.getElementById("radiusInput");
+  range.addEventListener("input", ()=>{box.value=range.value; renderAll();});
+  box.addEventListener("input", ()=>{range.value=box.value; renderAll();});
+  document.querySelectorAll('input[name="selmode"]').forEach(r=>r.addEventListener("change",renderAll));
+  custListEl.addEventListener("change", renderAll);
+}
+
+/* =============== main =============== */
+buildCustomerUI();
+initMap();
+bindControls();
+
+fetch("data/factories.csv",{cache:"no-store"})
+  .then(res=>res.text())
+  .then(t=>{
+    RAW = parseCSV(t).map(o=>({ // ปรับรูปให้ใช้ร่วมกับฟังก์ชันระยะ
+      ...o, lat:o.lat, lng:o.lng
+    }));
+    renderAll();
   })
-  .bindPopup(`
-    <div class="popup-title">ลานกระทิงแดง (ฐานเรา)</div>
-    <div class="popup-desc">
-      ถนนสายใยรัก<br/>
-      ${redBullLatLng[0].toFixed(5)}, ${redBullLatLng[1].toFixed(5)}
-    </div>
-  `)
-  .addTo(baseLayerGroup);
-
-  // -------------------------------
-  // 2) CSV parser (เหมือนใน map.html)
-  // -------------------------------
-
-  function parseCSV(text) {
-    const lines = text.trim().split("\n");
-    const headers = lines[0].split(",").map(h => h.trim());
-    const rows = lines.slice(1);
-
-    return rows.map(row => {
-      const cols = [];
-      let current = '';
-      let inQuotes = false;
-
-      for (let i = 0; i < row.length; i++) {
-        const char = row[i];
-        if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-          cols.push(current.trim());
-          current = '';
-        } else {
-          current += char;
-        }
-      }
-      cols.push(current.trim());
-
-      const obj = {};
-      headers.forEach((h, i) => {
-        obj[h] = cols[i] ?? "";
-      });
-      return obj;
-    });
-  }
-
-  // -------------------------------
-  // 3) ดึง CSV แล้วเก็บโรงงานไว้ (allFactories)
-  // -------------------------------
-
-  let allFactories = [];
-
-  fetch('data/factories.csv')
-    .then(res => res.text())
-    .then(text => {
-      allFactories = parseCSV(text);
-      // หลังโหลดเสร็จ ให้ render ครั้งแรก
-      syncRadiusUI(); // จะเรียก updateView ด้านล่าง
-    });
-
-  // -------------------------------
-  // 4) คำนวณระยะทางระหว่าง 2 จุด (เมตร)
-  // -------------------------------
-
-  function distanceInMeters(lat1,lng1,lat2,lng2){
-    const R = 6371000; // เมตร
-    const toRad = d => d * Math.PI / 180;
-    const dLat = toRad(lat2-lat1);
-    const dLng = toRad(lng2-lng1);
-    const a = Math.sin(dLat/2)**2 +
-              Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*
-              Math.sin(dLng/2)**2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  }
-
-  // -------------------------------
-  // 5) อัปเดตการมองผลตามรัศมี
-  // -------------------------------
-
-  function updateView(radiusMeters){
-    // ล้างคู่แข่งเดิม
-    recycleLayer.clearLayers();
-
-    // ลบวงกลมเก่า
-    if(radiusCircle){
-      map.removeLayer(radiusCircle);
-    }
-
-    // วาดวงกลมรัศมีรอบลานกระทิงแดง
-    radiusCircle = L.circle(redBullLatLng, {
-      radius: radiusMeters,
-      color: '#ff0000',
-      weight: 2,
-      fillColor: '#ff0000',
-      fillOpacity: 0.08
-    }).addTo(map);
-
-    // ใส่หมุดเฉพาะ "คู่แข่ง" = category มีคำว่า "รีไซเคิล"
-    allFactories.forEach(f => {
-      if (!f.category) return;
-      const isCompetitor = f.category.includes("รีไซเคิล");
-      if(!isCompetitor) return;
-
-      const lat = parseFloat(f.lat);
-      const lng = parseFloat(f.lng);
-      if (isNaN(lat) || isNaN(lng)) return;
-
-      const dist = distanceInMeters(
-        redBullLatLng[0], redBullLatLng[1],
-        lat, lng
-      );
-
-      if(dist <= radiusMeters){
-        const marker = L.circleMarker([lat,lng],{
-          radius:6,
-          color:'#ef4444',
-          fillColor:'#ef4444',
-          fillOpacity:0.9,
-          weight:1
-        }).addTo(recycleLayer);
-
-        marker.bindPopup(`
-          <div class="popup-title">${f.name || "(ไม่ระบุชื่อ)"}</div>
-          <div class="popup-desc">
-            <div><b>หมวด:</b> ${f.category || "-"}</div>
-            <div><b>รายละเอียด:</b> ${f.detail || "-"}</div>
-            <div><b>ที่อยู่:</b> ${f.address || "-"}</div>
-            <div><b>ระยะจากลานกระทิงแดง:</b> ${(dist/1000).toFixed(2)} กม.</div>
-            <div><b>พิกัด:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
-          </div>
-        `);
-      }
-    });
-  }
-
-  // -------------------------------
-  // 6) ผูกกับ slider UI
-  // -------------------------------
-
-  const radiusInput = document.getElementById('radiusInput');
-  const radiusLabel = document.getElementById('radiusLabel');
-
-  function syncRadiusUI(){
-    const r = parseInt(radiusInput.value,10);
-    radiusLabel.textContent = (r/1000).toFixed(1) + " กม.";
-    updateView(r);
-  }
-
-  radiusInput.addEventListener('input', syncRadiusUI);
-
-  // -------------------------------
-  // 7) Layer control
-  // -------------------------------
-
-  const baseMaps = {
-    "ถนน (OSM)": streetLayer,
-    "ดาวเทียม": satelliteLayer,
-    "โหมดมืด": darkLayer
-  };
-  const overlayMaps = {
-    "ลานกระทิงแดง": baseLayerGroup,
-    "คู่แข่งรีไซเคิลในรัศมี": recycleLayer
-  };
-  L.control.layers(baseMaps, overlayMaps, { collapsed:false }).addTo(map);
-
+  .catch(e=>{
+    console.error(e);
+    alert("โหลด data/factories.csv ไม่ได้");
+  });
 </script>
 </body>
 </html>
