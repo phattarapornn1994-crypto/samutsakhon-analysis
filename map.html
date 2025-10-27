@@ -386,223 +386,271 @@
   </section>
 
   <!-- ===== MAP SCRIPT ===== -->
-  <script>
-    // ---------------------------
-    // CSV -> Array โรงงาน
-    // รองรับ format:
-    // category,name,detail,"address with , inside",lat,lng
-    // ---------------------------
-    function parseFactoriesCSV(csvText) {
-      const lines = csvText.trim().split('\n');
-      const factories = [];
+<script>
+  // ---------------------------
+  // 1) ตัวอ่าน CSV -> Array โรงงาน
+  //    ฟอร์แมตที่รองรับ:
+  //    category,name,detail,"address with , inside",lat,lng
+  // ---------------------------
+  function parseFactoriesCSV(csvText) {
+    const lines = csvText.trim().split('\n');
+    const factories = [];
 
-      let startIndex = 0;
-      const firstLineLower = lines[0].toLowerCase();
-      const looksLikeHeader =
-        firstLineLower.includes('category') ||
-        firstLineLower.includes('name') ||
-        firstLineLower.includes('lat');
-      if (looksLikeHeader) startIndex = 1;
+    let startIndex = 0;
+    const firstLineLower = lines[0].toLowerCase();
+    const looksLikeHeader =
+      firstLineLower.includes('category') ||
+      firstLineLower.includes('name') ||
+      firstLineLower.includes('lat');
 
-      for (let i = startIndex; i < lines.length; i++) {
-        let row = lines[i].trim();
-        if (!row) continue;
-
-        // ดึง address ระหว่าง "...."
-        let address = '';
-        let addressMatch = row.match(/"([^"]*)"/);
-        if (addressMatch) {
-          address = addressMatch[1].trim();
-          row = row.replace(addressMatch[0], '##ADDRESS_PLACEHOLDER##');
-        }
-
-        const parts = row.split(',').map(p => p.trim());
-        if (parts.length < 6) continue;
-
-        const category = parts[0] || '';
-        const name = parts[1] || '';
-        const detail = parts[2] || '';
-        let reconstructedAddress = parts[3];
-        if (reconstructedAddress === '##ADDRESS_PLACEHOLDER##') {
-          reconstructedAddress = address;
-        }
-
-        const lat = parseFloat(parts[4]);
-        const lng = parseFloat(parts[5]);
-        if (isNaN(lat) || isNaN(lng)) continue;
-
-        factories.push({
-          category,
-          name,
-          detail,
-          address: reconstructedAddress,
-          lat,
-          lng
-        });
-      }
-
-      return factories;
+    if (looksLikeHeader) {
+      startIndex = 1;
     }
 
-    // ---------------------------
-    // จุดศูนย์กลางธุรกิจ (อัปเดตพิกัดตามที่แจ้ง)
-    // ---------------------------
-    const hubSite = {
-      name: "ลานกระทิงแดง (จุดตั้ง Hub)",
-      address: "สมุทรสาคร",
-      lat: 13.646333,
-      lng: 100.279361
+    for (let i = startIndex; i < lines.length; i++) {
+      let row = lines[i].trim();
+      if (!row) continue;
+
+      // ดึง address จาก "...."
+      let address = '';
+      let addressMatch = row.match(/"([^"]*)"/);
+      if (addressMatch) {
+        address = addressMatch[1].trim();
+        row = row.replace(addressMatch[0], '##ADDRESS_PLACEHOLDER##');
+      }
+
+      const parts = row.split(',').map(p => p.trim());
+      if (parts.length < 6) continue;
+
+      const category = parts[0] || '';
+      const name = parts[1] || '';
+      const detail = parts[2] || '';
+
+      let reconstructedAddress = parts[3];
+      if (reconstructedAddress === '##ADDRESS_PLACEHOLDER##') {
+        reconstructedAddress = address;
+      }
+
+      const lat = parseFloat(parts[4]);
+      const lng = parseFloat(parts[5]);
+      if (isNaN(lat) || isNaN(lng)) continue;
+
+      factories.push({
+        category,
+        name,
+        detail,
+        address: reconstructedAddress,
+        lat,
+        lng
+      });
+    }
+
+    return factories;
+  }
+
+  // ---------------------------
+  // 2) พิกัด Hub (ลานกระทิงแดง)
+  //    แก้เป็นค่าพิกัดล่าสุดของคุณที่ถูกต้อง
+  // ---------------------------
+  const redBullSite = {
+    name: "ลานกระทิงแดง (จุดตั้งใหม่)",
+    address: "ถนนสายใยรัก สมุทรสาคร",
+    lat: 13.646333,   // <- พิกัดใหม่ที่คุณให้มา
+    lng: 100.279361
+  };
+
+  // ---------------------------
+  // 3) ตัวแปร global สำหรับแผนที่และเลเยอร์
+  // ---------------------------
+  let map;
+  let layerFactories;   // หมุดโรงงาน
+  let layerHeat;        // ฮีทแมพ
+  let layerRedBull;     // จุด Hub เรา
+
+  // ---------------------------
+  // 4) คู่แข่งหลัก? = โรงงานรีไซเคิล
+  // ---------------------------
+  function isRecyclingFactory(f) {
+    // ถ้ามีคำว่า "รีไซเคิล" ในหมวด ให้ถือว่าเป็นคู่แข่งสีแดง
+    return f.category.includes("รีไซเคิล");
+  }
+
+  // ---------------------------
+  // 5) popup HTML
+  // ---------------------------
+  function factoryPopupHTML(fac) {
+    return `
+      <div style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:4px;line-height:1.4;">
+        ${fac.name || "-"}
+      </div>
+      <div style="font-size:12px;color:#475569;line-height:1.4;">
+        <div><strong>ประเภท:</strong> ${fac.category || "-"}</div>
+        <div><strong>รายละเอียด:</strong> ${fac.detail || "-"}</div>
+        <div><strong>ที่อยู่:</strong> ${fac.address || "-"}</div>
+        <div><strong>พิกัด:</strong> ${fac.lat.toFixed(5)}, ${fac.lng.toFixed(5)}</div>
+      </div>
+    `;
+  }
+
+  // ---------------------------
+  // 6) สร้าง heat data แบบ "พองรัศมี"
+  //
+  //    ไอเดีย:
+  //    - จุดจริง        weight 1.0  (แดงชัด)
+  //    - จุดรอบๆ offset weight 0.4  (ช่วยให้กระจาย ไม่เป็นจุดแดงเล็กจุดเดียว)
+  //
+  //    offset ~0.001 องศา ≈ 100 เมตรกว่า ๆ ในสมุทรสาคร
+  // ---------------------------
+  function buildHeatPoints(factories) {
+    const pts = [];
+
+    factories.forEach(f => {
+      // จุดหลัก = weight สูงสุด
+      pts.push([f.lat, f.lng, 1.0]);
+
+      // กระจายรอบ ๆ เป็นก้อน (4 ทิศ)
+      const off = 0.001; // ประมาณ 100+ เมตร
+      pts.push([f.lat + off, f.lng,       0.4]);
+      pts.push([f.lat - off, f.lng,       0.4]);
+      pts.push([f.lat,       f.lng + off, 0.4]);
+      pts.push([f.lat,       f.lng - off, 0.4]);
+    });
+
+    return pts;
+  }
+
+  // ---------------------------
+  // 7) init แผนที่
+  // ---------------------------
+  function initMap(factories) {
+    // พื้นฐาน tile ถนน
+    const street = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+      }
+    );
+
+    // ดาวเทียม
+    const satellite = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 19,
+        attribution: "Tiles © Esri"
+      }
+    );
+
+    // สร้างแผนที่
+    map = L.map("map", {
+      center: [redBullSite.lat, redBullSite.lng],
+      zoom: 11,
+      layers: [street]
+    });
+
+    // -------- 7.1 Hub เรา (ส้ม) --------
+    layerRedBull = L.layerGroup();
+    const redBullMarker = L.circleMarker([redBullSite.lat, redBullSite.lng], {
+      radius: 10,
+      color: "#fb923c",
+      fillColor: "#f97316",
+      fillOpacity: 0.9,
+      weight: 2
+    }).bindPopup(`
+      <div style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:4px;line-height:1.4;">
+        ★ ${redBullSite.name}
+      </div>
+      <div style="font-size:12px;color:#475569;line-height:1.4;">
+        <div><strong>ที่อยู่:</strong> ${redBullSite.address}</div>
+        <div><strong>พิกัด:</strong> ${redBullSite.lat}, ${redBullSite.lng}</div>
+      </div>
+    `);
+    redBullMarker.addTo(layerRedBull);
+
+    // -------- 7.2 หมุดโรงงาน --------
+    layerFactories = L.layerGroup();
+
+    factories.forEach(f => {
+      const color = isRecyclingFactory(f) ? "#ef4444" : "#3b82f6"; // แดง=รีไซเคิล, น้ำเงิน=อื่น
+      const marker = L.circleMarker([f.lat, f.lng], {
+        radius: 6,
+        color: "#fff",
+        weight: 1.5,
+        fillColor: color,
+        fillOpacity: 0.9
+      }).bindPopup(factoryPopupHTML(f));
+
+      marker.addTo(layerFactories);
+    });
+
+    // -------- 7.3 Heatmap --------
+    const heatPoints = buildHeatPoints(factories);
+
+    layerHeat = L.heatLayer(heatPoints, {
+      // radius ใหญ่ขึ้น = ปื้นสีจะกว้างขึ้น
+      radius: 45,
+      blur: 35,
+      maxZoom: 17,
+      max: 1.0,
+
+      // gradient custom:
+      // 0.0 = น้ำเงินเข้ม
+      // 0.4 = ฟ้า
+      // 0.7 = เหลือง/ส้มอุ่น
+      // 1.0 = แดงจัด
+      gradient: {
+        0.0: "#1e3a8a", // น้ำเงินเข้ม
+        0.4: "#3b82f6", // ฟ้า
+        0.7: "#facc15", // เหลือง
+        1.0: "#dc2626"  // แดงเข้ม
+      }
+    });
+
+    // ยังไม่เปิด layerHeat เป็นดีฟอลต์ก็ได้,
+    // หรือถ้าคุณอยากให้เปิดตั้งแต่แรก ให้ addTo(map) เลย
+    // layerHeat.addTo(map);
+
+    // -------- 7.4 ใส่ overlay ลงแผนที่ --------
+    layerRedBull.addTo(map);
+    layerFactories.addTo(map);
+    // (!!) ถ้าอยากให้ heatmap โผล่มาตั้งแต่โหลดหน้า ให้ uncomment:
+    // layerHeat.addTo(map);
+
+    // -------- 7.5 สร้าง Layer Control --------
+    const baseMaps = {
+      "โหมดถนน (OSM)": street,
+      "โหมดดาวเทียม (Esri)": satellite
     };
 
-    // ---------------------------
-    // เป็นโรงงานรีไซเคิลไหม?
-    // ---------------------------
-    function isRecyclingFactory(f) {
-      // ถ้าช่อง category มีคำว่า "รีไซเคิล" = คู่แข่งหลัก
-      return f.category.includes("รีไซเคิล");
-    }
+    const overlayMaps = {
+      "Hub เรา (ลานกระทิงแดง)": layerRedBull,
+      "หมุดโรงงาน": layerFactories,
+      "Heatmap โรงงาน": layerHeat
+    };
 
-    // popup HTML
-    function factoryPopupHTML(f) {
-      return `
-        <div class="popup-title">${f.name || "-"}</div>
-        <div class="popup-desc">
-          <div><strong>ประเภท:</strong> ${f.category || "-"}</div>
-          <div><strong>รายละเอียด:</strong> ${f.detail || "-"}</div>
-          <div><strong>ที่อยู่:</strong> ${f.address || "-"}</div>
-          <div><strong>พิกัด:</strong> ${f.lat.toFixed(5)}, ${f.lng.toFixed(5)}</div>
-        </div>
-      `;
-    }
+    L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
 
-    function hubPopupHTML(h) {
-      return `
-        <div class="popup-title">★ ${h.name}</div>
-        <div class="popup-desc">
-          <div><strong>บทบาท:</strong> ลานกระทิงแดง (ใหม่)</div>
-          <div><strong>ที่อยู่:</strong> ${h.address}</div>
-          <div><strong>พิกัด:</strong> ${h.lat}, ${h.lng}</div>
-        </div>
-      `;
-    }
+    // -------- 7.6 ซูมพอดีทั้งหมด --------
+    const allLatLng = factories.map(f => [f.lat, f.lng]);
+    allLatLng.push([redBullSite.lat, redBullSite.lng]);
 
-    // ---------------------------
-    // initMap
-    // ---------------------------
-    function initMap(factories) {
-      // base layers
-      const street = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors"
-        }
-      );
+    const bounds = L.latLngBounds(allLatLng);
+    map.fitBounds(bounds.pad(0.2));
+  }
 
-      const satellite = L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        {
-          maxZoom: 19,
-          attribution: "Tiles &copy; Esri"
-        }
-      );
-
-      // create map
-      const map = L.map("map", {
-        center: [hubSite.lat, hubSite.lng],
-        zoom: 11,
-        layers: [street],
-      });
-
-      // layer groups
-      const layerHub = L.layerGroup();
-      const layerFactories = L.layerGroup();
-
-      // สร้าง marker hub (สีเหลือง)
-      const hubMarker = L.circleMarker([hubSite.lat, hubSite.lng], {
-        radius: 9,
-        color: "#fff",
-        weight: 2,
-        fillColor: "#facc15",
-        fillOpacity: 0.9,
-      }).bindPopup(hubPopupHTML(hubSite));
-      hubMarker.addTo(layerHub);
-
-      // markers โรงงาน
-      factories.forEach(f => {
-        const color = isRecyclingFactory(f) ? "#ef4444" : "#3b82f6"; // แดง=รีไซเคิล, น้ำเงิน=อื่น
-        const marker = L.circleMarker([f.lat, f.lng], {
-          radius: 6,
-          color: "#fff",
-          weight: 1.5,
-          fillColor: color,
-          fillOpacity: 0.9
-        }).bindPopup(factoryPopupHTML(f));
-
-        marker.addTo(layerFactories);
-      });
-
-      // heatmap points
-      // intensity set สูงขึ้นหน่อย ให้แดงโผล่
-      const heatPoints = factories.map(f => [f.lat, f.lng, 0.8]);
-
-      // gradient ปรับใหม่: น้ำเงินเข้ม → เขียว → เหลือง → ส้ม → แดงเข้ม
-      const layerHeat = L.heatLayer(heatPoints, {
-        radius: 28,
-        blur: 22,
-        maxZoom: 17,
-        max: 1.0,
-        gradient: {
-          0.00: "#1e3a8a",   // navy-ish
-          0.25: "#22c55e",   // green
-          0.50: "#fde047",   // yellow
-          0.75: "#fb923c",   // orange
-          1.00: "#dc2626"    // strong red
-        }
-      });
-
-      // add default layers
-      layerHub.addTo(map);
-      layerFactories.addTo(map);
-      // layerHeat ไม่เปิดตั้งต้นก็ได้ ถ้าอยากเปิดตั้งต้นให้ addTo(map) ตรงนี้
-      layerHeat.addTo(map); // เปิดเลยเพื่อให้เห็นความหนาแน่นชัด
-
-      // layer control
-      const baseMaps = {
-        "โหมดถนน (OSM)": street,
-        "โหมดดาวเทียม (Esri)": satellite,
-      };
-
-      const overlayMaps = {
-        "ศูนย์กลางเรา (Hub)": layerHub,
-        "หมุดโรงงานทั้งหมด": layerFactories,
-        "Heatmap โรงงาน": layerHeat,
-      };
-
-      L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
-
-      // zoom to bounds
-      const allLatLng = factories.map(f => [f.lat, f.lng]);
-      allLatLng.push([hubSite.lat, hubSite.lng]);
-      if (allLatLng.length > 0) {
-        const bounds = L.latLngBounds(allLatLng);
-        map.fitBounds(bounds.pad(0.2));
-      }
-    }
-
-    // ---------------------------
-    // fetch CSV แล้ว render map
-    // ---------------------------
-    fetch("data/factories.csv", { cache: "no-store" })
-      .then(res => res.text())
-      .then(csvText => {
-        const factories = parseFactoriesCSV(csvText);
-        initMap(factories);
-      })
-      .catch(err => {
-        console.error("โหลด factories.csv ไม่ได้:", err);
-        alert("มีปัญหาในการโหลดข้อมูลโรงงาน (factories.csv)");
-      });
-  </script>
+  // ---------------------------
+  // 8) โหลด CSV แล้วเริ่ม
+  // ---------------------------
+  fetch("data/factories.csv", { cache: "no-store" })
+    .then(res => res.text())
+    .then(csvText => {
+      const factories = parseFactoriesCSV(csvText);
+      initMap(factories);
+    })
+    .catch(err => {
+      console.error("โหลด factories.csv ไม่ได้:", err);
+      alert("มีปัญหาในการโหลดข้อมูลโรงงาน (factories.csv)");
+    });
+</script>
 </body>
 </html>
